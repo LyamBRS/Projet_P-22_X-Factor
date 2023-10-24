@@ -66,10 +66,10 @@ bool MovingEvent(float executionRatio, unsigned char direction);
  * is turning left. 1 means the robot is 
  * turning right.
  * @return true:
- * The robot can continue to move
+ * The robot can continue to turn
  * @return false:
  * The robot needs to stop.
  */
-bool MovingEvent(float executionRatio, unsigned char direction);
+bool TurningEvent(float executionRatio, unsigned char direction);
 
 #pragma endregion
