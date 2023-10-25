@@ -117,32 +117,8 @@ int SafeBox_GetPackagesDeposited();
  */
 bool SafeBox_GetDoorBellStatus();
 
-/**
- * @brief Asks SafeBox to return its current
- * generic status which consists of a number
- * corresponding to an enum.
- * @return int: The value of SafeBox's status.
- */
-int SafeBox_GetStatus();
 #pragma endregion
 
 #pragma region [Senders]
-/**
- * @brief Sends XFactor's current status to
- * SafeBox.
- * 
- * @attention
- * SafeBox WILL return its own status shortly
- * after XFactor has sent his. If the message is
- * not read or cleared, it may fuck some shit up
- * later when Bluetooth communications are needed
- * 
- * @param xFactorStatus
- * The current status of XFactor.
- * @return true:
- * Successfully sent the status to SafeBox.
- * @return false:
- * Failed to send the status to SafeBox.
- */
-bool SafeBox_SendStatus(int xFactorStatus);
+
 #pragma endregion
