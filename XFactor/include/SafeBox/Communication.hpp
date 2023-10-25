@@ -118,7 +118,3 @@ int SafeBox_GetPackagesDeposited();
 bool SafeBox_GetDoorBellStatus();
 
 #pragma endregion
-
-#pragma region [Senders]
-
-#pragma endregion
