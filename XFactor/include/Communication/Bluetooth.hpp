@@ -103,3 +103,29 @@ bool BT_WaitForAMessage(int millisecondsTimeOut);
  * the reception buffer.
  */
 string BT_GetLatestMessage();
+
+/**
+ * @brief Function that firstly clears the UART
+ * buffer to empty it of any messages, then sends
+ * a specified message to the UART Bluetooth
+ * module. Once that is done, the function waits
+ * for a message to be received to return it or
+ * waits for the timeout to reach its specified
+ * value.
+ * 
+ * @attention
+ * Its recommended to use this function rather
+ * than the other BT functions as this one
+ * handles everything there is to handle.
+ * 
+ * @warning
+ * This function automatically calls
+ * @ref BT_BeforeCommsEvent
+ * @ref BT_CommsSuccessEvent
+ * @ref BT_CommsFailedEvent
+ * 
+ * @param message 
+ * @param millisecondsTimeOut 
+ * @return string 
+ */
+string BT_MessageExchange(string message, int millisecondsTimeOut);
