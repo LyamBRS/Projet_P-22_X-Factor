@@ -124,8 +124,13 @@ string BT_GetLatestMessage();
  * @ref BT_CommsSuccessEvent
  * @ref BT_CommsFailedEvent
  * 
- * @param message 
- * @param millisecondsTimeOut 
- * @return string 
+ * @param message
+ * A string containing the message that needs
+ * to be sent to SafeBox. All messages must be
+ * stored as DEFINES.
+ * @param millisecondsTimeOut
+ * How long should the program wait for a message
+ * @return string: The received message from
+ * SafeBox.
  */
 string BT_MessageExchange(string message, int millisecondsTimeOut);
