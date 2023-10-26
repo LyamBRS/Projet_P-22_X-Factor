@@ -15,6 +15,78 @@
 
 #pragma once
 
+#pragma region [FUNCTION_IDS]
+
+#define ID_WAIT_AFTER_SAFEBOX 0
+#define ID_WAIT_FOR_DELIVERY 1
+#define ID_GETTING_OUT_OF_GARAGE 2
+#define ID_SEARCH_PREPARATIONS 3
+#define ID_SEARCH_FOR_PACKAGE 4
+#define ID_AVOID_OBSTACLE 5
+#define ID_EXAMINE_FOUND_PACKAGE 6
+#define ID_PICK_UP_PACKAGE 7
+#define ID_RETURN_HOME 8
+#define ID_PREPARING_FOR_DROP_OFF 9
+#define ID_PACKAGE_DROP_OFF 10
+#define ID_CONFIRM_DROP_OFF 11
+#define ID_ALARM 12
+#define ID_ERROR 13
+#define ID_RETURN_INSIDE_GARAGE 14
+#define ID_END_OF_PROGRAM 15
+
+#pragma endregion
+
+#pragma region [ACTION_HANDLERS]
+/**
+ * @brief Function periodically called in void
+ * loop. This function is a massive switch case
+ * that checks which execution / action function
+ * should currently be executed by XFactor. To
+ * specify that function, use 
+ * @ref SetNewExecutionFunction using defines
+ * available in this header file.
+ */
+void Execute_CurrentFunction();
+
+/**
+ * @brief
+ * Function that specifies a new function ID
+ * so that @ref Execute_CurrentFunction can
+ * execute that function instead of the current
+ * one that is executed. This is used to change
+ * execution functions.
+ * 
+ * @warning
+ * DO NOT call execution functions outside of
+ * @ref Execute_CurrentFunction. Programming in
+ * that manner WILL cause stack overflows
+ * because functions won't ever return to
+ * previous ones.
+ * 
+ * @param functionID
+ * The ID of the function to execute. IDs are
+ * available as defines in this document.
+ * @return true:
+ * Successfully changed the execution function
+ * to the new ID.
+ * @return false:
+ * Failed to change the execution function to the
+ * new ID. May be out of range.
+ */
+bool SetNewExecutionFunction(unsigned char functionID);
+
+/**
+ * @brief
+ * Function that returns the value of the current
+ * action/execution function that is being
+ * executed in @ref Execute_CurrentFunction.
+ * @return unsigned char:
+ * function ID
+ */
+unsigned char GetCurrentExecutionFunction();
+#pragma endregion
+
+#pragma region [ACTION_FUNCTIONS]
 /**
  * @brief
  * Action function executed once at the start of
@@ -366,3 +438,5 @@ void Execute_ReturnInsideGarage();
  * program.
  */
 void Execute_EndOfProgram();
+
+#pragma endregion
