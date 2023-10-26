@@ -146,4 +146,41 @@ bool Package_Transport();
  * inside the robot.
  */
 bool Package_Detected();
+
+/**
+ * @brief
+ * Function that defines if XFactor should be
+ * expecting to carry a package or not. For
+ * example, if XFactor finds a package and picks
+ * it up, this function should be called to
+ * make the program know that XFactor should be
+ * carrying a package. This way, if the package
+ * is no longer detected, an alarm can be turned
+ * on.
+ * 
+ * This also allows the alarm to not be turned on
+ * if the package is supposed to be no longer
+ * detected.
+ * 
+ * @param newPackageStatus
+ * Should XFactor expect a package inside its
+ * claw?
+ * @return true:
+ * The new package status was set successfully. 
+ * @return false:
+ * Failed to set a new package status.
+ */
+bool Package_SetStatus(bool newPackageStatus);
+
+/**
+ * @brief 
+ * Function that simply returns the expected
+ * package state.
+ * 
+ * @return true:
+ * XFactor is supposed to be carrying a package
+ * @return false:
+ * XFactor shouldn't be carrying a package.
+ */
+bool Package_GetStatus();
 #pragma endregion
