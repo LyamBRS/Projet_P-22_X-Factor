@@ -43,6 +43,35 @@
 bool MoveFromtVector(float radians, float distance, bool saveVector);
 
 /**
+ * @brief 
+ * This function backtraces the robot by using
+ * the saved vectors in the vector buffer.
+ * Firstly, it will rotate the robot so that its
+ * rotation is the exact opposite of the previous
+ * vector in the buffer. After that, it will
+ * start to backtrace for a specified amount of
+ * vectors or until he vector table is empty.
+ * Once the specified amount of vectors have been
+ * backtraced, the robot will turn around on
+ * itself again to face where the rotation value
+ * of the last vector in the buffer.
+ * @param AmountOfVectorsToBacktrace 
+ * How many vectors should the robot backtrace?
+ * If the number is bigger than the amount of
+ * saved vectors in the vector buffer, the
+ * function will stop once the buffer is empty.
+ * @return true: 
+ * Successfully backtraced the amount of
+ * specified vectors
+ * @return false: 
+ * Failed to backtraced the amount of
+ * specified vectors due to possible errors or
+ * because there is no more vectors to backtrace.
+ */
+bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace);
+
+
+/**
  * @brief Makes the robot turn on itself relative
  * to a given radian. 0 corresponds to the front
  * of the robot (AKA not turning), and 3.14
