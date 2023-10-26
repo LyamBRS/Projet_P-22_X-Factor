@@ -58,4 +58,16 @@ bool SaveNewVector();
  * The vectors failed to be reset.
  */
 bool ResetVectors();
+
+/**
+ * @brief Resets the last vector stored in the
+ * vector buffers back to default values (0).
+ * Also reduces global variables that keep tracks
+ * of the available vectors left.
+ * @return true:
+ * The vector was successfully removed.
+ * @return false:
+ * The vector failed to be removed.
+ */
+bool RemoveLastVector();
 #pragma endregion
