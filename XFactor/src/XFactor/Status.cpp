@@ -48,7 +48,7 @@ enum XFactor_StatusEnum {
 
     /// @brief Status used when XFactor is examinating a potential package
     ExaminatingAPackage = 5,
-    
+
     /// @brief Status used when XFactor is actively picking up or trying to pick up a package
     PickingUpAPackage = 6,
 
