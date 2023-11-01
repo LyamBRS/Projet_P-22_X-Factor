@@ -31,16 +31,21 @@
  */
 void XFactor_Innit()
 {
-    bool initialisationError = false;
-
     BoardInit();
 
     if (LEDS_Innit()){
         if (BT_Innit()){
             if(Alarm_Innit()){
-                XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery);
-                SetNewExecutionFunction()
+                if(XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery)){
+                    if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
+                        // Function is successful.
+                        return;
+                    }
+                }
             }
         }
+        XFactor_SetNewStatus(XFactor_StatusEnum::Error);
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
     }
+    // Cant continue initialisation.
 }
