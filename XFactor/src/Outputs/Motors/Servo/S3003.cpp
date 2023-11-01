@@ -1,12 +1,14 @@
 /**
- * @file ServoMotors.cpp
+ * @file ServoMotors.hpp
  * @author Lyam BRS (lyam.brs@gmail.com)
- * @brief File used for servo motor related functions
+ * @brief Header file used for servo motors colour sensor.
  * @version 0.1
  * @date 2023-10-19
+ * 
  * @copyright Copyright (c) 2023
+ * 
  */
-#include "Servo_Motors/ServoMotors.hpp"
+#pragma once
 
 /**
  * @brief Initialisation function of a single

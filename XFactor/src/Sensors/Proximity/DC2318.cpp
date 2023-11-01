@@ -1,24 +1,21 @@
 /**
  * @file DC2318.cpp
  * @author Élodie
- * @brief 
+ * @brief
  * Code file for functions associated with the DC2318 sensor
  * @version 0.1
  * @date 2023-09-28
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
-#include "Proximity_sensors/InfraRed.hpp"
-#include "Proximity_sensors/DC2318.hpp"
-
 
 /**
  * @brief Function that initialize a DC2318 sensor
- * 
- * @param leftPin 
+ *
+ * @param leftPin
  * the pin used for the left IR sensor
- * @param rightPin 
+ * @param rightPin
  * the pin used for the right IR sensor
  */
 void DC2318_Innit(int leftPin, int rightPin){
@@ -28,12 +25,12 @@ void DC2318_Innit(int leftPin, int rightPin){
 
 /**
  * @brief Function that read a DC2318 sensor
- * 
- * @param leftPin 
+ *
+ * @param leftPin
  * the pin used for the left IR sensor
- * @param rightPin 
+ * @param rightPin
  * the pin used for the right IR sensor
- * @return unsigned char 
+ * @return unsigned char
  * Value returned depending on the state of the IR sensor.
  * 0: no walls
  * 1: A wall on the right is detected

@@ -1,12 +1,14 @@
 /**
- * @file GROVE.cpp
+ * @file GROVE.hpp
  * @author Lyam BRS (lyam.brs@gmail.com)
- * @brief File containing the functions exclusively related to the GROVE colour sensor.
+ * @brief Header file used for the GROVE colour sensor.
  * @version 0.1
  * @date 2023-10-19
+ * 
  * @copyright Copyright (c) 2023
+ * 
  */
-#include "Colour_sensor/GROVE.hpp"
+#pragma once
 
 /**
  * @brief Initialises one GROVE sensor depending on given
@@ -15,10 +17,7 @@
  * @param greenPin Arduino pins for the green input
  * @param bluePin Arduino pins for the blue input
  */
-void GROVE_Innit(int redPin, int greenPin, int bluePin)
-{
-
-}
+void GROVE_Innit(int redPin, int greenPin, int bluePin);
 
 /**
  * @brief This function should use the specified colour
@@ -33,10 +32,7 @@ void GROVE_Innit(int redPin, int greenPin, int bluePin)
  * @param bluePin Arduino pins for the blue input
  * @return unsigned int of the hex colour returned by the sensor.
  */
-unsigned int GROVE_GetColor(int redPin, int greenPin, int bluePin)
-{
-
-}
+unsigned int GROVE_GetColor(int redPin, int greenPin, int bluePin);
 
 // I suggest making more functions. You could make one that makes the big number from the smaller number for example.
-
+// The functions you make should start with GROVE_. variables as inputs should be lower camelCase.
