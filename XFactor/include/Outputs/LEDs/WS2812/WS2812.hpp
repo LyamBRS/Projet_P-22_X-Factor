@@ -12,6 +12,7 @@
 
 #pragma once
 
+// - INCLUDE - //
 #include <Adafruit_NeoPixel.h>
 
 /**
@@ -24,7 +25,7 @@
  * Which pin of the Arduino is used to talk with
  * the LEDs
  * @return true:
- * Successfully initialised a strip of WS2812s 
+ * Successfully initialised a strip of WS2812s
  * @return false:
  * Failed to initialise the WS2812 at the
  * specified pin.

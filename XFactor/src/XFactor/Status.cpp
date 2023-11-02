@@ -13,7 +13,7 @@
 // - INCLUDES - //
 #include "XFactor/Status.hpp"
 
-#pragma region [FUNCTIONS]
+//#pragma region [FUNCTIONS]
 /**
  * @brief
  * Function that sets the global variable which
@@ -49,4 +49,4 @@ unsigned char XFactor_GetStatus()
     return XFactorStatus;
 }
 
-#pragma endregion
+//#pragma endregion

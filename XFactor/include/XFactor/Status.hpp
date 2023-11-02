@@ -12,7 +12,7 @@
 
 #pragma once
 
-#pragma region [ENUM]
+//#pragma region [ENUM]
 
 /**
  * @brief Enumeration of all the possible status
@@ -20,7 +20,7 @@
  * a mode or activity that XFactor is currently
  * doing. These modes are used for SafeBox to
  * take decisions and communicate properly.
- * 
+ *
  * @attention
  * Usage: variable = XFactor_StatusEnum::Off;
  * @warning
@@ -37,7 +37,7 @@ enum XFactor_StatusEnum {
     /// @brief Status used when XFactor awaits for SafeBox to give it the go
     WaitingForDelivery = 1,
 
-    /// @brief Satus used when XFactor is leaving the garage
+    /// @brief Status used when XFactor is leaving the garage
     LeavingSafeBox = 2,
 
     /// @brief Status used when XFactor is preparing to search for the package
@@ -48,14 +48,14 @@ enum XFactor_StatusEnum {
 
     /// @brief Status used when XFactor is examinating a potential package
     ExaminatingAPackage = 5,
-    
+
     /// @brief Status used when XFactor is actively picking up or trying to pick up a package
     PickingUpAPackage = 6,
 
     /// @brief Status used when XFactor is trying to calculate a way home
     CalculatingRouteHome = 7,
 
-    /// @brief Status used when XFactor is actively returnin home
+    /// @brief Status used when XFactor is actively returning home
     ReturningHome = 8,
 
     /// @brief Status used when XFactor is preparing to drop off a package inside of SafeBox
@@ -67,16 +67,16 @@ enum XFactor_StatusEnum {
     /// @brief Status used when XFactor is attempting to confirm that the package was dropped off
     ConfirmingDropOff = 11,
 
-    /// @brief Status used whenn XFactor is trying to enter the garage
+    /// @brief Status used when XFactor is trying to enter the garage
     EnteringSafeBox = 12,
 
     /// @brief Status used when XFactor fails to examine if a potential package is a package or not.
     PackageExaminationFailed = 13,
 
-    /// @brief Status used when XFactor cannnot pick up an identified package after X attempts
+    /// @brief Status used when XFactor cannot pick up an identified package after X attempts
     PackagePickUpFailed = 14,
 
-    /// @brief Statys used when XFactor fails to drop off the package inside SafeBox.
+    /// @brief Status used when XFactor fails to drop off the package inside SafeBox.
     PackageDropOffFailed = 15,
 
     /// @brief Status used when XFactor failed to find a package that was delivered
@@ -84,7 +84,7 @@ enum XFactor_StatusEnum {
 
     /// @brief Safebox is in maintenance mode
     Maintenance = 50,
-    
+
     /// @brief SafeBox encountered a critical error
     Error = 51,
 
@@ -94,17 +94,17 @@ enum XFactor_StatusEnum {
 
 /**
  * @brief Global variable used to store the last
- * status that was retreived from SafeBox.
+ * status that was retrieved from SafeBox.
  * Declared as extern in @ref Status.hpp but
- * initialised in @ref SafeBox_Innit. 
+ * initialised in @ref SafeBox_Innit.
  */
 extern int XFactorStatus;
 
-#pragma endregion
+//#pragma endregion
 
-#pragma region [FUNCTIONS]
+//#pragma region [FUNCTIONS]
 /**
- * @brief 
+ * @brief
  * Function that sets the global variable which
  * holds the current status of XFactor to a new
  * desired value from @ref XFactor_StatusEnum
@@ -120,16 +120,16 @@ extern int XFactorStatus;
 bool XFactor_SetNewStatus(unsigned char newStatus);
 
 /**
- * @brief 
+ * @brief
  * Function that returns the current status of
- * XFactor as an unsigned char. You must check 
+ * XFactor as an unsigned char. You must check
  * that value with @ref XFactor_StatusEnum to
  * identify what the current status of XFactor is
- * 
+ *
  * @return unsigned char
- * value from @ref XFactor_StatusEnum which 
+ * value from @ref XFactor_StatusEnum which
  * corresponds to XFactor's current status.
  */
 unsigned char XFactor_GetStatus();
 
-#pragma endregion
+//#pragma endregion

@@ -7,15 +7,15 @@
  * should be in another file.
  * @version 0.1
  * @date 2023-10-23
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 #pragma once
 
-#pragma region [Base_functions]
+//#pragma region [Base_functions]
 /**
- * @brief 
+ * @brief
  * This function moves the robot on a specified
  * vector allowing it to keep track of where it
  * is relative to the box. The robot will start
@@ -23,13 +23,13 @@
  * radian value. It will then move the given
  * distance in a straight line after which the
  * vector will be saved in the buffer.
- * @param radians 
+ * @param radians
  * The relative radians that the robot should turn
  * before it starts to move forwards. The radians
  * is relative to the current direction that the
  * robot is facing. Meaning 0 will always be nothing
  * and 3.14 will always be a 180 turn.
- * @param distance 
+ * @param distance
  * The distance in centimeters that the robot should
  * make. In other words, the length of the vector.
  * @param saveVector
@@ -40,10 +40,10 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-bool MoveFromtVector(float radians, float distance, bool saveVector);
+bool MoveFromVector(float radians, float distance, bool saveVector);
 
 /**
- * @brief 
+ * @brief
  * This function backtraces the robot by using
  * the saved vectors in the vector buffer.
  * Firstly, it will rotate the robot so that its
@@ -55,42 +55,41 @@ bool MoveFromtVector(float radians, float distance, bool saveVector);
  * backtraced, the robot will turn around on
  * itself again to face where the rotation value
  * of the last vector in the buffer.
- * @param AmountOfVectorsToBacktrace 
+ * @param AmountOfVectorsToBacktrace
  * How many vectors should the robot backtrace?
  * If the number is bigger than the amount of
  * saved vectors in the vector buffer, the
  * function will stop once the buffer is empty.
- * @return true: 
+ * @return true:
  * Successfully backtraced the amount of
  * specified vectors
- * @return false: 
+ * @return false:
  * Failed to backtraced the amount of
  * specified vectors due to possible errors or
  * because there is no more vectors to backtrace.
  */
 bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace);
 
-
 /**
  * @brief Makes the robot turn on itself relative
  * to a given radian. 0 corresponds to the front
  * of the robot (AKA not turning), and 3.14
  * corresponds to a full 180 turn.
- * @param radians 
+ * @param radians
  * The relative radians that the robot should turn
  * before it starts to move forwards. The radians
  * is relative to the current direction that the
  * robot is facing. Meaning 0 will always be nothing
  * and 3.14 will always be a 180 turn.
- * @return true 
+ * @return true
  * The robot successfully turned by X radians
- * @return false 
+ * @return false
  * The robot failed to turn by the given radian.
  */
 bool TurnInRadians(float radians);
 
 /**
- * @brief Makes the robot go in a 
+ * @brief Makes the robot go in a
  * straight line until the specified
  * distance is reached.
  * @param distance
@@ -99,33 +98,33 @@ bool TurnInRadians(float radians);
  * @return true
  * The robot successfully drove to the
  * wanted distance
- * @return false 
+ * @return false
  * The robot failed to reach the wanted distance.
  */
 bool MoveStraight(float distance);
 
 /**
- * @brief Calculate the wanted speed factor depending on how much 
- * distance is left to move to reach its wanted destination. 
- * This allows the robot to perform an acceleration when starting 
- * its movement and a deacceleration when its nearing the end of 
+ * @brief Calculate the wanted speed factor depending on how much
+ * distance is left to move to reach its wanted destination.
+ * This allows the robot to perform an acceleration when starting
+ * its movement and a de acceleration when its nearing the end of
  * its distance.
- * 
+ *
  * This is important to make the robot go faster than an instant
  * acceleration that would otherwise cause slip and potential
  * drifting, meaning loss in accuracy.
- * @param distanceLeft 
+ * @param distanceLeft
  * How much rotation or distance is left to make
  * @param totalDistance
  * How much total distance or total rotation is needed
  * to reach the end of the moving sequence. This is
  * used to make a ratio from 0 to 1.
- * @param maximumSpeed 
+ * @param maximumSpeed
  * a ratio from 0 to 1 that indicates the maximum speed of
  * the wheels.
  * @return float
- * Ratio from 0 to 1 that should be multiplied to the 
- * current PID value 
+ * Ratio from 0 to 1 that should be multiplied to the
+ * current PID value
  */
 float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed);
 
@@ -133,9 +132,9 @@ float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed);
  * @brief Stops the robot no matter what.
  * This function should simply stop
  * the motors
- * @return true 
+ * @return true
  * Successfully stopped the robot
- * @return false 
+ * @return false
  * Something failed and the robot could not be stopped.
  */
 bool Stop();
@@ -153,9 +152,9 @@ bool Stop();
  * Failed to reset the movements.
  */
 bool ResetMovements();
-#pragma endregion
+//#pragma endregion
 
-#pragma region [Execution_Functions]
+//#pragma region [Execution_Functions]
 
 /**
  * @brief Function that executes the
@@ -164,20 +163,20 @@ bool ResetMovements();
  * function until the robot has finished
  * turning or something prevents it from
  * continuing to turn.
- * 
+ *
  * This function should periodically
  * execute PID and acceleration each
  * milliseconds. While it waits for that
  * millisecond, TurningEvent is called.
- * 
- * @param targetRadians 
+ *
+ * @param targetRadians
  * Relative turn that the robot needs
  * to turn.
  * @return true:
  * Successfully executed the turning
- * sequence 
+ * sequence
  * @return false:
- * Failed to execute the turning sequence 
+ * Failed to execute the turning sequence
  */
 bool Execute_Turning(float targetRadians);
 
@@ -188,23 +187,23 @@ bool Execute_Turning(float targetRadians);
  * function until the robot has finished
  * moving or something prevents it from
  * continuing to go straight.
- * 
+ *
  * This function should periodically
- * execute @ref PID and @ref Acceleration 
- * each milliseconds. While it waits for 
- * that millisecond, @ref MovingEvent is 
+ * execute @ref PID and @ref Acceleration
+ * each milliseconds. While it waits for
+ * that millisecond, @ref MovingEvent is
  * called.
- * 
- * @param targetDistance 
+ *
+ * @param targetDistance
  * Relative distance that the robot needs
  * to move in a straight line. Can be
  * negative for reversing.
  * @return true:
  * Successfully executed the moving
- * sequence 
+ * sequence
  * @return false:
- * Failed to execute the moving sequence 
+ * Failed to execute the moving sequence
  */
 bool Execute_Moving(float targetDistance);
 
-#pragma endregion
+//#pragma endregion

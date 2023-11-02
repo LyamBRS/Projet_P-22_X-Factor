@@ -38,7 +38,7 @@ void DC2318_Innit(int leftPin, int rightPin){
  * 1: A wall on the right is detected
  * 2: A wall on the left is detected
  * 3: A wall straight ahead is detected
- * 4: An error occured with the sensor
+ * 4: An error occurred with the sensor
  */
 unsigned char DC2318_Read(int leftPin, int rightPin){
     bool leftState;

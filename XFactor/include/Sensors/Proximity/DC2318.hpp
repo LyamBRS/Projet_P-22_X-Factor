@@ -19,7 +19,7 @@
 #define DC2318_DETECTION_ERROR 4
 
 /**
- * @brief Fonction that initialize a DC2318 sensor
+ * @brief Function that initialize a DC2318 sensor
  *
  * @param leftPin
  * the pin used for the left IR sensor

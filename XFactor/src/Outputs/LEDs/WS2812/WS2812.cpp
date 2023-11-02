@@ -12,6 +12,8 @@
 // - INCLUDE - //
 #include "Outputs/LEDs/WS2812/WS2812.hpp"
 
+Adafruit_NeoPixel pixels;
+
 /**
  * @brief
  * Initialises one or multiple WS2812 by
@@ -29,7 +31,9 @@
  */
 bool WS2812_Innit(int pinNumber)
 {
-    return false;
+    pixels = Adafruit_NeoPixel(1, pinNumber, NEO_GRB + NEO_KHZ800);
+    pixels.begin();
+    return true;
 }
 
 /**
@@ -61,5 +65,15 @@ bool WS2812_Innit(int pinNumber)
  */
 bool WS2812_SetStaticColors(int pinNumber, int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
 {
-    return false;
+    // Checking if the 300 microseconds of down time has been acheived or not.
+    if(not pixels.canShow())
+    {
+        // Cannot change the color right now.
+        return false;
+    }
+
+    pixels.setPixelColor(LEDNumber, pixels.Color(red, green, blue));
+    pixels.show();
+
+    return true;
 }

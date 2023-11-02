@@ -97,7 +97,7 @@ bool BT_WaitForAMessage(int millisecondsTimeOut);
  * available, the string will be empty
  *
  * @attention
- * It is preffered that @ref BT_MessagesAvailable
+ * It is preferred that @ref BT_MessagesAvailable
  * is called before you call this function.
  *
  * @return string: The oldest message stored in

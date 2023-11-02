@@ -17,26 +17,26 @@
 #include "Actions/Actions.hpp"
 
 /**
- * @brief 
+ * @brief
  * Global variable that is local to the action.c
  * file. This stores the current action's number
  * so that @ref Execute_CurrentFunction can be
  * executed properly without needing an input
  * parameter.
- * 
+ *
  * @attention
  * DO NOT USE THIS INSIDE EXECUTION FUNCTIONS.
  * THIS SHOULD ONLY BE USED IN ACTION HANDLERS.
  */
 static unsigned char currentFunctionID = 0;
 
-#pragma region [ACTION_HANDLERS]
+//#pragma region [ACTION_HANDLERS]
 /**
  * @brief Function periodically called in void
  * loop. This function is a massive switch case
  * that checks which execution / action function
  * should currently be executed by XFactor. To
- * specify that function, use 
+ * specify that function, use
  * @ref SetNewExecutionFunction using defines
  * available in this header file.
  */
@@ -184,9 +184,9 @@ unsigned char GetCurrentExecutionFunction()
 {
     return currentFunctionID;
 }
-#pragma endregion
+//#pragma endregion
 
-#pragma region [ACTION_FUNCTIONS]
+//#pragma region [ACTION_FUNCTIONS]
 /**
  * @brief
  * Action function executed once at the start of
@@ -210,7 +210,7 @@ void Execute_WaitAfterSafeBox()
 
 /**
  * @brief
- * Action function that makes XFactor wait for 
+ * Action function that makes XFactor wait for
  * SafeBox to tell it that a package is received
  * and that it must go fetch it. LED status must
  * clearly indicate that XFactor is waiting for
@@ -222,7 +222,7 @@ void Execute_WaitAfterSafeBox()
  * @attention
  * XFactor should remain stuck in this action
  * function until SafeBox gives it the go.
- * Afterwhich, XFactor should go to
+ * After which, XFactor should go to
  * @ref Execute_GettingOutOfGarage
  *
  * @warning
@@ -243,7 +243,7 @@ void Execute_WaitForDelivery()
  * drive out of it. This action function should
  * update XFactor's status to match with what its
  * doing. Once XFactor is outside of the garage,
- * they need to exhange status. Only after this
+ * they need to exchange status. Only after this
  * can XFactor starts
  * @ref Execute_SearchPreparations
  *
@@ -268,7 +268,7 @@ void Execute_GettingOutOfGarage()
  * vector buffer as well as movements and
  * positions before moving the robot to the
  * starting point of the package search pattern,
- * wherever that is. Afterwhich, XFactor needs
+ * wherever that is. After which, XFactor needs
  * to change its status and do another status
  * exchange with SafeBox.
  *
@@ -277,7 +277,7 @@ void Execute_GettingOutOfGarage()
  *
  * @attention
  * If XFactor cannot establish a communication
- * with SafeBox after its ready to begin searchin
+ * with SafeBox after its ready to begin searching
  * XFactor must try again for 5 attempts after
  * which it needs to enter @ref Execute_Alarm
  *
@@ -291,7 +291,7 @@ void Execute_SearchPreparations()
 
 /**
  * @brief This function makes XFactor move in
- * zig-zag search pattern throughout the searchin
+ * zig-zag search pattern throughout the searching
  * zone until a package or obstacle is detected.
  * Movements are done through the use of Vectors
  * which are saved in memory so that XFactor can
@@ -565,7 +565,7 @@ void Execute_Error()
  * Once XFactor is back inside the garage,
  * SafeBox is ready to wait for another doorbell
  * or can enter its finished state and wait for
- * the user to come retreive its packages
+ * the user to come retrieve its packages
  */
 void Execute_ReturnInsideGarage()
 {
@@ -587,4 +587,4 @@ void Execute_EndOfProgram()
 
 }
 
-#pragma endregion
+//#pragma endregion

@@ -16,7 +16,7 @@
 // - INCLUDE - //
 #include "Outputs/LEDs/WS2812/WS2812.hpp"
 
-#pragma region [LED_COLORS]
+//#pragma region [LED_COLORS]
 /// @brief RGB color that the LED will have when XFactor is offline.
 #define LED_COLOR_OFFLINE 0,0,0
 /// @brief RGB color that the LED will have when XFactor is initialising.
@@ -33,13 +33,13 @@
 #define LED_COLOR_ARMED 128,128,0
 /// @brief RGB color that the LED will have when XFactor going nuts over the alarm.
 #define LED_COLOR_ALARM 255,0,0
-#pragma endregion
+//#pragma endregion
 
-#pragma region [XFACTOR_LED_NUMBERS]
+//#pragma region [XFACTOR_LED_NUMBERS]
 #define LED_ID_STATUS_INDICATOR 0
-#pragma endregion
+//#pragma endregion
 
-#pragma region [FUNCTIONS]
+//#pragma region [FUNCTIONS]
 
 /**
  * @brief
@@ -76,4 +76,4 @@ bool LEDS_Innit();
  */
 bool LEDS_SetColor(int LEDNumber, unsigned char red, unsigned char green, unsigned char blue);
 
-#pragma endregion
+//#pragma endregion
