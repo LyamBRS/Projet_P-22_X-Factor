@@ -1,7 +1,12 @@
+
+// - INCLUDE - //
+#include "Arduino.h"
+#include "Sensors/Proximity/InfraRed.hpp"
+
 /**
  * @brief Initialize an infra red sensor
- * 
- * @param pin 
+ *
+ * @param pin
  * the pin to initialize
  */
 void IR_Innit(int pin){
@@ -10,12 +15,12 @@ void IR_Innit(int pin){
 
 /**
  * @brief Reads the infra red sensor
- * 
- * @param pin 
+ *
+ * @param pin
  * the infra red's pin to read from
- * @return true 
+ * @return true
  * returned when something is detected
- * @return false 
+ * @return false
  * returned when nothing is detected
  */
 bool IR_Read(int pin){
