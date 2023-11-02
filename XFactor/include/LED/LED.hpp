@@ -5,7 +5,7 @@
  * File containing the header definitions of
  * functions used to handle the LEDs of XFactor
  * at an high level. Also contains the defines
- * used for LED colours and their meanings. 
+ * used for LED colours and their meanings.
  * @version 0.1
  * @date 2023-10-26
  * @copyright Copyright (c) 2023
@@ -13,14 +13,25 @@
 
 #pragma once
 
+// - INCLUDE - //
+#include "Outputs/LEDs/WS2812/WS2812.hpp"
+
 #pragma region [LED_COLORS]
+/// @brief RGB color that the LED will have when XFactor is offline.
 #define LED_COLOR_OFFLINE 0,0,0
+/// @brief RGB color that the LED will have when XFactor is initialising.
 #define LED_COLOR_INITIALISING 255,255,255
+/// @brief RGB color that the LED will have when XFactor is waiting to receive communications.
 #define LED_COLOR_WAITING_FOR_COMMS 32,32,0
+/// @brief RGB color that the LED will have when XFactor is actively communicating.
 #define LED_COLOR_COMMUNICATING 0,128,128
+/// @brief RGB color that the LED will have when XFactor is in an error.
 #define LED_COLOR_ERROR 128,0,0
+/// @brief RGB color that the LED will have when XFactor is moving and not armed with the alarm.
 #define LED_COLOR_DISARMED 0,128,0
+/// @brief RGB color that the LED will have when XFactor is moving and armed with the alarm.
 #define LED_COLOR_ARMED 128,128,0
+/// @brief RGB color that the LED will have when XFactor going nuts over the alarm.
 #define LED_COLOR_ALARM 255,0,0
 #pragma endregion
 
@@ -34,18 +45,18 @@
  * @brief
  * Function that initialises all the LEDs used
  * on XFactor.
- * 
+ *
  * @return true:
- * Successfully initialised all the LEDs. 
+ * Successfully initialised all the LEDs.
  * @return false:
  * Failed to initialise all the LEDs.
  */
 bool LEDS_Innit();
 
 /**
- * @brief 
+ * @brief
  * Function that sets the color of a specified
- * RGB LED to a specified colour in the RGB 
+ * RGB LED to a specified colour in the RGB
  * format.
  * @param LEDNumber
  * The number associated with that LED. Ranges
