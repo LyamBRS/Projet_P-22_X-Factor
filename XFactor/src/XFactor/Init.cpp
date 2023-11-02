@@ -18,6 +18,7 @@
 #include "Communication/Bluetooth.hpp"
 #include "LED/LED.hpp"
 #include "Alarm/Alarm.hpp"
+#include "Package/Package.hpp"
 
 
 /**
@@ -36,10 +37,12 @@ void XFactor_Innit()
     if (LEDS_Innit()){
         if (BT_Innit()){
             if(Alarm_Innit()){
-                if(XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery)){
-                    if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
-                        // Function is successful.
-                        return;
+                if(Package_Innit()){
+                    if(XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery)){
+                        if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
+                            // Function is successful.
+                            return;
+                        }
                     }
                 }
             }
