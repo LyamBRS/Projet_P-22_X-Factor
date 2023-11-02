@@ -1,11 +1,11 @@
 /**
  * @file Bluetooth.hpp
  * @author LyamBRS (lyam.brs@gmail.com)
- * @brief 
+ * @brief
  * Header file containing all the definitions of
- * Bluetooth functions used throughout the 
+ * Bluetooth functions used throughout the
  * XFactor project. These functions allows the
- * robot to communicate with SafeBox and vise 
+ * robot to communicate with SafeBox and vise
  * versa.
  * @version 0.1
  * @date 2023-10-25
@@ -13,6 +13,7 @@
  */
 
 #pragma once
+#include "Arduino.h"
 
 /**
  * @brief Function that initialises Bluetooth on
@@ -20,12 +21,12 @@
  * module. It initialises the used pins correctly
  * and makes XFactor ready for Bluetooth
  * communications.
- * 
+ *
  * @attention
  * This must be called at the start of the
  * program inside of the setup function or
  * inside of a wider initialisation function.
- * 
+ *
  * @return true:
  * Bluetooth was successfully initialised
  * @return false:
@@ -46,14 +47,14 @@ bool BT_Innit();
  * @return false:
  * Failed to send the message.
  */
-bool BT_SendString(string message);
+bool BT_SendString(String message);
 
 /**
  * @brief Simple function that checks how many
  * messages are currently available for reading
  * and parsing inside of the UART buffer where
  * the Bluetooth device is connected.
- * 
+ *
  * @return int: 0: no messages, >0: some messages
  */
 int BT_MessagesAvailable();
@@ -63,7 +64,7 @@ int BT_MessagesAvailable();
  * stored. If any messages was not read before
  * this function is called, it will be forever
  * lost.
- * 
+ *
  * @return true:
  * Successfully cleared the message buffer
  * @return false:
@@ -77,7 +78,7 @@ bool BT_ClearAllMessages();
  * message is received during the specified time
  * reception window. If no messages is detected,
  * the function will return a fail.
- * 
+ *
  * @param millisecondsTimeOut
  * How long should the program wait for a message
  * @return true:
@@ -94,15 +95,15 @@ bool BT_WaitForAMessage(int millisecondsTimeOut);
  * the oldest message stored in the reception
  * buffer of the device. If there is no messages
  * available, the string will be empty
- * 
+ *
  * @attention
  * It is preffered that @ref BT_MessagesAvailable
  * is called before you call this function.
- * 
+ *
  * @return string: The oldest message stored in
  * the reception buffer.
  */
-string BT_GetLatestMessage();
+String BT_GetLatestMessage();
 
 /**
  * @brief Function that firstly clears the UART
@@ -112,18 +113,18 @@ string BT_GetLatestMessage();
  * for a message to be received to return it or
  * waits for the timeout to reach its specified
  * value.
- * 
+ *
  * @attention
  * Its recommended to use this function rather
  * than the other BT functions as this one
  * handles everything there is to handle.
- * 
+ *
  * @warning
  * This function automatically calls
  * @ref BT_BeforeCommsEvent
  * @ref BT_CommsSuccessEvent
  * @ref BT_CommsFailedEvent
- * 
+ *
  * @param message
  * A string containing the message that needs
  * to be sent to SafeBox. All messages must be
@@ -133,4 +134,4 @@ string BT_GetLatestMessage();
  * @return string: The received message from
  * SafeBox.
  */
-string BT_MessageExchange(string message, int millisecondsTimeOut);
+String BT_MessageExchange(String message, int millisecondsTimeOut);
