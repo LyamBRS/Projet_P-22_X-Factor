@@ -1,43 +1,43 @@
 /**
- * @file WS2812.hpp
+ * @file WS2812.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
- * File that takes care of the header definitions
- * of functions that handles directly WS2812 LEDs
- * by using Arduino's basic functions.
+ * File that takes care of the hardware functions
+ * of WS2812 programmable RGB LEDs.
  * @version 0.1
- * @date 2023-10-26
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
-
-#include <Adafruit_NeoPixel.h>
-#include <math.h>
+// - INCLUDE - //
+#include "Outputs/LEDs/WS2812/WS2812.hpp"
 
 /**
  * @brief
  * Initialises one or multiple WS2812 by
  * specifying which pin of the Arduino is used to
  * talk with the LEDs.
- * 
+ *
  * @param pinNumber
  * Which pin of the Arduino is used to talk with
  * the LEDs
  * @return true:
- * Successfully initialised a strip of WS2812s 
+ * Successfully initialised a strip of WS2812s
  * @return false:
  * Failed to initialise the WS2812 at the
  * specified pin.
  */
-bool WS2812_Innit(int pinNumber);
+bool WS2812_Innit(int pinNumber)
+{
+    return false;
+}
 
 /**
  * @brief Updates a specified WS2812 with a
  * specified color in the RGB format. You
  * must specify which LED in the strip needs to
  * be updated.
- * 
+ *
  * @param pinNumber
  * Which pin of the Arduino is used to talk with
  * the LEDs
@@ -59,4 +59,7 @@ bool WS2812_Innit(int pinNumber);
  * Failed to change the LED with the specified
  * colors.
  */
-bool WS2812_SetStaticColors(int pinNumber, int LEDNumber, unsigned char red, unsigned char green, unsigned char blue);
+bool WS2812_SetStaticColors(int pinNumber, int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
+{
+    return false;
+}

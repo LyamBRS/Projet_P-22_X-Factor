@@ -13,14 +13,13 @@
 #pragma once
 
 #include <Adafruit_NeoPixel.h>
-#include <math.h>
 
 /**
  * @brief
  * Initialises one or multiple WS2812 by
  * specifying which pin of the Arduino is used to
  * talk with the LEDs.
- * 
+ *
  * @param pinNumber
  * Which pin of the Arduino is used to talk with
  * the LEDs
@@ -37,7 +36,7 @@ bool WS2812_Innit(int pinNumber);
  * specified color in the RGB format. You
  * must specify which LED in the strip needs to
  * be updated.
- * 
+ *
  * @param pinNumber
  * Which pin of the Arduino is used to talk with
  * the LEDs
