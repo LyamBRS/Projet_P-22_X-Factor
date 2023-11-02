@@ -1,40 +1,34 @@
 /**
- * @file Actions.hpp
+ * @file Actions.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
- * @brief File which contains the header
- * definition of action functions used
- * throughout the program. These action functions
- * are functions that execute a certain step of
- * XFactor such as getting out of the garage,
- * finding a package, picking up a package,
- * returning home, depositing a package etc.
+ * @brief File which contains the action 
+ * functions used throughout the program. These
+ * action functions are functions that execute a
+ * certain step of XFactor such as getting out of
+ * the garage, finding a package, picking up a
+ * package, returning home, depositing a package
+ * etc.
  * @version 0.1
- * @date 2023-10-25
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
+// - INCLUDE - //
+#include "Actions/Actions.hpp"
 
-#pragma region [FUNCTION_IDS]
-
-#define ID_WAIT_AFTER_SAFEBOX 0
-#define ID_WAIT_FOR_DELIVERY 1
-#define ID_GETTING_OUT_OF_GARAGE 2
-#define ID_SEARCH_PREPARATIONS 3
-#define ID_SEARCH_FOR_PACKAGE 4
-#define ID_AVOID_OBSTACLE 5
-#define ID_EXAMINE_FOUND_PACKAGE 6
-#define ID_PICK_UP_PACKAGE 7
-#define ID_RETURN_HOME 8
-#define ID_PREPARING_FOR_DROP_OFF 9
-#define ID_PACKAGE_DROP_OFF 10
-#define ID_CONFIRM_DROP_OFF 11
-#define ID_ALARM 12
-#define ID_ERROR 13
-#define ID_RETURN_INSIDE_GARAGE 14
-#define ID_END_OF_PROGRAM 15
-
-#pragma endregion
+/**
+ * @brief 
+ * Global variable that is local to the action.c
+ * file. This stores the current action's number
+ * so that @ref Execute_CurrentFunction can be
+ * executed properly without needing an input
+ * parameter.
+ * 
+ * @attention
+ * DO NOT USE THIS INSIDE EXECUTION FUNCTIONS.
+ * THIS SHOULD ONLY BE USED IN ACTION HANDLERS.
+ */
+static unsigned char currentFunctionID = 0;
 
 #pragma region [ACTION_HANDLERS]
 /**
@@ -46,7 +40,81 @@
  * @ref SetNewExecutionFunction using defines
  * available in this header file.
  */
-void Execute_CurrentFunction();
+void Execute_CurrentFunction(){
+    switch(currentFunctionID){
+
+        case(FUNCTION_ID_ALARM):
+            Execute_Alarm();
+            break;
+
+        case(FUNCTION_ID_AVOID_OBSTACLE):
+            Execute_AvoidObstacle();
+            break;
+
+        case(FUNCTION_ID_CONFIRM_DROP_OFF):
+            Execute_ConfirmDropOff();
+            break;
+
+        case(FUNCTION_ID_END_OF_PROGRAM):
+            Execute_EndOfProgram();
+            break;
+
+        case(FUNCTION_ID_ERROR):
+            Execute_Error();
+            break;
+
+        case(FUNCTION_ID_EXAMINE_FOUND_PACKAGE):
+            Execute_ExamineFoundPackage();
+            break;
+
+        case(FUNCTION_ID_GETTING_OUT_OF_GARAGE):
+            Execute_GettingOutOfGarage();
+            break;
+
+        case(FUNCTION_ID_PACKAGE_DROP_OFF):
+            Execute_PackageDropOff();
+            break;
+
+        case(FUNCTION_ID_PICK_UP_PACKAGE):
+            Execute_PickUpPackage();
+            break;
+
+        case(FUNCTION_ID_PREPARING_FOR_DROP_OFF):
+            Execute_PreparingForDropOff();
+            break;
+
+        case(FUNCTION_ID_RETURN_HOME):
+            Execute_ReturnHome();
+            break;
+
+        case(FUNCTION_ID_RETURN_INSIDE_GARAGE):
+            Execute_ReturnInsideGarage();
+            break;
+
+        case(FUNCTION_ID_SEARCH_FOR_PACKAGE):
+            Execute_SearchForPackage();
+            break;
+
+        case(FUNCTION_ID_SEARCH_PREPARATIONS):
+            Execute_SearchPreparations();
+            break;
+
+        case(FUNCTION_ID_WAIT_AFTER_SAFEBOX):
+            Execute_WaitAfterSafeBox();
+            break;
+
+        case(FUNCTION_ID_WAIT_FOR_DELIVERY):
+            Execute_WaitForDelivery();
+            break;
+        
+        default:
+            // The current function ID is not recognized.
+            // Error is executed by default.
+            Execute_Error();
+            return;
+    }
+    // Successful execution //
+}
 
 /**
  * @brief
