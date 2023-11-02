@@ -15,7 +15,7 @@
 
 #pragma once
 
-#pragma region [FUNCTION_IDS]
+//#pragma region [FUNCTION_IDS]
 
 #define FUNCTION_ID_WAIT_AFTER_SAFEBOX 0
 #define FUNCTION_ID_WAIT_FOR_DELIVERY 1
@@ -34,15 +34,15 @@
 #define FUNCTION_ID_RETURN_INSIDE_GARAGE 14
 #define FUNCTION_ID_END_OF_PROGRAM 15
 
-#pragma endregion
+//#pragma endregion
 
-#pragma region [ACTION_HANDLERS]
+//#pragma region [ACTION_HANDLERS]
 /**
  * @brief Function periodically called in void
  * loop. This function is a massive switch case
  * that checks which execution / action function
  * should currently be executed by XFactor. To
- * specify that function, use 
+ * specify that function, use
  * @ref SetNewExecutionFunction using defines
  * available in this header file.
  */
@@ -55,14 +55,14 @@ void Execute_CurrentFunction();
  * execute that function instead of the current
  * one that is executed. This is used to change
  * execution functions.
- * 
+ *
  * @warning
  * DO NOT call execution functions outside of
  * @ref Execute_CurrentFunction. Programming in
  * that manner WILL cause stack overflows
  * because functions won't ever return to
  * previous ones.
- * 
+ *
  * @param functionID
  * The ID of the function to execute. IDs are
  * available as defines in this document.
@@ -84,44 +84,44 @@ bool SetNewExecutionFunction(unsigned char functionID);
  * function ID
  */
 unsigned char GetCurrentExecutionFunction();
-#pragma endregion
+//#pragma endregion
 
-#pragma region [ACTION_FUNCTIONS]
+//#pragma region [ACTION_FUNCTIONS]
 /**
  * @brief
  * Action function executed once at the start of
  * the program. This function's purpose is to
  * make XFactor wait until SafeBox is online and
  * is answering Bluetooth commands.
- * 
+ *
  * This function simply sends a status exchange
  * to SafeBox each second and waits until a time
  * out for its reply. LED status should clearly
  * indicate that XFactor is awaiting SafeBox to
  * begin its program.
- * 
+ *
  * XFactor will not do anything until SafeBox
  * begins to reply to Bluetooth commands.
  */
 void Execute_WaitAfterSafeBox();
 
 /**
- * @brief 
- * Action function that makes XFactor wait for 
+ * @brief
+ * Action function that makes XFactor wait for
  * SafeBox to tell it that a package is received
  * and that it must go fetch it. LED status must
  * clearly indicate that XFactor is waiting for
  * SafeBox to give it the go.
- * 
+ *
  * Communication requests must be done each
  * second to avoid spamming SafeBox with data.
- * 
+ *
  * @attention
  * XFactor should remain stuck in this action
  * function until SafeBox gives it the go.
- * Afterwhich, XFactor should go to
+ * After which, XFactor should go to
  * @ref Execute_GettingOutOfGarage
- * 
+ *
  * @warning
  * Depending on SafeBox's status, XFactor will
  * either be armed or disarmed.
@@ -130,23 +130,23 @@ void Execute_WaitForDelivery();
 
 /**
  * @brief
- * Action function that makes XFactor leave 
+ * Action function that makes XFactor leave
  * SafeBox's garage. Firstly, XFactor must ask
  * SafeBox to open the garage. Once SafeBox
  * confirms that the garage is open, XFactor must
  * drive out of it. This action function should
  * update XFactor's status to match with what its
  * doing. Once XFactor is outside of the garage,
- * they need to exhange status. Only after this
- * can XFactor starts 
+ * they need to exchange status. Only after this
+ * can XFactor starts
  * @ref Execute_SearchPreparations
- * 
+ *
  * @attention
  * If XFactor cannot establish a communication
  * with SafeBox after it has driven outside of it
  * XFactor must drive back inside of SafeBox and
  * return to @ref Execute_WaitAfterSafeBox
- * 
+ *
  * @warning
  * From there on out, XFactor needs to be armed
  */
@@ -155,31 +155,31 @@ void Execute_GettingOutOfGarage();
 /**
  * @brief
  * This action function must first ask SafeBox
- * to close its garage before resetting the 
- * vector buffer as well as movements and 
+ * to close its garage before resetting the
+ * vector buffer as well as movements and
  * positions before moving the robot to the
- * starting point of the package search pattern, 
- * wherever that is. Afterwhich, XFactor needs
+ * starting point of the package search pattern,
+ * wherever that is. After which, XFactor needs
  * to change its status and do another status
  * exchange with SafeBox.
- * 
- * If everything goes well, 
+ *
+ * If everything goes well,
  * @ref Execute_SearchForPackage should be called
- * 
+ *
  * @attention
  * If XFactor cannot establish a communication
- * with SafeBox after its ready to begin searchin
+ * with SafeBox after its ready to begin searching
  * XFactor must try again for 5 attempts after
  * which it needs to enter @ref Execute_Alarm
- * 
+ *
  * @warning
  * From there on out, XFactor needs to be armed
  */
 void Execute_SearchPreparations();
 
 /**
- * @brief This function makes XFactor move in 
- * zig-zag search pattern throughout the searchin
+ * @brief This function makes XFactor move in
+ * zig-zag search pattern throughout the searching
  * zone until a package or obstacle is detected.
  * Movements are done through the use of Vectors
  * which are saved in memory so that XFactor can
@@ -187,16 +187,16 @@ void Execute_SearchPreparations();
  * Each 5 vectors, XFactor must perform a status
  * exchange with SafeBox to know if both can
  * still communicate and talk to each other.
- * 
+ *
  * @attention
  * If XFactor cannot establish a communication
- * with SafeBox, XFactor must try again for 5 
- * attempts after which it needs to enter 
+ * with SafeBox, XFactor must try again for 5
+ * attempts after which it needs to enter
  * @ref Execute_Alarm.
- * 
+ *
  * @warning
  * If an obstacle is detected that is not a
- * potential package, 
+ * potential package,
  * @ref Execute_AvoidObstacle must be called.
  * Otherwise, @ref Execute_ExamineFoundPackage
  * must be called instead. If the vector buffer
@@ -206,7 +206,7 @@ void Execute_SearchPreparations();
 void Execute_SearchForPackage();
 
 /**
- * @brief 
+ * @brief
  * Action function that allows XFactor to go
  * around a detected obstacle. If the detected
  * obstacle is too long and XFactor cannot go
@@ -217,7 +217,7 @@ void Execute_SearchForPackage();
  * @ref Execute_SearchForPackage must be
  * directly called without going through
  * @ref Execute_SearchPreparations
- * 
+ *
  * @attention
  * If the vector buffer becomes full, XFactor
  * must tell SafeBox about it through a status
@@ -227,7 +227,7 @@ void Execute_SearchForPackage();
 void Execute_AvoidObstacle();
 
 /**
- * @brief 
+ * @brief
  * Action function that makes XFactor position
  * itself with a potential package through vector
  * based movements before analyzing it with its
@@ -237,7 +237,7 @@ void Execute_AvoidObstacle();
  * a package, XFactor must backtrace all the
  * vectors that it just did and remove them from
  * the vector table.
- * 
+ *
  * @attention
  * If the vector buffer becomes full, XFactor
  * must tell SafeBox about it through a status
@@ -256,12 +256,12 @@ void Execute_ExamineFoundPackage();
  * change XFactor's status and perform a status
  * exchange with SafeBox to tell it that it has
  * found a package and its about to pick it up.
- * 
+ *
  * If XFactor fails to pick up the package after
  * 5 attempts, @ref Execute_Error must be called
  * but the alarm must not be activated unless
  * XFactor is tempered with.
- * 
+ *
 * @attention
  * If the vector buffer becomes full, XFactor
  * must tell SafeBox about it through a status
@@ -274,7 +274,7 @@ void Execute_ExamineFoundPackage();
 void Execute_PickUpPackage();
 
 /**
- * @brief 
+ * @brief
  * Action function that firstly changes XFactor's
  * status to indicate that its about to return
  * home and then perform a status exchange with
@@ -284,12 +284,12 @@ void Execute_PickUpPackage();
  * position while avoiding all the obstacles that
  * it has found on its way to the package. This
  * is extremely difficult.
- * 
+ *
  * @attention
  * If XFactor is not able to calculate a return
  * vector, XFactor must simply redo all the saved
  * vectors in reverse until its back to the start
- * 
+ *
  * @warning
  * A status exchange must be performed each 5
  * vectors to ensure that communication with
@@ -307,11 +307,11 @@ void Execute_ReturnHome();
  * movements and perform a status exchange
  * with SafeBox to ensure that communication is
  * possible before drop off is attempted.
- * 
+ *
  * Once that is done, XFactor must position
  * itself to be ready to quickly drop off the
  * package inside of SafeBox.
- * 
+ *
  * @attention
  * XFactor is allowed any amount of attempts
  * to establish the communication with SafeBox
@@ -329,9 +329,9 @@ void Execute_PreparingForDropOff();
  * SafeBox to close the lid. Once that is done,
  * this function will update XFactor's status
  * and perform a status exchange. After that
- * status exchange is performed, 
+ * status exchange is performed,
  * @ref Execute_ConfirmDropOff must be called.
- * 
+ *
  * @attention
  * SafeBox will immediately close the lid once
  * it detects that a package was dropped off.
@@ -352,7 +352,7 @@ void Execute_PackageDropOff();
  * on. If SafeBox has not detected a new package
  * within itself, it would mean that someone has
  * stolen it.
- * 
+ *
  * @attention
  * XFactor is allowed to try to communicate with
  * SafeBox as many time as it wants. However,
@@ -371,14 +371,14 @@ void Execute_ConfirmDropOff();
  * call @ref AlarmEvent at the very start before
  * looping and constantly checking if SafeBox has
  * sent the reset command.
- * 
+ *
  * @attention
  * XFactor's status must be changed to the alarm
  * status and status exchanges must be executed
  * each second until SafeBox returns a reset
  * status after which XFactor can stop the alarm
  * and wait for SafeBox to no longer say that its
- * status is reset. After which, 
+ * status is reset. After which,
  * @ref Execute_WaitForDelivery must be called.
  */
 void Execute_Alarm();
@@ -400,7 +400,7 @@ void Execute_Alarm();
  * each second until SafeBox returns a reset
  * status after which XFactor can stop blocking
  * and wait for SafeBox to no longer say that its
- * status is reset. After which, 
+ * status is reset. After which,
  * @ref Execute_WaitForDelivery must be called.
  */
 void Execute_Error();
@@ -418,12 +418,12 @@ void Execute_Error();
  * SafeBox to close the garage door. Once that
  * is done, XFactor must perform a status
  * exchange with SafeBox.
- * 
+ *
  * @attention
  * Once XFactor is back inside the garage,
  * SafeBox is ready to wait for another doorbell
  * or can enter its finished state and wait for
- * the user to come retreive its packages
+ * the user to come retrieve its packages
  */
 void Execute_ReturnInsideGarage();
 
@@ -439,4 +439,4 @@ void Execute_ReturnInsideGarage();
  */
 void Execute_EndOfProgram();
 
-#pragma endregion
+//#pragma endregion
