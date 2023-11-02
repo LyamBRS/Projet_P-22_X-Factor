@@ -141,7 +141,35 @@ void Execute_CurrentFunction(){
  * Failed to change the execution function to the
  * new ID. May be out of range.
  */
-bool SetNewExecutionFunction(unsigned char functionID);
+bool SetNewExecutionFunction(unsigned char functionID)
+{
+    switch(currentFunctionID){
+
+        case(FUNCTION_ID_ALARM):
+        case(FUNCTION_ID_AVOID_OBSTACLE):
+        case(FUNCTION_ID_CONFIRM_DROP_OFF):
+        case(FUNCTION_ID_END_OF_PROGRAM):
+        case(FUNCTION_ID_ERROR):
+        case(FUNCTION_ID_EXAMINE_FOUND_PACKAGE):
+        case(FUNCTION_ID_GETTING_OUT_OF_GARAGE):
+        case(FUNCTION_ID_PACKAGE_DROP_OFF):
+        case(FUNCTION_ID_PICK_UP_PACKAGE):
+        case(FUNCTION_ID_PREPARING_FOR_DROP_OFF):
+        case(FUNCTION_ID_RETURN_HOME):
+        case(FUNCTION_ID_RETURN_INSIDE_GARAGE):
+        case(FUNCTION_ID_SEARCH_FOR_PACKAGE):
+        case(FUNCTION_ID_SEARCH_PREPARATIONS):
+        case(FUNCTION_ID_WAIT_AFTER_SAFEBOX):
+        case(FUNCTION_ID_WAIT_FOR_DELIVERY):
+            // The specified function is indeed a valid function ID.
+            currentFunctionID = functionID;
+            return true;
+
+        default:
+            // The current function ID is not recognized.
+            // The function ID will therefor not be set.
+            return false;   
+}
 
 /**
  * @brief
@@ -151,7 +179,10 @@ bool SetNewExecutionFunction(unsigned char functionID);
  * @return unsigned char:
  * function ID
  */
-unsigned char GetCurrentExecutionFunction();
+unsigned char GetCurrentExecutionFunction()
+{
+    return currentFunctionID;
+}
 #pragma endregion
 
 #pragma region [ACTION_FUNCTIONS]
