@@ -10,6 +10,8 @@
  */
 #pragma once
 
+#include "InfraRed.hpp"
+
 #define DC2318_NO_WALL 0
 #define DC2318_LEFT_WALL 1
 #define DC2318_RIGHT_WALL 2
@@ -18,22 +20,22 @@
 
 /**
  * @brief Fonction that initialize a DC2318 sensor
- * 
- * @param leftPin 
+ *
+ * @param leftPin
  * the pin used for the left IR sensor
- * @param rightPin 
+ * @param rightPin
  * the pin used for the right IR sensor
  */
 void DC2318_Innit(int leftPin, int rightPin);
 
 /**
  * @brief Function that read a DC2318 sensor
- * 
- * @param leftPin 
+ *
+ * @param leftPin
  * the pin used for the left IR sensor
- * @param rightPin 
+ * @param rightPin
  * the pin used for the right IR sensor
- * @return unsigned char 
+ * @return unsigned char
  * Value returned depending on the state of the IR sensor.
  * 0: no walls
  * 1: A wall on the left is detected

@@ -10,6 +10,8 @@
  *
  */
 
+#include "Sensors/Proximity/DC2318.hpp"
+
 /**
  * @brief Function that initialize a DC2318 sensor
  *
