@@ -51,7 +51,7 @@
  * @return false:
  * Failed to initialise all the LEDs.
  */
-bool LEDS_Innit();
+bool LEDS_Init();
 
 /**
  * @brief

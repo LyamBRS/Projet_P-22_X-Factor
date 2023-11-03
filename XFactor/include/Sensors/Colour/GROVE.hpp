@@ -17,7 +17,7 @@
  * @param greenPin Arduino pins for the green input
  * @param bluePin Arduino pins for the blue input
  */
-void GROVE_Innit(int redPin, int greenPin, int bluePin);
+void GROVE_Init(int redPin, int greenPin, int bluePin);
 
 /**
  * @brief This function should use the specified colour

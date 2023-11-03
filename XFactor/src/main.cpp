@@ -15,7 +15,7 @@
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  XFactor_Innit();
+  XFactor_Init();
 }
 
 /// @brief Arduino's while(1) function.

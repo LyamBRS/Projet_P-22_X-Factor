@@ -32,7 +32,7 @@
  * @return false:
  * Bluetooth failed to be initialised
  */
-bool BT_Innit();
+bool BT_Init();
 
 /**
  * @brief Simple function that sends a string

@@ -25,7 +25,7 @@
  * @return false:
  * Failed to initialise the accelerometer.
  */
-bool Accelerometer_Innit(int accelerometerPin);
+bool Accelerometer_Init(int accelerometerPin);
 
 /**
  * @brief

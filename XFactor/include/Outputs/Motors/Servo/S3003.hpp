@@ -17,7 +17,7 @@
  * @param servoMotorPin 
  * Arduino pin number
  */
-void S3003_Innit(int servoMotorPin);
+void S3003_Init(int servoMotorPin);
 
 /**
  * @brief Simple function that must put the right

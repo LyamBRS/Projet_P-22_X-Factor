@@ -18,6 +18,6 @@
  * present in void setup.
  *
  * @attention
- * (Claws_innit), (BoardInnit), (LEDS_Innit), (Package_Innit), (Alarm_Innit)
+ * (Claws_init), (BoardInit), (LEDS_Init), (Package_Init), (Alarm_Init)
  */
-void XFactor_Innit();
+void XFactor_Init();

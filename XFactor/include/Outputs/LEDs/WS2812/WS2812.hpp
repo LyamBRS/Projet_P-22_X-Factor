@@ -30,7 +30,7 @@
  * Failed to initialise the WS2812 at the
  * specified pin.
  */
-bool WS2812_Innit(int pinNumber);
+bool WS2812_Init(int pinNumber);
 
 /**
  * @brief Updates a specified WS2812 with a

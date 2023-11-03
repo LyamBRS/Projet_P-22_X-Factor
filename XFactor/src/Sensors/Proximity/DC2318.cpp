@@ -21,9 +21,9 @@
  * @param rightPin
  * the pin used for the right IR sensor
  */
-void DC2318_Innit(int leftPin, int rightPin){
-    IR_Innit(leftPin);
-    IR_Innit(rightPin);
+void DC2318_Init(int leftPin, int rightPin){
+    IR_Init(leftPin);
+    IR_Init(rightPin);
 }
 
 /**

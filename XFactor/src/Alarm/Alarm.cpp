@@ -25,7 +25,7 @@
  * @return false:
  * Failed to initialise the alarm.
  */
-bool Alarm_Innit()
+bool Alarm_Init()
 {
     return false;
 }

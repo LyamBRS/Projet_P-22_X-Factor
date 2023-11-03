@@ -23,7 +23,7 @@
  * @return false:
  * Failed to initialise package functions.
  */
-bool Package_Innit()
+bool Package_Init()
 {
     return false;
 }

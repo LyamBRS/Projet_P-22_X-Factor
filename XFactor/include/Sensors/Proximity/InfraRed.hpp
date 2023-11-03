@@ -16,7 +16,7 @@
  * @param pin 
  * the pin to initialize
  */
-void IR_Innit(int pin);
+void IR_Init(int pin);
 
 /**
  * @brief Reads the infra red sensor

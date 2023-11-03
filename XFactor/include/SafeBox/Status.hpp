@@ -64,7 +64,7 @@ enum SafeBox_StatusEnum {
  * @brief Global variable used to store the last
  * status that was retreived from SafeBox.
  * Declared as extern in @ref Status.hpp but
- * initialised in @ref SafeBox_Innit. 
+ * initialised in @ref SafeBox_Init. 
  */
 extern int SafeBoxStatus;
 #pragma endregion

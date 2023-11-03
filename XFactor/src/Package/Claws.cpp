@@ -25,7 +25,7 @@
  * @return false:
  * Failed to initialise the claw.
  */
-bool Claws_Innit()
+bool Claws_Init()
 {
     return false;
 }

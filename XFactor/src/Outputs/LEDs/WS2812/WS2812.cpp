@@ -29,7 +29,7 @@ Adafruit_NeoPixel pixels;
  * Failed to initialise the WS2812 at the
  * specified pin.
  */
-bool WS2812_Innit(int pinNumber)
+bool WS2812_Init(int pinNumber)
 {
     pixels = Adafruit_NeoPixel(1, pinNumber, NEO_GRB + NEO_KHZ800);
     pixels.begin();

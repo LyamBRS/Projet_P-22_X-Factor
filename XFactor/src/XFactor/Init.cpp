@@ -28,16 +28,16 @@
  * present in void setup.
  *
  * @attention
- * (Claws_innit), (BoardInnit), (LEDS_Innit), (Package_Innit), (Alarm_Innit)
+ * (Claws_init), (BoardInit), (LEDS_Init), (Package_Init), (Alarm_Init)
  */
-void XFactor_Innit()
+void XFactor_Init()
 {
     BoardInit();
 
-    if (LEDS_Innit()){
-        if (BT_Innit()){
-            if(Alarm_Innit()){
-                if(Package_Innit()){
+    if (LEDS_Init()){
+        if (BT_Init()){
+            if(Alarm_Init()){
+                if(Package_Init()){
                     if(XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery)){
                         if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
                             // Function is successful.
