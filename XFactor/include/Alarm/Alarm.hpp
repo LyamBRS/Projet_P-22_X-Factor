@@ -12,7 +12,7 @@
 
 #pragma once
 
-#pragma region [DEFINES]
+// #pragma region [DEFINES]
 
 #define ALARM_GYRO_X_MAX
 #define ALARM_GYRO_X_MIN
@@ -21,19 +21,18 @@
 #define ALARM_GYRO_Z_MAX
 #define ALARM_GYRO_Z_MIN
 
-#pragma endregion
+// #pragma endregion
 
-#pragma region [FUNCTIONS]
+// #pragma region [FUNCTIONS]
 /**
  * @brief
  * Function that initialises the Alarm and its
  * components such as the accelerometer installed
  * on XFactor. Other components are initialised
- * on their own or inside other innitialisations
- * because they are used by other things than the
- * alarm.
+ * on their own or inside other inits because
+ * they are used by other things than the alarm.
  * @return true:
- * Successfully initialised the alarm. 
+ * Successfully initialised the alarm.
  * @return false:
  * Failed to initialise the alarm.
  */
@@ -43,7 +42,7 @@ bool Alarm_Innit();
  * @brief
  * Verifies all the sensors of XFactor that can
  * be utilised to trigger an alarm.
- * 
+ *
  * @return true:
  * An alarm needs to be triggered
  * @return false:
@@ -56,7 +55,7 @@ bool Alarm_VerifySensors();
  * Verifies the accelerometer's values to see if
  * the alarm needs to be activated based off the
  * values returned.
- * 
+ *
  * @return true:
  * An alarm needs to be activated.
  * @return false:
@@ -77,4 +76,4 @@ bool Alarm_VerifyGyro();
  * No alarm needs to be activated.
  */
 bool Alarm_VerifyPackage();
-#pragma endregion
+// #pragma endregion

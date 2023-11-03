@@ -1,51 +1,37 @@
 /**
- * @file LED.hpp
+ * @file LED.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
- * File containing the header definitions of
- * functions used to handle the LEDs of XFactor
- * at an high level. Also contains the defines
- * used for LED colours and their meanings. 
+ * File containing the functions used to handle
+ * the LEDs of XFactor at an high level.
  * @version 0.1
- * @date 2023-10-26
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
+// - INCLUDES - //
+#include "LED/LED.hpp"
 
-#pragma region [LED_COLORS]
-#define LED_COLOR_OFFLINE 0,0,0
-#define LED_COLOR_INITIALISING 255,255,255
-#define LED_COLOR_WAITING_FOR_COMMS 32,32,0
-#define LED_COLOR_COMMUNICATING 0,128,128
-#define LED_COLOR_ERROR 128,0,0
-#define LED_COLOR_DISARMED 0,128,0
-#define LED_COLOR_ARMED 128,128,0
-#define LED_COLOR_ALARM 255,0,0
-#pragma endregion
-
-#pragma region [XFACTOR_LED_NUMBERS]
-#define LED_ID_STATUS_INDICATOR 0
-#pragma endregion
-
-#pragma region [FUNCTIONS]
 
 /**
  * @brief
  * Function that initialises all the LEDs used
  * on XFactor.
- * 
+ *
  * @return true:
- * Successfully initialised all the LEDs. 
+ * Successfully initialised all the LEDs.
  * @return false:
  * Failed to initialise all the LEDs.
  */
-bool LEDS_Innit();
+bool LEDS_Innit()
+{
+    return false;
+}
 
 /**
- * @brief 
+ * @brief
  * Function that sets the color of a specified
- * RGB LED to a specified colour in the RGB 
+ * RGB LED to a specified colour in the RGB
  * format.
  * @param LEDNumber
  * The number associated with that LED. Ranges
@@ -63,6 +49,7 @@ bool LEDS_Innit();
  * Failed to changed the specified LED's colors
  * to the new specified colors.
  */
-bool LEDS_SetColor(int LEDNumber, unsigned char red, unsigned char green, unsigned char blue);
-
-#pragma endregion
+bool LEDS_SetColor(int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
+{
+    return false;
+}

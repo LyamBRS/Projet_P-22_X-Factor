@@ -1,4 +1,15 @@
 
+/**
+ * @file InfraRed.cpp
+ * @author Élodie
+ * @brief
+ * File containing the functions used to make an
+ * IR LED work.
+ * @version 0.1
+ * @date 2023-11-02
+ * @copyright Copyright (c) 2023
+ */
+
 // - INCLUDE - //
 #include "Arduino.h"
 #include "Sensors/Proximity/InfraRed.hpp"

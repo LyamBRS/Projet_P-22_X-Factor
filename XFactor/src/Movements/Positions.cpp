@@ -1,17 +1,18 @@
 /**
- * @file Positions.hpp
+ * @file Positions.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
- * @brief This file contains the functions necessary to update
- * and use the current positions of the robot.
- * Current positions should be updated when the robot
- * finishes a movement and reset whenever a vector is
- * saved.
+ * @brief This file contains the functions
+ * necessary to update and use the current
+ * positions of the robot. Current positions
+ * should be updated when the robot finishes a
+ * movement and reset whenever a vector is saved.
  * @version 0.1
- * @date 2023-10-23
- * 
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
- * 
  */
+
+// - INCLUDES - //
+#include "Movements/Positions.hpp"
 
 /**
  * @brief Updates the total rotation of the robot
@@ -24,12 +25,15 @@
  * @param newRotation
  * The amount of radians that the robot just
  * made.
- * @return true
+ * @return true:
  * The rotation was updated successfully.
- * @return false 
+ * @return false:
  * The rotation failed to be updated.
  */
-bool UpdateSavedRotation(float newRotation);
+bool UpdateSavedRotation(float newRotation)
+{
+    return false;
+}
 
 /**
  * @brief Updates the robot's current distance
@@ -37,31 +41,37 @@ bool UpdateSavedRotation(float newRotation);
  * a vector needs to be saved. This function
  * needs to be called AFTER the robot
  * successfully made the distance.
- * @param distanceMade 
- * @return true
+ * @param distanceMade
+ * @return true:
  * The distance was updated successfully.
- * @return false 
+ * @return false:
  * The distance failed to be updated.
  */
-bool UpdateSavedDistance(float distanceMade);
+bool UpdateSavedDistance(float distanceMade)
+{
+    return false;
+}
 
 /**
  * @brief Function that resets both global
  * variables that stores the robot's current
  * position. The distance and rotation will
- * be reseted back to 0 when this is called.
- * 
+ * be reset back to 0 when this is called.
+ *
  * @attention
- * If vectors were not saved before this 
+ * If vectors were not saved before this
  * function is called, it will be
- * impossible to retreive the robot's
+ * impossible to retrieve the robot's
  * current position relative to the box.
- * @return true
- * Positions was reset successfully. 
- * @return false 
+ * @return true:
+ * Positions was reset successfully.
+ * @return false:
  * The position did not need to be reset.
  */
-bool ResetPositions();
+bool ResetPositions()
+{
+    return false;
+}
 
 /**
  * @brief Returns the current value
@@ -71,7 +81,10 @@ bool ResetPositions();
  * @return float
  * value of the saved rotation.
  */
-float GetSavedRotation();
+float GetSavedRotation()
+{
+    return 0.0f;
+}
 
 /**
  * @brief Returns the current value
@@ -81,4 +94,7 @@ float GetSavedRotation();
  * @return float
  * value of the saved rotation.
  */
-float GetSavedDistance();
+float GetSavedDistance()
+{
+    return 0.0f;
+}

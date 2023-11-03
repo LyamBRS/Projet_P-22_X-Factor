@@ -15,7 +15,7 @@
 // - INCLUDE - //
 #include "Events/Events.hpp"
 
-#pragma region [Movement_Related]
+// #pragma region [Movement_Related]
 
 /**
  * @brief Periodically executed when the
@@ -78,9 +78,9 @@ bool TurningEvent(float executionRatio, unsigned char direction)
     return false;
 }
 
-#pragma endregion
+// #pragma endregion
 
-#pragma region [Communication_Related]
+// #pragma region [Communication_Related]
 
 /**
  * @brief Event called once before any
@@ -147,7 +147,7 @@ bool BT_MessageSentEvent(String messageSent)
  */
 bool BT_WaitingForMessageEvent(float executionRatio)
 {
-    return true;
+    return false;
 }
 
 /**
@@ -172,7 +172,7 @@ bool BT_WaitingForMessageEvent(float executionRatio)
  */
 bool BT_MessageExchangeSuccessEvent(String messageSent, String messageReceived)
 {
-    return true;
+    return false;
 }
 
 /**
@@ -193,7 +193,7 @@ bool BT_MessageExchangeSuccessEvent(String messageSent, String messageReceived)
  */
 bool BT_MessageReceivedEvent(String receivedMessage)
 {
-    return true;
+    return false;
 }
 
 /**
@@ -212,7 +212,7 @@ bool BT_MessageReceivedEvent(String receivedMessage)
  */
 bool BT_TimeoutEvent(int timeoutDuration)
 {
-    return true;
+    return false;
 }
 
-#pragma endregion
+// #pragma endregion

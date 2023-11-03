@@ -32,7 +32,10 @@
  * @return false:
  * Bluetooth failed to be initialised
  */
-bool BT_Innit();
+bool BT_Innit()
+{
+    return false;
+}
 
 /**
  * @brief Simple function that sends a string
@@ -47,7 +50,10 @@ bool BT_Innit();
  * @return false:
  * Failed to send the message.
  */
-bool BT_SendString(String message);
+bool BT_SendString(String message)
+{
+    return false;
+}
 
 /**
  * @brief Simple function that checks how many
@@ -57,7 +63,10 @@ bool BT_SendString(String message);
  *
  * @return int: 0: no messages, >0: some messages
  */
-int BT_MessagesAvailable();
+int BT_MessagesAvailable()
+{
+    return 0;
+}
 
 /**
  * @brief Clears the buffer where messages are
@@ -70,7 +79,10 @@ int BT_MessagesAvailable();
  * @return false:
  * Failed to clear the message buffer.
  */
-bool BT_ClearAllMessages();
+bool BT_ClearAllMessages()
+{
+    return false;
+}
 
 /**
  * @brief Will block the program for a specified
@@ -88,7 +100,10 @@ bool BT_ClearAllMessages();
  * Failed to receive a message / no message was
  * received.
  */
-bool BT_WaitForAMessage(int millisecondsTimeOut);
+bool BT_WaitForAMessage(int millisecondsTimeOut)
+{
+    return false;
+}
 
 /**
  * @brief Returns a string which corresponds to
@@ -103,7 +118,10 @@ bool BT_WaitForAMessage(int millisecondsTimeOut);
  * @return string: The oldest message stored in
  * the reception buffer.
  */
-String BT_GetLatestMessage();
+String BT_GetLatestMessage()
+{
+    return "ERROR_FUNCTION_NOT_MADE";
+}
 
 /**
  * @brief Function that firstly clears the UART
@@ -134,4 +152,7 @@ String BT_GetLatestMessage();
  * @return string: The received message from
  * SafeBox.
  */
-String BT_MessageExchange(String message, int millisecondsTimeOut);
+String BT_MessageExchange(String message, int millisecondsTimeOut)
+{
+    return "ERROR_FUNCTION_NOT_MADE";
+}

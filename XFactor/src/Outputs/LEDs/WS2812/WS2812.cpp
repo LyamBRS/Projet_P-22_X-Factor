@@ -33,6 +33,7 @@ bool WS2812_Innit(int pinNumber)
 {
     pixels = Adafruit_NeoPixel(1, pinNumber, NEO_GRB + NEO_KHZ800);
     pixels.begin();
+    pixels.clear();
     return true;
 }
 

@@ -1,34 +1,19 @@
 /**
- * @file Claw.hpp
+ * @file Claw.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
- * File which contains the header definitions
- * of functions that controls XFactor's package
+ * File which contains the functions that
+ * controls XFactor's package
  * recovery claw. These functions are then
  * used by regular Package functions.
  * @version 0.1
- * @date 2023-10-26
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
+// - INCLUDES - //
+#include "Package/Claws.hpp"
 
-#pragma region [DEFINES]
-#define CLAWS_SQUEEZE_DISTANCE
-#define CLAWS_CLOSING_SPEED
-
-#define CLAWS_GRABBERS_MAX
-#define CLAWS_GRABBERS_MIN
-
-#define CLAWS_HEIGHT_MAX
-#define CLAWS_HEIGHT_MIN
-
-#define CLAWS_PINS_SWITCH
-#define CLAWS_PINS_GRABBER
-#define CLAWS_PINS_HEIGHT
-#pragma endregion
-
-#pragma region [FUNCTIONS]
 
 /**
  * @brief
@@ -40,7 +25,10 @@
  * @return false:
  * Failed to initialise the claw.
  */
-bool Claws_Innit();
+bool Claws_Innit()
+{
+    return false;
+}
 
 /**
  * @brief
@@ -53,14 +41,17 @@ bool Claws_Innit();
  * @return false:
  * Nothing is inside the claw
  */
-bool Claws_GetSwitchStatus();
+bool Claws_GetSwitchStatus()
+{
+    return false;
+}
 
 /**
  * @brief
  * Function used to set the claw's grabber to a
  * wanted position in pourcents. The claw must be
  * deployed for this function to work.
- * 
+ *
  * @param pourcent
  * How much should the grabbers be opened?
  * 0 means closed and 100 means completely
@@ -71,16 +62,19 @@ bool Claws_GetSwitchStatus();
  * @return false:
  * Failed to move the grabbers because the claw
  * is either not deployed or the specified value
- * is outside of the allowed range. 
+ * is outside of the allowed range.
  */
-bool Claws_SetGrabbers(unsigned char pourcent);
+bool Claws_SetGrabbers(unsigned char pourcent)
+{
+    return false;
+}
 
 /**
  * @brief
  * Function used to set the claw's height to a
  * wanted position in pourcents. The claw must be
  * deployed for this function to work.
- * 
+ *
  * @param pourcent
  * How high should the claw be? 0 is as low as
  * possible and 100 is the highest.
@@ -90,9 +84,12 @@ bool Claws_SetGrabbers(unsigned char pourcent);
  * @return false:
  * Failed to move the height because the claw
  * is either not deployed or the specified value
- * is outside of the allowed range. 
+ * is outside of the allowed range.
  */
-bool Claws_SetHeight(unsigned char pourcent);
+bool Claws_SetHeight(unsigned char pourcent)
+{
+    return false;
+}
 
 /**
  * @brief
@@ -103,20 +100,23 @@ bool Claws_SetHeight(unsigned char pourcent);
  * as much as possible. If you deploy the claw,
  * it will be in a position that is ready to pick
  * up packages.
- * 
+ *
  * @attention
  * If a package is currently detected inside the
- * claw, deployement function will fail its
+ * claw, deployment function will fail its
  * execution and return false.
- * 
- * @param deployement
+ *
+ * @param deployment
  * true means deployed and false means stored.
  * @return true:
  * Successfully deployed or stored the claw.
  * @return false:
  * Failed to deploy or store the claw.
  */
-bool Claws_SetDeployement(bool deployement);
+bool Claws_SetDeployment(bool deployment)
+{
+    return false;
+}
 
 /**
  * @brief
@@ -126,21 +126,24 @@ bool Claws_SetDeployement(bool deployement);
  * prevent it from easily slipping out of the
  * claw. The function will return wether or not
  * it was able to secure the package.
- * 
+ *
  * @attention
  * The amount by which the claw closes to squeeze
  * the package is predefined inside of this
  * function.
- * 
+ *
  * @return true:
- * Successfully squeezed the package. 
+ * Successfully squeezed the package.
  * @return false:
  * Failed to squeeze the package because there
  * either was never a package to start with, the
- * package was lost during squeezing or bcause
+ * package was lost during squeezing or because
  * the claw is not deployed or not opened enough.
  */
-bool Claws_SqueezePackage();
+bool Claws_SqueezePackage()
+{
+    return false;
+}
 
 /**
  * @brief
@@ -153,6 +156,7 @@ bool Claws_SqueezePackage();
  * @return false:
  * Failed to detect a package while closing.
  */
-bool Claws_CloseUntilDetection();
-
-#pragma endregion
+bool Claws_CloseUntilDetection()
+{
+    return false;
+}
