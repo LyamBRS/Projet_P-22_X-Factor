@@ -13,6 +13,9 @@
 
 #pragma once
 
+// - INCLUDES - //
+#include "Package/Claws.hpp" //// Used to pick up and handle the package.
+
 // #pragma region [DEFINES]
 #define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT

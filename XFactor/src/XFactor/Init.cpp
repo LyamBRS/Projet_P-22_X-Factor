@@ -11,15 +11,6 @@
 
 // - INCLUDES - //
 #include "XFactor/Init.hpp"
-#include "XFactor/Status.hpp"
-#include "LibRobus.h"
-
-#include "Actions/Actions.hpp"
-#include "Communication/Bluetooth.hpp"
-#include "LED/LED.hpp"
-#include "Alarm/Alarm.hpp"
-#include "Package/Package.hpp"
-
 
 /**
  * @brief

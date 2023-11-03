@@ -8,10 +8,10 @@
  * saved.
  * @version 0.1
  * @date 2023-10-23
- * 
  * @copyright Copyright (c) 2023
- * 
  */
+
+#pragma once
 
 /**
  * @brief Updates the total rotation of the robot
@@ -26,7 +26,7 @@
  * made.
  * @return true
  * The rotation was updated successfully.
- * @return false 
+ * @return false
  * The rotation failed to be updated.
  */
 bool UpdateSavedRotation(float newRotation);
@@ -37,10 +37,10 @@ bool UpdateSavedRotation(float newRotation);
  * a vector needs to be saved. This function
  * needs to be called AFTER the robot
  * successfully made the distance.
- * @param distanceMade 
- * @return true
+ * @param distanceMade
+ * @return true:
  * The distance was updated successfully.
- * @return false 
+ * @return false:
  * The distance failed to be updated.
  */
 bool UpdateSavedDistance(float distanceMade);
@@ -49,16 +49,16 @@ bool UpdateSavedDistance(float distanceMade);
  * @brief Function that resets both global
  * variables that stores the robot's current
  * position. The distance and rotation will
- * be reseted back to 0 when this is called.
- * 
+ * be reset back to 0 when this is called.
+ *
  * @attention
- * If vectors were not saved before this 
+ * If vectors were not saved before this
  * function is called, it will be
- * impossible to retreive the robot's
+ * impossible to retrieve the robot's
  * current position relative to the box.
- * @return true
- * Positions was reset successfully. 
- * @return false 
+ * @return true:
+ * Positions was reset successfully.
+ * @return false:
  * The position did not need to be reset.
  */
 bool ResetPositions();
@@ -68,7 +68,7 @@ bool ResetPositions();
  * of the global variable that
  * stores the robot's current
  * relative rotation.
- * @return float
+ * @return float:
  * value of the saved rotation.
  */
 float GetSavedRotation();
@@ -78,7 +78,7 @@ float GetSavedRotation();
  * of the global variable that
  * stores the robot's current
  * relative rotation.
- * @return float
+ * @return float:
  * value of the saved rotation.
  */
 float GetSavedDistance();

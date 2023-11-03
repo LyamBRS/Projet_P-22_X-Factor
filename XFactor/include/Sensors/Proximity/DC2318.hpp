@@ -4,9 +4,8 @@
  * @brief Header file for the use of the infra red sensor DC2318
  * @version 0.1
  * @date 2023-09-28
- * 
+
  * @copyright Copyright (c) 2023
- * 
  */
 #pragma once
 

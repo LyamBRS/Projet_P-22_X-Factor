@@ -7,11 +7,15 @@
  * should be in another file.
  * @version 0.1
  * @date 2023-10-23
- *
  * @copyright Copyright (c) 2023
- *
  */
 #pragma once
+
+// - INCLUDES - //
+#include "Outputs/Motors/DC/Motors.hpp" //// Used to get encoders and set motor speeds
+#include "Movements/PID.hpp"            //// Used to correct the speed of the robot. May need several defines.
+#include "Movements/Positions.hpp"      //// Keeps tracks of the robot's current position and rotations as it moves around.
+#include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
 
 //#pragma region [Base_functions]
 /**

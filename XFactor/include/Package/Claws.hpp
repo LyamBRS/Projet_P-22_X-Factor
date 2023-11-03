@@ -13,6 +13,9 @@
 
 #pragma once
 
+// - INCLUDES - //
+#include "Outputs/Motors/Servo/S3003.hpp" //// Used to make the claw move. 3 servo motors should be used.
+
 // #pragma region [DEFINES]
 #define CLAWS_SQUEEZE_DISTANCE
 #define CLAWS_CLOSING_SPEED

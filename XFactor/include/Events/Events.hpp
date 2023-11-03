@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "Arduino.h"
+#include "Arduino.h" //// For string returns and parameters
 
-#pragma region [Movement_Related]
+// #pragma region [Movement_Related]
 
 /**
  * @brief Periodically executed when the
@@ -74,9 +74,9 @@ bool MovingEvent(float executionRatio, unsigned char direction);
  */
 bool TurningEvent(float executionRatio, unsigned char direction);
 
-#pragma endregion
+// #pragma endregion
 
-#pragma region [Communication_Related]
+// #pragma region [Communication_Related]
 
 /**
  * @brief Event called once before any
@@ -193,4 +193,4 @@ bool BT_MessageReceivedEvent(String receivedMessage);
  */
 bool BT_TimeoutEvent(int timeoutDuration);
 
-#pragma endregion
+// #pragma endregion

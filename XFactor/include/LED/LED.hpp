@@ -14,7 +14,7 @@
 #pragma once
 
 // - INCLUDE - //
-#include "Outputs/LEDs/WS2812/WS2812.hpp"
+#include "Outputs/LEDs/WS2812/WS2812.hpp" //// The LED used by XFactor is a WS2812.
 
 //#pragma region [LED_COLORS]
 /// @brief RGB color that the LED will have when XFactor is offline.

@@ -1,7 +1,7 @@
 /**
  * @file Alarm.hpp
  * @author LyamBRS (lyam.brs@gmail.com)
- * @brief 
+ * @brief
  * File containing the header definitions of
  * the functions used to handle and detect alarms
  * in the XFactor program.
@@ -11,6 +11,8 @@
  */
 
 #pragma once
+// - INCLUDES - //
+#include "Sensors/Accelerometer/Accelerometer.hpp" //// Needs to be initialised in alarms initialise function, and used in accelerometer getters.
 
 // #pragma region [DEFINES]
 

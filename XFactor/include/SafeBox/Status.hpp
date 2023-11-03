@@ -11,14 +11,14 @@
 
 #pragma once
 
-#pragma region [Enumerations]
+// #pragma region [Enumerations]
 /**
  * @brief Enumeration of all the possible status
  * that SafeBox can have. Each status represents
  * a mode or activity that SafeBox is currently
  * ongoing. These modes are used for XFactor to
  * take decisions and communicate properly.
- * 
+ *
  * @attention
  * Usage: variable = SafeBox_StatusEnum::Off;
  * @warning
@@ -26,7 +26,7 @@
  */
 enum SafeBox_StatusEnum {
 
-    /// @brief Default status when the program fails to retreive SafeBox's status.
+    /// @brief Default status when the program fails to retrieve SafeBox's status.
     CommunicationError = -1,
 
     /// @brief SafeBox is off
@@ -38,21 +38,21 @@ enum SafeBox_StatusEnum {
     /// @brief Safebox is currently being configurated by its user. Its disarmed.
     BeingConfigurated = 2,
 
-    /// @brief Safebox is armed and waiting for a doorbell to start the proceedure
+    /// @brief Safebox is armed and waiting for a doorbell to start the procedure
     WaitingForDoorbell = 3,
 
-    /// @brief Safebox identified that a package was delivered. XFactor needs to retreive it. Its armed.
+    /// @brief Safebox identified that a package was delivered. XFactor needs to retrieve it. Its armed.
     PackageDelivered = 4,
 
-    /// @brief Safebox is waiting for XFactor to deposite its package inside of it
-    WaitingForDeposite = 5,
+    /// @brief Safebox is waiting for XFactor to deposit its package inside of it
+    WaitingForDeposit = 5,
 
-    /// @brief Safebox is waitin for XFactor to return inside of it.
+    /// @brief Safebox is waiting for XFactor to return inside of it.
     WaitingForXFactor = 6,
 
     /// @brief Safebox is in maintenance mode
     Maintenance = 50,
-    
+
     /// @brief SafeBox encountered a critical error
     Error = 51,
 
@@ -62,25 +62,9 @@ enum SafeBox_StatusEnum {
 
 /**
  * @brief Global variable used to store the last
- * status that was retreived from SafeBox.
+ * status that was retrieved from SafeBox.
  * Declared as extern in @ref Status.hpp but
- * initialised in @ref SafeBox_Init. 
+ * initialised in @ref SafeBox_Init.
  */
 extern int SafeBoxStatus;
-#pragma endregion
-
-#pragma region [Functions]
-/*
-bool SafeBox_ExecuteReceivedStatus(int receivedSafeBoxStatus);
-*/
-/**
- * @brief 
- * 
- * @param newSafeBoxStatus 
- * @return true 
- * @return false 
- */
-/*
-bool SafeBox_CompareNewStatusWithOld(int newSafeBoxStatus);
-*/
-#pragma endregion
+// #pragma endregion

@@ -11,14 +11,12 @@
 
 #pragma once
 
-#pragma region [FUNCTIONS]
-
 /**
- * @brief 
+ * @brief
  * Initialises an accelerometer to be used on
  * XFactor. The name of the accelerometer will
  * define how these functions are called.
- * @param accelerometerPin 
+ * @param accelerometerPin
  * @return true:
  * Successfully initialised the accelerometer
  * using the specifed pins.
@@ -37,7 +35,7 @@ bool Accelerometer_Init(int accelerometerPin);
  * initialised
  * @return float:
  * If 0 is returned, the function failed to
- * execute properly. 
+ * execute properly.
  */
 float Accelerometer_GetX(int accelerometerPin);
 
@@ -51,7 +49,7 @@ float Accelerometer_GetX(int accelerometerPin);
  * initialised
  * @return float:
  * If 0 is returned, the function failed to
- * execute properly. 
+ * execute properly.
  */
 float Accelerometer_GetY(int accelerometerPin);
 
@@ -65,7 +63,7 @@ float Accelerometer_GetY(int accelerometerPin);
  * initialised
  * @return float:
  * If 0 is returned, the function failed to
- * execute properly. 
+ * execute properly.
  */
 float Accelerometer_GetZ(int accelerometerPin);
 
@@ -79,7 +77,6 @@ float Accelerometer_GetZ(int accelerometerPin);
  * initialised
  * @return float:
  * If 0 is returned, the function failed to
- * execute properly. 
+ * execute properly.
  */
 float Accelerometer_GetCompass(int accelerometerPin);
-#pragma endregion

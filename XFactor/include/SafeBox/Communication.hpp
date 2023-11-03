@@ -12,7 +12,11 @@
 
 #pragma once
 
-#pragma region [Command_Requests]
+// - INCLUDES - //
+#include "SafeBox/Status.hpp"           //// Used to store the status of SafeBox and get the enumeration of its possible values
+#include "Communication/Bluetooth.hpp"  //// Used to communicate information and receive information from SafeBox
+
+// #pragma region [Command_Requests]
 
 /**
  * @brief Asks SafeBox to change its package lid
