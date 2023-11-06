@@ -12,7 +12,6 @@
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
 
-
 /// @brief Arduino's initialisation function.
 void setup()
 {
