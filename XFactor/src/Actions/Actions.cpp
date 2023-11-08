@@ -205,7 +205,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
-
+  
 }
 
 /**
@@ -231,15 +231,26 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
+  int comTimeOut_ms = 1000;
+  int startExecutionTime_ms = millis();
+  int currentExecutionTime_ms = 0;
+
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
-  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
-
-  if (BT_WaitForAMessage(1000))
+  LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
+  for (;;)
   {
-    if (BT_GetLatestMessage() == "") // PUT MESSAGE WHEN BT HAS ITS STRINGS
+    currentExecutionTime_ms = millis();
+    if (currentExecutionTime_ms - startExecutionTime_ms >= comTimeOut_ms)
     {
-      SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+      startExecutionTime_ms = millis();
+      currentExecutionTime_ms = 0;
+
+      if (SafeBox_GetDoorBellStatus())
+      {
+        SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+        return;
+      }
     }
   }
 }

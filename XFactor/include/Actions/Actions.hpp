@@ -17,7 +17,8 @@
 
 // - INCLUDES - //
 #include "LED/LED.hpp"
-#include "Communication/Bluetooth.hpp"
+#include "SafeBox/Communication.hpp"
+#include "XFactor/Status.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
