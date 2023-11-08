@@ -205,7 +205,28 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
-  
+  int comTimeOut_ms = 1000;
+  unsigned long startExecutionTime_ms = millis();
+  unsigned long currentExecutionTime_ms = startExecutionTime_ms;
+
+  SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
+
+  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS);
+
+  for (;;)
+  {
+    currentExecutionTime_ms = millis();
+    if (currentExecutionTime_ms - startExecutionTime_ms >= comTimeOut_ms)
+    {
+      startExecutionTime_ms = millis();
+
+      if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError) // XFACTOR STATUS TO CONFIRM
+      {
+        SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+        return;
+      }
+    }
+  }
 }
 
 /**
@@ -232,12 +253,13 @@ void Execute_WaitAfterSafeBox()
 void Execute_WaitForDelivery()
 {
   int comTimeOut_ms = 1000;
-  int startExecutionTime_ms = millis();
-  int currentExecutionTime_ms = startExecutionTime_ms;
+  unsigned long startExecutionTime_ms = millis();
+  unsigned long currentExecutionTime_ms = startExecutionTime_ms;
 
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
   LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
+
   for (;;)
   {
     currentExecutionTime_ms = millis();
@@ -245,7 +267,7 @@ void Execute_WaitForDelivery()
     {
       startExecutionTime_ms = millis();
 
-      if (SafeBox_GetDoorBellStatus())
+      if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError && SafeBox_GetDoorBellStatus())
       {
         SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
         return;
