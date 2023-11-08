@@ -206,7 +206,7 @@ unsigned char GetCurrentExecutionFunction()
 void Execute_WaitAfterSafeBox()
 {
   SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
-  XFactor_SetNewStatus(XFactor_StatusEnum::Off);
+  XFactor_SetNewStatus(XFactor_StatusEnum::Off); // will need to add Initializing status
 
   LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
 
@@ -244,7 +244,7 @@ void Execute_WaitForDelivery()
 
   LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
 
-  if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError && SafeBox_GetDoorBellStatus())
+  if (SafeBox_GetDoorBellStatus())
   {
     SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
   }
@@ -274,7 +274,21 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
-  
+  XFactor_SetNewStatus(XFactor_StatusEnum::LeavingSafeBox);
+
+  if (SafeBox_GetGarageState())
+  {
+    if (MoveFromVector(0, 50.0f, false)) //Add define for distances to get outta the box
+    {
+      // EXCHANGE STATUS
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
+      XFactor_SetNewStatus(XFactor_StatusEnum::PreparingForTheSearch);
+    }
+  }
+  else
+  {
+    SafeBox_ChangeGarageState(true);
+  }
 }
 
 /**
