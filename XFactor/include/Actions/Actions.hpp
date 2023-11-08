@@ -16,7 +16,8 @@
 #pragma once
 
 // - INCLUDES - //
-
+#include "LED/LED.hpp"
+#include "Communication/Bluetooth.hpp"
 
 //#pragma region [FUNCTION_IDS]
 

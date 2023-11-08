@@ -231,7 +231,17 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
+  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
+  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
+
+  if (BT_WaitForAMessage(1000))
+  {
+    if (BT_GetLatestMessage() == "") // PUT MESSAGE WHEN BT HAS ITS STRINGS
+    {
+      SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+    }
+  }
 }
 
 /**
