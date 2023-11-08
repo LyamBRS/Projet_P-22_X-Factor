@@ -205,27 +205,14 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
-  int comTimeOut_ms = 1000;
-  unsigned long startExecutionTime_ms = millis();
-  unsigned long currentExecutionTime_ms = startExecutionTime_ms;
-
   SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
+  XFactor_SetNewStatus(XFactor_StatusEnum::Off);
 
-  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS);
+  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
 
-  for (;;)
+  if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError) // XFACTOR STATUS TO CONFIRM
   {
-    currentExecutionTime_ms = millis();
-    if (currentExecutionTime_ms - startExecutionTime_ms >= comTimeOut_ms)
-    {
-      startExecutionTime_ms = millis();
-
-      if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError) // XFACTOR STATUS TO CONFIRM
-      {
-        SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
-        return;
-      }
-    }
+    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   }
 }
 
@@ -252,27 +239,14 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
-  int comTimeOut_ms = 1000;
-  unsigned long startExecutionTime_ms = millis();
-  unsigned long currentExecutionTime_ms = startExecutionTime_ms;
-
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery);
 
   LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
 
-  for (;;)
+  if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError && SafeBox_GetDoorBellStatus())
   {
-    currentExecutionTime_ms = millis();
-    if (currentExecutionTime_ms - startExecutionTime_ms >= comTimeOut_ms)
-    {
-      startExecutionTime_ms = millis();
-
-      if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError && SafeBox_GetDoorBellStatus())
-      {
-        SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
-        return;
-      }
-    }
+    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
   }
 }
 
@@ -300,7 +274,7 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
-
+  
 }
 
 /**
