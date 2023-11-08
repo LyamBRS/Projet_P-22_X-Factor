@@ -233,7 +233,7 @@ void Execute_WaitForDelivery()
 {
   int comTimeOut_ms = 1000;
   int startExecutionTime_ms = millis();
-  int currentExecutionTime_ms = 0;
+  int currentExecutionTime_ms = startExecutionTime_ms;
 
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
@@ -244,7 +244,6 @@ void Execute_WaitForDelivery()
     if (currentExecutionTime_ms - startExecutionTime_ms >= comTimeOut_ms)
     {
       startExecutionTime_ms = millis();
-      currentExecutionTime_ms = 0;
 
       if (SafeBox_GetDoorBellStatus())
       {
