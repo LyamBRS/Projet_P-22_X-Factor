@@ -4,11 +4,11 @@
  * @brief
  * Header file containing all the definitions of
  * Bluetooth functions used throughout the
- * XFactor project. These functions allows the
+ * SafeBox project. These functions allows the
  * robot to communicate with SafeBox and vise
  * versa.
  * @version 0.1
- * @date 2023-10-25
+ * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
@@ -21,7 +21,7 @@
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART
  * module. It initialises the used pins correctly
- * and makes XFactor ready for Bluetooth
+ * and makes SafeBox ready for Bluetooth
  * communications.
  *
  * @attention
