@@ -3,7 +3,7 @@
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
  * File containing the header definitions of
- * functions used to handle the LEDs of XFactor
+ * functions used to handle the LEDs of SafeBox
  * at an high level. Also contains the defines
  * used for LED colours and their meanings.
  * @version 0.1
@@ -14,24 +14,24 @@
 #pragma once
 
 // - INCLUDE - //
-#include "Outputs/LEDs/WS2812/WS2812.hpp" //// The LED used by XFactor is a WS2812.
+#include "Outputs/LEDs/WS2812/WS2812.hpp" //// The LED used by SafeBox is a WS2812.
 
 //#pragma region [LED_COLORS]
-/// @brief RGB color that the LED will have when XFactor is offline.
+/// @brief RGB color that the LED will have when SafeBox is offline.
 #define LED_COLOR_OFFLINE 0,0,0
-/// @brief RGB color that the LED will have when XFactor is initialising.
+/// @brief RGB color that the LED will have when SafeBox is initialising.
 #define LED_COLOR_INITIALISING 255,255,255
-/// @brief RGB color that the LED will have when XFactor is waiting to receive communications.
+/// @brief RGB color that the LED will have when SafeBox is waiting for XFactor to be online.
 #define LED_COLOR_WAITING_FOR_COMMS 32,32,0
-/// @brief RGB color that the LED will have when XFactor is actively communicating.
+/// @brief RGB color that the LED will have when SafeBox is actively communicating.
 #define LED_COLOR_COMMUNICATING 0,128,128
-/// @brief RGB color that the LED will have when XFactor is in an error.
+/// @brief RGB color that the LED will have when SafeBox is in an error.
 #define LED_COLOR_ERROR 128,0,0
-/// @brief RGB color that the LED will have when XFactor is moving and not armed with the alarm.
+/// @brief RGB color that the LED will have when SafeBox is unlocked by the user
 #define LED_COLOR_DISARMED 0,128,0
-/// @brief RGB color that the LED will have when XFactor is moving and armed with the alarm.
+/// @brief RGB color that the LED will have when SafeBox is locked and operational.
 #define LED_COLOR_ARMED 128,128,0
-/// @brief RGB color that the LED will have when XFactor going nuts over the alarm.
+/// @brief RGB color that the LED will have when SafeBox going nuts over the alarm.
 #define LED_COLOR_ALARM 255,0,0
 //#pragma endregion
 
@@ -44,7 +44,7 @@
 /**
  * @brief
  * Function that initialises all the LEDs used
- * on XFactor.
+ * on SafeBox.
  *
  * @return true:
  * Successfully initialised all the LEDs.

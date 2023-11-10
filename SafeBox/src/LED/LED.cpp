@@ -3,9 +3,9 @@
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
  * File containing the functions used to handle
- * the LEDs of XFactor at an high level.
+ * the LEDs of SafeBox at an high level.
  * @version 0.1
- * @date 2023-11-02
+ * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
@@ -16,7 +16,7 @@
 /**
  * @brief
  * Function that initialises all the LEDs used
- * on XFactor.
+ * on SafeBox.
  *
  * @return true:
  * Successfully initialised all the LEDs.
