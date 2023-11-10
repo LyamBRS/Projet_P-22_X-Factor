@@ -4,9 +4,9 @@
  * @brief
  * File containing the header definitions of
  * the functions used to handle and detect alarms
- * in the XFactor program.
+ * in the SafeBox program.
  * @version 0.1
- * @date 2023-10-26
+ * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
@@ -30,7 +30,7 @@
  * @brief
  * Function that initialises the Alarm and its
  * components such as the accelerometer installed
- * on XFactor. Other components are initialised
+ * on SafeBox. Other components are initialised
  * on their own or inside other inits because
  * they are used by other things than the alarm.
  * @return true:
@@ -42,8 +42,8 @@ bool Alarm_Init();
 
 /**
  * @brief
- * Verifies all the sensors of XFactor that can
- * be utilised to trigger an alarm.
+ * Verifies all the sensors of SafeBox that can
+ * be utilized to trigger an alarm.
  *
  * @return true:
  * An alarm needs to be triggered
@@ -67,9 +67,9 @@ bool Alarm_VerifyGyro();
 
 /**
  * @brief
- * Function that utilises the Package status to
+ * Function that utilizes the Package status to
  * figure out if a package has been stolen inside
- * of XFactor. If the package status is false,
+ * of SafeBox. If the package status is false,
  * this function is bypassed because there is no
  * package to steal.
  * @return true:
