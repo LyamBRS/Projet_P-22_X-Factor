@@ -1,18 +1,17 @@
 /**
- * @file PID.hpp
+ * @file PID.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
- * Header file that contains the definition
- * of PID functions. Local defines are
- * located in the cpp file of the same name
- * The PID needs to be reset before each
- * long term use.
+ * File that contains the definition of PID
+ * functions. The PID needs to be reset before
+ * each long term use.
  * @version 0.1
- * @date 2023-10-24
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
+// - INCLUDE - //
+#include "Movements/PID.hpp"
 
 /**
  * @brief Basic PID function that returns an
@@ -34,11 +33,11 @@
  * @param integral
  * the I value of the PID. In other words, the
  * small corrections done over time if there's
- * oscillaton.
+ * oscillation.
  * @param derivative
  * The D value of the PID. When the value
  * begins to reach the wanted value, this
- * will deaccelerate the PID.
+ * will de accelerate the PID.
  * @param currentValue
  * The current value that was just read.
  * Its the value that needs to be corrected
@@ -52,7 +51,10 @@
  * at 0.
  * @return float
  */
-float PID(float proportional, float integral, float derivative, float currentValue, float wantedValue, float startingValue);
+float PID(float proportional, float integral, float derivative, float currentValue, float wantedValue, float startingValue)
+{
+    return 0.0f;
+}
 
 /**
  * @brief Resets @ref PID
@@ -65,4 +67,7 @@ float PID(float proportional, float integral, float derivative, float currentVal
  * @return false:
  * Failed to reset the PID.
  */
-bool ResetPID();
+bool ResetPID()
+{
+    return false;
+}

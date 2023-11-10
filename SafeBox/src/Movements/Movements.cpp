@@ -1,23 +1,19 @@
 /**
- * @file Movements.hpp
+ * @file Movements.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief This file contains all the
  * high level functions used throughout
  * XFactor's movements. Any low end functions
  * should be in another file.
  * @version 0.1
- * @date 2023-10-23
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
-#pragma once
 
 // - INCLUDES - //
-#include "Outputs/Motors/DC/Motors.hpp" //// Used to get encoders and set motor speeds
-#include "Movements/PID.hpp"            //// Used to correct the speed of the robot. May need several defines.
-#include "Movements/Positions.hpp"      //// Keeps tracks of the robot's current position and rotations as it moves around.
-#include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
+#include "Movements/Movements.hpp"
 
-//#pragma region [Base_functions]
+//#pragma region Base_functions
 /**
  * @brief
  * This function moves the robot on a specified
@@ -44,7 +40,10 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-bool MoveFromVector(float radians, float distance, bool saveVector);
+bool MoveFromVector(float radians, float distance, bool saveVector)
+{
+    return false;
+}
 
 /**
  * @brief
@@ -72,7 +71,10 @@ bool MoveFromVector(float radians, float distance, bool saveVector);
  * specified vectors due to possible errors or
  * because there is no more vectors to backtrace.
  */
-bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace);
+bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
+{
+    return false;
+}
 
 /**
  * @brief Makes the robot turn on itself relative
@@ -90,7 +92,10 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace);
  * @return false
  * The robot failed to turn by the given radian.
  */
-bool TurnInRadians(float radians);
+bool TurnInRadians(float radians)
+{
+    return false;
+}
 
 /**
  * @brief Makes the robot go in a
@@ -105,7 +110,10 @@ bool TurnInRadians(float radians);
  * @return false
  * The robot failed to reach the wanted distance.
  */
-bool MoveStraight(float distance);
+bool MoveStraight(float distance)
+{
+    return false;
+}
 
 /**
  * @brief Calculate the wanted speed factor depending on how much
@@ -130,7 +138,10 @@ bool MoveStraight(float distance);
  * Ratio from 0 to 1 that should be multiplied to the
  * current PID value
  */
-float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed);
+float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed)
+{
+    return 0.0f;
+}
 
 /**
  * @brief Stops the robot no matter what.
@@ -141,7 +152,10 @@ float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed);
  * @return false
  * Something failed and the robot could not be stopped.
  */
-bool Stop();
+bool Stop()
+{
+    return false;
+}
 
 /**
  * @brief Function that must be called
@@ -155,10 +169,13 @@ bool Stop();
  * @return false:
  * Failed to reset the movements.
  */
-bool ResetMovements();
+bool ResetMovements()
+{
+    return false;
+}
 //#pragma endregion
 
-//#pragma region [Execution_Functions]
+//#pragma region Execution_Functions
 
 /**
  * @brief Function that executes the
@@ -182,7 +199,10 @@ bool ResetMovements();
  * @return false:
  * Failed to execute the turning sequence
  */
-bool Execute_Turning(float targetRadians);
+bool Execute_Turning(float targetRadians)
+{
+    return false;
+}
 
 /**
  * @brief Function that executes the
@@ -208,6 +228,9 @@ bool Execute_Turning(float targetRadians);
  * @return false:
  * Failed to execute the moving sequence
  */
-bool Execute_Moving(float targetDistance);
+bool Execute_Moving(float targetDistance)
+{
+    return false;
+}
 
 //#pragma endregion

@@ -1,21 +1,19 @@
 /**
- * @file Events.hpp
+ * @file Events.cpp
  * @author LyamBRS (lyam.brs@gmail.com)
- * @brief This file contains the definition
- * of event functions. Event functions are
- * called whenever their associated events
- * happen during execution of XFactor's code.
- * In the event functions, things such as
- * checking for alarms and packages must be
- * done.
+ * @brief This file contains the event functions.
+ * Event functions are called whenever their
+ * associated events happen during execution of
+ * XFactor's code. In the event functions, things
+ * such as checking for alarms and packages must
+ * be done.
  * @version 0.1
- * @date 2023-10-24
+ * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
-
-#include "Arduino.h" //// For string returns and parameters
+// - INCLUDE - //
+#include "Events/Events.hpp"
 
 // #pragma region [Movement_Related]
 
@@ -45,7 +43,10 @@
  * @return false:
  * The robot needs to stop.
  */
-bool MovingEvent(float executionRatio, unsigned char direction);
+bool MovingEvent(float executionRatio, unsigned char direction)
+{
+    return false;
+}
 
 /**
  * @brief Periodically executed when the
@@ -72,7 +73,10 @@ bool MovingEvent(float executionRatio, unsigned char direction);
  * @return false:
  * The robot needs to stop.
  */
-bool TurningEvent(float executionRatio, unsigned char direction);
+bool TurningEvent(float executionRatio, unsigned char direction)
+{
+    return false;
+}
 
 // #pragma endregion
 
@@ -94,7 +98,10 @@ bool TurningEvent(float executionRatio, unsigned char direction);
  * @return false:
  * Do not send the message to the UART module.
  */
-bool BT_BeforeCommunicationEvent(String messageToBeSent);
+bool BT_BeforeCommunicationEvent(String messageToBeSent)
+{
+    return false;
+}
 
 /**
  * @brief Event called once after a message is
@@ -110,7 +117,10 @@ bool BT_BeforeCommunicationEvent(String messageToBeSent);
  * @return false:
  * Something went wrong during the event.
  */
-bool BT_MessageSentEvent(String messageSent);
+bool BT_MessageSentEvent(String messageSent)
+{
+    return true;
+}
 
 /**
  * @brief Event periodically called at an interval
@@ -135,7 +145,10 @@ bool BT_MessageSentEvent(String messageSent);
  * @return false:
  * The event failed to be handled.
  */
-bool BT_WaitingForMessageEvent(float executionRatio);
+bool BT_WaitingForMessageEvent(float executionRatio)
+{
+    return false;
+}
 
 /**
  * @brief Event called once after a message
@@ -157,7 +170,10 @@ bool BT_WaitingForMessageEvent(float executionRatio);
  * @return false:
  * The event failed to be handled successfully.
  */
-bool BT_MessageExchangeSuccessEvent(String messageSent, String messageReceived);
+bool BT_MessageExchangeSuccessEvent(String messageSent, String messageReceived)
+{
+    return false;
+}
 
 /**
  * @brief Event that is called once when a
@@ -175,7 +191,10 @@ bool BT_MessageExchangeSuccessEvent(String messageSent, String messageReceived);
  * @return false:
  * The event failed to be handled.
  */
-bool BT_MessageReceivedEvent(String receivedMessage);
+bool BT_MessageReceivedEvent(String receivedMessage)
+{
+    return false;
+}
 
 /**
  * @brief Event called once whenever the BT
@@ -191,6 +210,9 @@ bool BT_MessageReceivedEvent(String receivedMessage);
  * @return false:
  * The event failed to be handled.
  */
-bool BT_TimeoutEvent(int timeoutDuration);
+bool BT_TimeoutEvent(int timeoutDuration)
+{
+    return false;
+}
 
 // #pragma endregion

@@ -1,52 +1,25 @@
-#include "ROBUSMovement.hpp"
-#include "ROBUSSensors.hpp"
-#include "WhistlesoundDetector.hpp"
-#include "WhistleDetector.hpp"
-#include "ObstacleDetector.hpp"
-#include "MazeSolver.hpp"
+/**
+ * @file main.cpp
+ * @author LyamBRS (lyam.brs@gmail.com)
+ * @brief
+ * Arduino's main file.
+ * @version 0.1
+ * @date 2023-11-01
+ * @copyright Copyright (c) 2023
+ */
 
-#include "integrationTesting/ROBUSMovement_test.hpp"
+// - INCLUDES -//
+#include "Actions/Actions.hpp"
+#include "XFactor/Init.hpp"
 
+/// @brief Arduino's initialisation function.
 void setup()
 {
-  BoardInit();
-  InitializeProximitySensors();
-  MazeSolver_init();
+  XFactor_Init();
 }
 
+/// @brief Arduino's while(1) function.
 void loop()
 {
-  waitForWhistle();
-
-  MazeSolver_init();
-  while (!MazeSolver_hasCompletedMaze())
-  {
-    if (GetWall())
-    {
-      MazeSolver_setObstacle();
-    }
-    MazeSolver_setNextMoves();
-    MazeSolver_executeNextMoves();
-  }
-  ROBUSMovement_moveStraight(FORWARD,20.0f,50.0f);
-  MazeSolver_returnToStart();
-
-  /*if (ROBUS_IsBumper(3))
-  {
-    MazeSolver_init();
-    while (!MazeSolver_hasCompletedMaze())
-    {
-      if (GetWall())
-      {
-        MazeSolver_setObstacle();
-      }
-      MazeSolver_setNextMoves();
-      MazeSolver_executeNextMoves();
-    }
-  }*/
-  //ROBUSMovement_turnOnSelf(LEFT_TURN, 0.15f, 90);
-  //delay(1500);
-  //ROBUSMovement_turnOnSelf(RIGHT_TURN, 0.15f, 90);
-  //delay(1500);
-  //ROBUSMovement_moveStraight(FORWARD, 20, 50);
+  Execute_CurrentFunction();
 }
