@@ -26,7 +26,7 @@
  * @warning
  * Usage: SafeBoxStatus = SafeBox_StatusEnum::Alarm;
  */
-enum SafeBox_StatusEnum {
+enum class SafeBox_Status {
 
     /// @brief Default status when the program fails to communicate properly.
     CommunicationError = 253,
@@ -82,7 +82,7 @@ enum SafeBox_StatusEnum {
  * The specified status does not match available
  * status of @ref SafeBox_StatusEnum
  */
-bool SafeBox_SetNewStatus(unsigned char newStatus);
+bool SafeBox_SetNewStatus(SafeBox_Status newStatus);
 
 /**
  * @brief
@@ -95,6 +95,6 @@ bool SafeBox_SetNewStatus(unsigned char newStatus);
  * value from @ref SafeBox_StatusEnum which
  * corresponds to SafeBox's current status.
  */
-unsigned char SafeBox_GetStatus();
+SafeBox_Status SafeBox_GetStatus();
 
 //#pragma endregion

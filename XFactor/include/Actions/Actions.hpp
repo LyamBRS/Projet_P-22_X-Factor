@@ -16,7 +16,11 @@
 #pragma once
 
 // - INCLUDES - //
-
+#include "Alarm/Alarm.hpp"
+#include "LED/LED.hpp"
+#include "Movements/Movements.hpp"
+#include "SafeBox/Communication.hpp"
+#include "XFactor/Status.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
