@@ -19,7 +19,7 @@
  * of SafeBox so that getter and setter functions
  * can be used in the program.
  */
-unsigned char SafeBoxSavedStatus = SafeBox_StatusEnum::Off;
+SafeBox_Status SafeBoxSavedStatus = SafeBox_Status::Off;
 
 //#pragma region [FUNCTIONS]
 /**
@@ -36,28 +36,28 @@ unsigned char SafeBoxSavedStatus = SafeBox_StatusEnum::Off;
  * The specified status does not match available
  * status of @ref SafeBox_StatusEnum
  */
-bool SafeBox_SetNewStatus(unsigned char newStatus)
+bool SafeBox_SetNewStatus(SafeBox_Status newStatus)
 {
     switch(newStatus)
     {
-        case(SafeBox_StatusEnum::CommunicationError):
-        case(SafeBox_StatusEnum::Off):
-        case(SafeBox_StatusEnum::WaitingForDelivery):
-        case(SafeBox_StatusEnum::WaitingForRetrieval):
-        case(SafeBox_StatusEnum::WaitingForReturn):
-        case(SafeBox_StatusEnum::ReadyForDropOff):
-        case(SafeBox_StatusEnum::Unlocked):
-        case(SafeBox_StatusEnum::DroppingOff):
-        case(SafeBox_StatusEnum::Maintenance):
-        case(SafeBox_StatusEnum::Error):
-        case(SafeBox_StatusEnum::Alarm):
+        case(SafeBox_Status::CommunicationError):
+        case(SafeBox_Status::Off):
+        case(SafeBox_Status::WaitingForDelivery):
+        case(SafeBox_Status::WaitingForRetrieval):
+        case(SafeBox_Status::WaitingForReturn):
+        case(SafeBox_Status::ReadyForDropOff):
+        case(SafeBox_Status::Unlocked):
+        case(SafeBox_Status::DroppingOff):
+        case(SafeBox_Status::Maintenance):
+        case(SafeBox_Status::Error):
+        case(SafeBox_Status::Alarm):
             // The status is valid.
             SafeBoxSavedStatus = newStatus;
             return true;
 
         default:
             // Invalid status
-            SafeBoxSavedStatus = SafeBox_StatusEnum::Error;
+            SafeBoxSavedStatus = SafeBox_Status::Error;
             return false;
     }
     // SHOULD NEVER REACH HERE
@@ -75,7 +75,7 @@ bool SafeBox_SetNewStatus(unsigned char newStatus)
  * value from @ref SafeBox_StatusEnum which
  * corresponds to SafeBox's current status.
  */
-unsigned char SafeBox_GetStatus()
+SafeBox_Status SafeBox_GetStatus()
 {
     return SafeBoxSavedStatus;
 }
