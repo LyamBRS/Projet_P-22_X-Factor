@@ -29,7 +29,7 @@ void XFactor_Init()
         if (BT_Init()){
             if(Alarm_Init()){
                 if(Package_Init()){
-                    if(XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery)){
+                    if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
                         if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
                             // Function is successful.
                             return;
@@ -38,7 +38,7 @@ void XFactor_Init()
                 }
             }
         }
-        XFactor_SetNewStatus(XFactor_StatusEnum::Error);
+        XFactor_SetNewStatus(XFactor_Status::Error);
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
     }
     // Cant continue initialisation.
