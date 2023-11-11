@@ -39,7 +39,7 @@ static unsigned char currentFunctionID = 0;
  * specify that function, use
  * @ref SetNewExecutionFunction using defines
  * available in this header file.
- */
+*/
 void Execute_CurrentFunction(){
     switch(currentFunctionID){
 
