@@ -101,7 +101,7 @@ bool SafeBox_ChangeLidState(bool wantedLidState);
  * @return false:
  * Failed to handle the status or exchange our own.
  */
-bool SafeBox_ReplyStatus(unsigned char XFactorStatus);
+bool SafeBox_ReplyStatus(XFactor_Status XFactorStatus);
 
 /**
  * @brief
