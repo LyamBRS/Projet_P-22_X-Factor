@@ -3,9 +3,9 @@
  * @author LyamBRS (lyam.brs@gmail.com)
  * @brief
  * Contains the main function that initialises
- * XFactor.
+ * SafeBox.
  * @version 0.1
- * @date 2023-11-01
+ * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
@@ -20,6 +20,7 @@
 #include "LED/LED.hpp"
 #include "Alarm/Alarm.hpp"
 #include "Package/Package.hpp"
+#include "Lid/Lid.hpp"
 
 /**
  * @brief
@@ -28,6 +29,6 @@
  * present in void setup.
  *
  * @attention
- * (Claws_init), (BoardInit), (LEDS_Init), (Package_Init), (Alarm_Init)
+ * (LEDS_Init), (Package_Init), (Alarm_Init), (Lid_Init)
  */
-void XFactor_Init();
+void SafeBox_Init();
