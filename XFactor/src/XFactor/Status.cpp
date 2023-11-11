@@ -28,7 +28,7 @@
  * The specified status does not match available
  * status of @ref XFactor_StatusEnum
  */
-bool XFactor_SetNewStatus(unsigned char newStatus)
+bool XFactor_SetNewStatus(XFactor_Status newStatus)
 {
     return false;
 }
@@ -44,7 +44,7 @@ bool XFactor_SetNewStatus(unsigned char newStatus)
  * value from @ref XFactor_StatusEnum which
  * corresponds to XFactor's current status.
  */
-unsigned char XFactor_GetStatus()
+XFactor_Status XFactor_GetStatus()
 {
     return XFactorStatus;
 }
