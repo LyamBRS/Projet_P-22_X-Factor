@@ -14,6 +14,7 @@
 
 // - INCLUDES - //
 #include "SafeBox/Status.hpp"           //// Used to store the status of SafeBox and get the enumeration of its possible values
+#include "XFactor/Status.hpp"           //// Used to get the enumeration of XFactor status possible values
 #include "Communication/Bluetooth.hpp"  //// Used to communicate information and receive information from SafeBox
 
 // #pragma region [Command_Requests]
@@ -82,7 +83,7 @@ bool SafeBox_CheckIfPackageDeposited();
  * @return int: The value of SafeBox's status.
  * If -1, no status were returned.
  */
-int SafeBox_ExchangeStatus(int xFactorStatus);
+SafeBox_Status SafeBox_ExchangeStatus(XFactor_Status xFactorStatus);
 
 // #pragma endregion
 
