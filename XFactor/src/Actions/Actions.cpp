@@ -316,7 +316,15 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
+  XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
 
+  SafeBox_ChangeGarageState(false);
+
+  if (!SafeBox_GetGarageState())
+  {
+    MoveFromVector(0.0f, 50.0f, false); //DEPENDING ON ACTUAL START POSITION
+    ResetVectors();
+  }
 }
 
 /**
