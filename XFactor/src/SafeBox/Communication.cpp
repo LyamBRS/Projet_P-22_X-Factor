@@ -49,7 +49,10 @@ bool SafeBox_ChangeLidState(bool wantedState)
  * @return false:
  * Failed to ask SafeBox to open the garage door.
  */
-bool SafeBox_ChangeGarageState(bool wantedState);
+bool SafeBox_ChangeGarageState(bool wantedState)
+{
+  return false;
+}
 
 /**
  * @brief Asks SafeBox to identify if a package
@@ -85,9 +88,9 @@ bool SafeBox_CheckIfPackageDeposited()
  * @return int: The value of SafeBox's status.
  * If -1, no status were returned.
  */
-int SafeBox_ExchangeStatus(int xFactorStatus)
+SafeBox_Status SafeBox_ExchangeStatus(XFactor_Status xFactorStatus)
 {
-    return -1;
+    return SafeBox_Status::Error;
 }
 
 //#pragma endregion
