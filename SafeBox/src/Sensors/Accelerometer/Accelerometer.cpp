@@ -17,7 +17,7 @@
 /**
  * @brief
  * Initialises an accelerometer to be used on
- * XFactor. The name of the accelerometer will
+ * SafeBox. The name of the accelerometer will
  * define how these functions are called.
  * @param accelerometerPin
  * @return true:
