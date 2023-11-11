@@ -205,7 +205,15 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
+  SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
+  XFactor_SetNewStatus(XFactor_Status::Off); // will need to add Initializing status
 
+  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
+
+  if (SafeBox_ExchangeStatus(XFactor_Status::WaitingForDelivery) != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
+  {
+    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  }
 }
 
 /**
@@ -231,7 +239,15 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
+  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
 
+  LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
+
+  if (SafeBox_GetDoorBellStatus())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+  }
 }
 
 /**
@@ -258,7 +274,21 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
+  XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
 
+  if (SafeBox_GetGarageState())
+  {
+    if (MoveFromVector(0, 50.0f, false)) //Add define for distances to get outta the box
+    {
+      // EXCHANGE STATUS
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
+      XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
+    }
+  }
+  else
+  {
+    SafeBox_ChangeGarageState(true);
+  }
 }
 
 /**
@@ -286,7 +316,15 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
+  XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
 
+  SafeBox_ChangeGarageState(false);
+
+  if (!SafeBox_GetGarageState())
+  {
+    MoveFromVector(0.0f, 50.0f, false); //DEPENDING ON ACTUAL START POSITION
+    ResetVectors();
+  }
 }
 
 /**
