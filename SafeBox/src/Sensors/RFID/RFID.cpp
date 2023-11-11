@@ -10,7 +10,7 @@
  */
 
 // - INCLUDE - //
-#include "Sensors/RFID.hpp"
+#include "Sensors/RFID/RFID.hpp"
 
 /**
  * @brief

@@ -27,8 +27,8 @@ void SafeBox_Init()
         if (BT_Init()){
             if(Alarm_Init()){
                 if(Package_Init()){
-                    if(Garage_Init){
-                        if(Lid_Init){
+                    if(Garage_Init()){
+                        if(Lid_Init()){
                             if(SafeBox_SetNewStatus(SafeBox_StatusEnum::WaitingForXFactor)){
                                 if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                     // Function is successful.

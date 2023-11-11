@@ -124,7 +124,6 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_END_OF_PROGRAM):
         case(FUNCTION_ID_ERROR):
         case(FUNCTION_ID_START_OF_DELIVERY):
-        case(FUNCTION_ID_START_OF_DELIVERY):
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_DROP_OFF):

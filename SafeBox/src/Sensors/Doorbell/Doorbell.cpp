@@ -10,8 +10,6 @@
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
-
 /**
  * @brief
  * Function that initialises the whistle detector

@@ -79,21 +79,6 @@ bool SafeBox_ChangeGarageState(bool wantedState)
 
 /**
  * @brief
- * Makes SafeBox change its package lid state
- * depending on what XFactor wants.
- * @param wantedLidState
- * @return true:
- * Successfully changed the lid state.
- * @return false:
- * Failed to change the lid state.
- */
-bool SafeBox_ChangeLidState(bool wantedLidState)
-{
-    return false;
-}
-
-/**
- * @brief
  * Replies to XFactor's status exchange by
  * replying to it with the box's own status.
  * XFactor status's is the sole input parameter

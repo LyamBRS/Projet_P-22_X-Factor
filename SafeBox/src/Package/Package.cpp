@@ -10,8 +10,6 @@
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
-
 // - INCLUDES - //
 #include "Package/Package.hpp"
 

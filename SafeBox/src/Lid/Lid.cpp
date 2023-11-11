@@ -9,8 +9,6 @@
  * @copyright Copyright (c) 2023
  */
 
-#pragma once
-
 // - INCLUDES - //
 #include "Lid/Lid.hpp"
 

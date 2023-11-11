@@ -29,7 +29,7 @@
 enum SafeBox_StatusEnum {
 
     /// @brief Default status when the program fails to communicate properly.
-    CommunicationError = -1,
+    CommunicationError = 253,
 
     /// @brief SafeBox is off. Default status.
     Off = 0,
