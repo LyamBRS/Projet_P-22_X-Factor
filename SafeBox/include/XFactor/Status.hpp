@@ -26,7 +26,7 @@
  * @warning
  * Usage: XFactorStatus = XFactor_StatusEnum::Alarm;
  */
-enum XFactor_StatusEnum {
+enum class XFactor_Status {
 
     /// @brief Default status when the program fails to communicate properly.
     CommunicationError = -1,
@@ -98,7 +98,7 @@ enum XFactor_StatusEnum {
  * Declared as extern in @ref Status.hpp but
  * initialised in @ref SafeBox_Init.
  */
-extern int XFactorStatus;
+extern XFactor_Status XFactorStatus;
 
 //#pragma endregion
 
@@ -117,7 +117,7 @@ extern int XFactorStatus;
  * The specified status does not match available
  * status of @ref XFactor_StatusEnum
  */
-bool XFactor_SetNewStatus(unsigned char newStatus);
+bool XFactor_SetNewStatus(XFactor_Status newStatus);
 
 /**
  * @brief
@@ -130,6 +130,6 @@ bool XFactor_SetNewStatus(unsigned char newStatus);
  * value from @ref XFactor_StatusEnum which
  * corresponds to XFactor's current status.
  */
-unsigned char XFactor_GetStatus();
+XFactor_Status XFactor_GetStatus();
 
 //#pragma endregion
