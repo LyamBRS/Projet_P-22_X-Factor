@@ -58,6 +58,9 @@ enum SafeBox_StatusEnum {
     /// @brief SafeBox encountered a critical error
     Error = 51,
 
+    /// @brief Safebox is waiting for XFactor to be online.
+    WaitingForXFactor = 254,
+
     /// @brief SafeBox has sounded the alarm and won't stop until the user disarms it.
     Alarm = 255
 };

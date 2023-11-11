@@ -12,8 +12,7 @@
 #pragma once
 
 // - INCLUDES - //
-#include "XFactor/Status.hpp"
-#include "LibRobus.h"
+#include "SafeBox/Status.hpp"
 
 #include "Actions/Actions.hpp"
 #include "Communication/Bluetooth.hpp"
@@ -21,14 +20,15 @@
 #include "Alarm/Alarm.hpp"
 #include "Package/Package.hpp"
 #include "Lid/Lid.hpp"
+#include "Garage/Garage.hpp"
 
 /**
  * @brief
  * Initialises all the functions required to make
- * XFactor work. Should be the only function
+ * SafeBox work. Should be the only function
  * present in void setup.
  *
  * @attention
- * (LEDS_Init), (Package_Init), (Alarm_Init), (Lid_Init)
+ * (LEDS_Init), (Package_Init), (Alarm_Init), (Lid_Init), (Garage_Init)
  */
 void SafeBox_Init();
