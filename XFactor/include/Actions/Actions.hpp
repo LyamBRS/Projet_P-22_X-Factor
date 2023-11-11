@@ -43,6 +43,12 @@
 
 //#pragma endregion
 
+//#pragma region [OTHER] // WILL BE CHANGED WHEN MORE OF EM SHOW UP
+
+#define PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS 5
+
+//#pragma endregion
+
 //#pragma region [ACTION_HANDLERS]
 /**
  * @brief Function periodically called in void

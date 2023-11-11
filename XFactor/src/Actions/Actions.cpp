@@ -316,14 +316,35 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
+  int currentCommunicationAttempts = 0;
+
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
-
-  SafeBox_ChangeGarageState(false);
-
+  
   if (!SafeBox_GetGarageState())
   {
-    MoveFromVector(0.0f, 50.0f, false); //DEPENDING ON ACTUAL START POSITION
-    ResetVectors();
+    if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
+    {
+      ResetVectors();
+
+      while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+      {
+        currentCommunicationAttempts++;
+        if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+        {
+          SetNewExecutionFunction(FUNCTION_ID_ALARM);
+          XFactor_SetNewStatus(XFactor_Status::Alarm);
+          return;
+        }
+      }
+      
+      // EXCHANGE STATUS
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+      XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+    }
+  }
+  else
+  {
+    SafeBox_ChangeGarageState(false);
   }
 }
 
