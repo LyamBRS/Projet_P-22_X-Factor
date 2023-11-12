@@ -51,8 +51,17 @@ bool RFID_Init(int RFIDPin)
  */
 bool RFID_HandleCard()
 {
+  const unsigned long long int VALID_CARD_NUMBER = 842024496;
 
-    return false;
+    if (RFID_GetCardNumber() == VALID_CARD_NUMBER) {
+        Serial.print("");
+        Serial.print(static_cast<unsigned long>(VALID_CARD_NUMBER));
+        Serial.print("Bonne Carte");
+        return true;
+    } else {
+        Serial.print("Mauvaise Carte");
+        return false;
+    }
 }
 
 /**
@@ -68,9 +77,9 @@ bool RFID_HandleCard()
 bool RFID_CheckIfCardIsThere()
 {
     // si elle li une carte, elle ne doit pas lire
-    if (isReadingRFID == true) return false;
+    if (isReadingRFID == true) return true;
     // elle ne li pas de carte, elle peut lire une carte. 
-    return true;
+    return false;
 }
 
 /**
@@ -85,39 +94,54 @@ bool RFID_CheckIfCardIsThere()
  * @return unsigned long long:
  * The Card ID. If 0, there is no card.
  */
-unsigned long long RFID_GetCardNumber()
-{
-    // Placeholder for RFID card handling logic
-    char crecu, i, incoming = 0;
-    char id_tag[20];
-    isReadingRFID = true;
+unsigned long long RFID_GetCardNumber() {
+  unsigned long long int resultedID = 0;
+  unsigned long long int temporaryBigNumber = 0;
+  byte crecu, i, incoming = 0;
+  byte id_tag[20];
 
-        if (Serial2.available())
-        {
-            crecu = Serial2.read(); // lit le ID-12
-            switch (crecu)
-            {
-            case 0x02:
-                // START OF TRANSMIT
-                digitalWrite(13, HIGH); // Activate Buzzer
-                i = 0;
-                incoming = 1;
-                break;
-            case 0x03:
-                // END OF TRANSMIT
-                digitalWrite(13, LOW); // Deactivate Buzzer
-                incoming = 0;
-                // Affiche le code recu sans valider le checksum
-                for (i = 0; i < 10; i++)
-                    Serial.print(id_tag[i]);
-                Serial.println("");
-                break;
-            default:
-                if (incoming)
-                    id_tag[i++] = crecu;
-                break;
-            }
-        }
+  
+  isReadingRFID = true;
 
-    return false;
+  while (1) {
+    if (Serial2.available()) {
+      crecu = Serial2.read();
+      switch (crecu) {
+        case 0x02:
+          // START OF TRANSMIT
+          digitalWrite(13, HIGH);
+          i = 0;
+          incoming = 1;
+          Serial.println("case 2");
+          break;
+        case 0x03:
+          // END OF TRANSMIT
+          digitalWrite(13, LOW);
+          incoming = 0;
+          Serial.println("case 3");
+
+          for (int i = 0; i < 10; i++)
+            Serial.println(id_tag[i]);
+
+          Serial.println("");
+
+          for (int i = 0; i < 8; i++) {
+            temporaryBigNumber = id_tag[i];
+            temporaryBigNumber = temporaryBigNumber << (8 * i);
+            Serial.println(static_cast<unsigned long>(resultedID));
+            resultedID = resultedID + temporaryBigNumber;
+          }
+         Serial.println(static_cast<unsigned long>(resultedID));
+
+          isReadingRFID = false;
+          return resultedID;
+
+        default:
+          if (incoming)
+            id_tag[i++] = crecu;
+          break;
+      }
+    }
+  }
+  return 0;
 }
