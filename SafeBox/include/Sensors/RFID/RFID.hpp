@@ -66,3 +66,5 @@ bool RFID_CheckIfCardIsThere();
  * The Card ID. If 0, there is no card.
  */
 unsigned long long RFID_GetCardNumber();
+
+bool isReadingRFID = false;
