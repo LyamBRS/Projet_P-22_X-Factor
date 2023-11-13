@@ -627,6 +627,7 @@ void Execute_Alarm()
     }
     timeStart = timeNow;
   }
+  return;
 }
 
 /**
@@ -679,6 +680,7 @@ void Execute_Error()
         }   
         timeStart = timeNow;
     }
+    return;
 }
 
 /**
