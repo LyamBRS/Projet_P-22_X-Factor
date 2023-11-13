@@ -89,13 +89,12 @@ bool SafeBox_ChangeGarageState(bool wantedState)
  * represents if the status was successfully
  * handled or not, and if the function managed to
  * reply to XFactor or not.
- * @param XFactorStatus
  * @return true:
  * Successfully stored the status and
  * @return false:
  * Failed to handle the status or exchange our own.
  */
-bool SafeBox_ReplyStatus(unsigned char XFactorStatus)
+bool SafeBox_ReplyStatus()
 {
     return false;
 }
