@@ -25,7 +25,8 @@
  */
 bool LEDS_Init()
 {
-    return false;
+    WS2812_Init(LED_WS2812_ARDUINO_PIN);
+    return true;
 }
 
 /**
@@ -51,5 +52,6 @@ bool LEDS_Init()
  */
 bool LEDS_SetColor(int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
 {
-    return false;
+    WS2812_SetStaticColors(LED_WS2812_ARDUINO_PIN, LEDNumber, red, green, blue);
+    return true;
 }
