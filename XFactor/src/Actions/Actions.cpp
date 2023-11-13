@@ -525,6 +525,14 @@ void Execute_ReturnHome()
 {
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
+  
+  if (SafeBox_ExchangeStatus(XFactor_Status::ReturningHome) != SafeBox_Status::CommunicationError)
+  {
+    // RETURN HOME WITH VECTORS, etc
+  }
+
+  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 }
 
 /**
