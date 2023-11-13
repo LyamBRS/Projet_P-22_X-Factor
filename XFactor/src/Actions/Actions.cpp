@@ -208,7 +208,7 @@ void Execute_WaitAfterSafeBox()
   SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
   XFactor_SetNewStatus(XFactor_Status::Off); // will need to add Initializing status
 
-  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
   if (SafeBox_ExchangeStatus(XFactor_Status::WaitingForDelivery) != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
   {
@@ -684,13 +684,13 @@ void Execute_Alarm()
       SafeBox_ExchangeStatus(XFactor_Status::Alarm);
       if (status == 1)
       {
-        LEDS_SetColor(0,LED_COLOR_ALARM); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
         AX_BuzzerON();
         status = 0;
       }
       else if (status == 0)
       {
-        LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
         AX_BuzzerOFF();
         status = 1;
       }
@@ -739,12 +739,12 @@ void Execute_Error()
            SafeBox_ExchangeStatus(XFactor_Status::Error); 
            if (status == 1)
            {
-            LEDS_SetColor(0,LED_COLOR_ERROR); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
             status = 0;
            }
            else if (status == 0)
            {
-            LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
             status = 1;
            }
         }   
