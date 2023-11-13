@@ -37,6 +37,8 @@
 
 //#pragma region [XFACTOR_LED_NUMBERS]
 #define LED_ID_STATUS_INDICATOR 0
+
+#define LED_WS2812_ARDUINO_PIN 13
 //#pragma endregion
 
 //#pragma region [FUNCTIONS]
