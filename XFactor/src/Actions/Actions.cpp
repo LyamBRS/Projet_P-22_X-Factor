@@ -574,7 +574,24 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-
+    // There's no error code for the XFactor. In the file XFactor/Status, the only error code is for the SafeBox which is Error = 51.
+    // I didn't find the status for the reset.
+    // What is the lednumber?
+    // what error code do we have to write with the Serial.print. Is it only "Error code" or we have to be more specific?
+    unsigned long timeStart = millis();
+    unsigned long timeNow;
+    XFactor_SetNewStatus(Error);
+    LEDS_SetColor(LEDNUMBER,LED_COLOR_ERROR);
+    Serial.println("ERROR CODE");
+    while (SafeBox_ExchangeStatus(Error) != RESET)
+    {
+        timeNow = millis();
+        if ((timeNow - timeStart) >= 1000)
+        {
+           SafeBox_ExchangeStatus(Error); 
+        }   
+        timeStart = timeNow;
+    }
 }
 
 /**
