@@ -19,6 +19,7 @@
 #include "Alarm/Alarm.hpp"
 #include "LED/LED.hpp"
 #include "Movements/Movements.hpp"
+#include "Package/Package.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
 
@@ -40,6 +41,12 @@
 #define FUNCTION_ID_ERROR 13
 #define FUNCTION_ID_RETURN_INSIDE_GARAGE 14
 #define FUNCTION_ID_END_OF_PROGRAM 15
+
+//#pragma endregion
+
+//#pragma region [OTHER] // WILL BE CHANGED WHEN MORE OF EM SHOW UP
+
+#define PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS 5
 
 //#pragma endregion
 

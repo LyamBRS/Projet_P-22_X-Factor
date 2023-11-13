@@ -206,11 +206,11 @@ unsigned char GetCurrentExecutionFunction()
 void Execute_WaitAfterSafeBox()
 {
   SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
-  XFactor_SetNewStatus(XFactor_StatusEnum::Off); // will need to add Initializing status
+  XFactor_SetNewStatus(XFactor_Status::Off); // will need to add Initializing status
 
   LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
 
-  if (SafeBox_ExchangeStatus(XFactor_StatusEnum::WaitingForDelivery) != SafeBox_StatusEnum::CommunicationError) // XFACTOR STATUS TO CONFIRM
+  if (SafeBox_ExchangeStatus(XFactor_Status::WaitingForDelivery) != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
   {
     SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   }
@@ -240,7 +240,7 @@ void Execute_WaitAfterSafeBox()
 void Execute_WaitForDelivery()
 {
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
-  XFactor_SetNewStatus(XFactor_StatusEnum::WaitingForDelivery);
+  XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
 
   LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
 
@@ -274,7 +274,7 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
-  XFactor_SetNewStatus(XFactor_StatusEnum::LeavingSafeBox);
+  XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
 
   if (SafeBox_GetGarageState())
   {
@@ -282,7 +282,7 @@ void Execute_GettingOutOfGarage()
     {
       // EXCHANGE STATUS
       SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
-      XFactor_SetNewStatus(XFactor_StatusEnum::PreparingForTheSearch);
+      XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
     }
   }
   else
@@ -316,7 +316,36 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
+  int currentCommunicationAttempts = 0;
 
+  XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
+  
+  if (!SafeBox_GetGarageState())
+  {
+    if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
+    {
+      ResetVectors();
+
+      while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+      {
+        currentCommunicationAttempts++;
+        if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+        {
+          SetNewExecutionFunction(FUNCTION_ID_ALARM);
+          XFactor_SetNewStatus(XFactor_Status::Alarm);
+          return;
+        }
+      }
+      
+      // EXCHANGE STATUS
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+      XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+    }
+  }
+  else
+  {
+    SafeBox_ChangeGarageState(false);
+  }
 }
 
 /**
@@ -347,7 +376,29 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
+  int currentCommunicationAttempts = 0;
 
+  XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+
+  // MOVE IN ZIG ZAG
+
+  if (Package_Detected())
+  {
+    XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+    SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+    return;
+  }
+
+  while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+  {
+    currentCommunicationAttempts++;
+    if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+    {
+      SetNewExecutionFunction(FUNCTION_ID_ALARM);
+      XFactor_SetNewStatus(XFactor_Status::Alarm);
+      return;
+    }
+  }
 }
 
 /**
