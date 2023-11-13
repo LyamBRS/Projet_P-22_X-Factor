@@ -600,7 +600,33 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
+  //AlarmEvent: Which function do we need to call in AlarmEvent?
+  // What is the ledNumber?
 
+  unsigned long timeStart = millis();
+  unsigned long timeNow;
+  int status = 0; // everything is closed
+  while (SafeBox_ExchangeStatus(Alarm) != Reset)
+  {
+    timeNow = millis();
+    if ((timeNow - timeStart) >= 1000)
+    {
+      SafeBox_ExchangeStatus(Alarm);
+      if (status == 1)
+      {
+        LEDS_SetColor(LEDNUMBER,LED_COLOR_ALARM);
+        AX_BuzzerON();
+        status = 0;
+      }
+      else if (status == 0)
+      {
+        LEDS_SetColor(LEDNUMBER,LED_COLOR_OFFLINE);
+        AX_BuzzerOFF();
+        status = 1;
+      }
+    }
+    timeStart = timeNow;
+  }
 }
 
 /**
@@ -631,8 +657,8 @@ void Execute_Error()
     // what error code do we have to write with the Serial.print. Is it only "Error code" or we have to be more specific?
     unsigned long timeStart = millis();
     unsigned long timeNow;
+    int status = 0; // everything is closed
     XFactor_SetNewStatus(Error);
-    LEDS_SetColor(LEDNUMBER,LED_COLOR_ERROR);
     Serial.println("ERROR CODE");
     while (SafeBox_ExchangeStatus(Error) != RESET)
     {
@@ -640,6 +666,16 @@ void Execute_Error()
         if ((timeNow - timeStart) >= 1000)
         {
            SafeBox_ExchangeStatus(Error); 
+           if (status == 1)
+           {
+            LEDS_SetColor(LEDNUMBER,LED_COLOR_ERROR);
+            status = 0;
+           }
+           else if (status == 0)
+           {
+            LEDS_SetColor(LEDNUMBER,LED_COLOR_OFFLINE);
+            status = 1;
+           }
         }   
         timeStart = timeNow;
     }

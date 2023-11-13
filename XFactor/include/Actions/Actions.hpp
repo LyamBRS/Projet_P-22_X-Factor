@@ -16,6 +16,7 @@
 #pragma once
 
 // - INCLUDES - //
+#include <LibRobus.h>
 #include "Alarm/Alarm.hpp"
 #include "LED/LED.hpp"
 #include "Movements/Movements.hpp"
