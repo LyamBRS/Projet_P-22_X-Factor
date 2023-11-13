@@ -378,27 +378,35 @@ void Execute_SearchForPackage()
 {
   int currentCommunicationAttempts = 0;
 
+  SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
 
-  // MOVE IN ZIG ZAG
-
-  if (Package_Detected())
+  while (GetAvailableVectors() != 0)
   {
-    XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
-    SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
-    return;
-  }
+    // MOVE IN ZIG ZAG
 
-  while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
-  {
-    currentCommunicationAttempts++;
-    if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+    if (Package_Detected())
     {
-      SetNewExecutionFunction(FUNCTION_ID_ALARM);
-      XFactor_SetNewStatus(XFactor_Status::Alarm);
+      XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+      SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
       return;
     }
+
+    while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+    {
+      currentCommunicationAttempts++;
+      if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        XFactor_SetNewStatus(XFactor_Status::Alarm);
+        return;
+      }
+    }
   }
+
+  // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 }
 
 /**
@@ -422,7 +430,7 @@ void Execute_SearchForPackage()
  */
 void Execute_AvoidObstacle()
 {
-
+  // WILL NEED TO KNOW SOME THINGS BEFORE
 }
 
 /**
@@ -448,7 +456,7 @@ void Execute_AvoidObstacle()
  */
 void Execute_ExamineFoundPackage()
 {
-
+  // WILL SEE
 }
 
 /**
@@ -475,7 +483,28 @@ void Execute_ExamineFoundPackage()
  */
 void Execute_PickUpPackage()
 {
+  int pickUpAttempt = 1;
+  SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+  XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
 
+  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  {
+    Package_PickUp();
+
+    while(!Package_Detected())
+    {
+      if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
+      {
+        XFactor_SetNewStatus(XFactor_Status::Error);
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+      }
+      pickUpAttempt++;
+      Package_PickUp();
+    }
+    SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+    XFactor_SetNewStatus(XFactor_Status::ReturningHome);
+  }
 }
 
 /**
@@ -502,7 +531,16 @@ void Execute_PickUpPackage()
  */
 void Execute_ReturnHome()
 {
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
+  
+  if (SafeBox_ExchangeStatus(XFactor_Status::ReturningHome) != SafeBox_Status::CommunicationError)
+  {
+    // RETURN HOME WITH VECTORS, etc
+  }
 
+  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 }
 
 /**
@@ -528,7 +566,20 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
+  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 
+  ResetVectors();
+  ResetMovements();
+
+  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  {
+    if (Package_AlignWithSafeBox())
+    {
+      SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+      XFactor_SetNewStatus(XFactor_Status::DroppingOff);
+    }
+  }
 }
 
 /**
@@ -606,21 +657,21 @@ void Execute_Alarm()
   unsigned long timeStart = millis();
   unsigned long timeNow;
   int status = 0; // everything is closed
-  while (SafeBox_ExchangeStatus(Alarm) != Reset)
+  while (SafeBox_ExchangeStatus(XFactor_Status::Alarm) != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
   {
     timeNow = millis();
     if ((timeNow - timeStart) >= 1000)
     {
-      SafeBox_ExchangeStatus(Alarm);
+      SafeBox_ExchangeStatus(XFactor_Status::Alarm);
       if (status == 1)
       {
-        LEDS_SetColor(LEDNUMBER,LED_COLOR_ALARM);
+        LEDS_SetColor(0,LED_COLOR_ALARM); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
         AX_BuzzerON();
         status = 0;
       }
       else if (status == 0)
       {
-        LEDS_SetColor(LEDNUMBER,LED_COLOR_OFFLINE);
+        LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
         AX_BuzzerOFF();
         status = 1;
       }
@@ -659,22 +710,22 @@ void Execute_Error()
     unsigned long timeStart = millis();
     unsigned long timeNow;
     int status = 0; // everything is closed
-    XFactor_SetNewStatus(Error);
+    XFactor_SetNewStatus(XFactor_Status::Error);
     Serial.println("ERROR CODE");
-    while (SafeBox_ExchangeStatus(Error) != RESET)
+    while (SafeBox_ExchangeStatus(XFactor_Status::Error) != SafeBox_Status::Off) // ADD SafceBox_Status::Reset 
     {
         timeNow = millis();
         if ((timeNow - timeStart) >= 1000)
         {
-           SafeBox_ExchangeStatus(Error); 
+           SafeBox_ExchangeStatus(XFactor_Status::Error); 
            if (status == 1)
            {
-            LEDS_SetColor(LEDNUMBER,LED_COLOR_ERROR);
+            LEDS_SetColor(0,LED_COLOR_ERROR); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
             status = 0;
            }
            else if (status == 0)
            {
-            LEDS_SetColor(LEDNUMBER,LED_COLOR_OFFLINE);
+            LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
             status = 1;
            }
         }   
