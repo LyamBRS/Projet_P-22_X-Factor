@@ -29,7 +29,7 @@
 enum class XFactor_Status {
 
     /// @brief Default status when the program fails to communicate properly.
-    CommunicationError = -1,
+    CommunicationError = 253,
 
     /// @brief XFactor is off. Default status.
     Off = 0,
@@ -81,6 +81,9 @@ enum class XFactor_Status {
 
     /// @brief Status used when XFactor failed to find a package that was delivered
     NoPackageFound = 16,
+
+    /// @brief Status used when XFactor awaits for SafeBox to reply to its communications
+    WaitingAfterSafeBox = 17,
 
     /// @brief Safebox is in maintenance mode
     Maintenance = 50,
