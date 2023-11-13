@@ -422,7 +422,7 @@ void Execute_SearchForPackage()
  */
 void Execute_AvoidObstacle()
 {
-
+  // WILL NEED TO KNOW SOME THINGS BEFORE
 }
 
 /**
@@ -448,7 +448,7 @@ void Execute_AvoidObstacle()
  */
 void Execute_ExamineFoundPackage()
 {
-
+  // WILL SEE
 }
 
 /**
@@ -475,7 +475,28 @@ void Execute_ExamineFoundPackage()
  */
 void Execute_PickUpPackage()
 {
+  int pickUpAttempt = 1;
+  SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+  XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
 
+  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  {
+    Package_PickUp();
+
+    while(!Package_Detected())
+    {
+      if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
+      {
+        XFactor_SetNewStatus(XFactor_Status::Error);
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+      }
+      pickUpAttempt++;
+      Package_PickUp();
+    }
+    SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+    XFactor_SetNewStatus(XFactor_Status::ReturningHome);
+  }
 }
 
 /**
@@ -502,7 +523,8 @@ void Execute_PickUpPackage()
  */
 void Execute_ReturnHome()
 {
-
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 }
 
 /**
