@@ -378,9 +378,8 @@ void Execute_SearchForPackage()
 {
   int currentCommunicationAttempts = 0;
 
+  SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
-
-  
 
   while (GetAvailableVectors() != 0)
   {
