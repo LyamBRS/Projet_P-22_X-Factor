@@ -376,7 +376,29 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
+  int currentCommunicationAttempts = 0;
 
+  XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+
+  // MOVE IN ZIG ZAG
+
+  if (Package_Detected())
+  {
+    XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+    SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+    return;
+  }
+
+  while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+  {
+    currentCommunicationAttempts++;
+    if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+    {
+      SetNewExecutionFunction(FUNCTION_ID_ALARM);
+      XFactor_SetNewStatus(XFactor_Status::Alarm);
+      return;
+    }
+  }
 }
 
 /**

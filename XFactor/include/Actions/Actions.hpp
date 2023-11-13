@@ -19,6 +19,7 @@
 #include "Alarm/Alarm.hpp"
 #include "LED/LED.hpp"
 #include "Movements/Movements.hpp"
+#include "Package/Package.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
 
