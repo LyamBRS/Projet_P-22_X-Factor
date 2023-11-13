@@ -17,6 +17,10 @@
 #include "Movements/Positions.hpp"      //// Keeps tracks of the robot's current position and rotations as it moves around.
 #include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
 
+
+//First 3 variables for the PID, Kp, Ki and Kd.
+#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
+
 //#pragma region [Base_functions]
 /**
  * @brief
