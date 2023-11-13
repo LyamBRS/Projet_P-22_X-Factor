@@ -574,7 +574,11 @@ void Execute_PreparingForDropOff()
 
   if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
   {
-    Package_AlignWithSafeBox();
+    if (Package_AlignWithSafeBox())
+    {
+      SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+      XFactor_SetNewStatus(XFactor_Status::DroppingOff);
+    }
   }
 }
 
