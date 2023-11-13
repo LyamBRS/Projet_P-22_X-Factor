@@ -604,7 +604,26 @@ void Execute_PreparingForDropOff()
  */
 void Execute_PackageDropOff()
 {
+  SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+  XFactor_SetNewStatus(XFactor_Status::DroppingOff);
 
+  if (SafeBox_GetLidState())
+  {
+    if (Package_Release())
+    {
+      SafeBox_ChangeLidState(false);
+
+      if (SafeBox_ExchangeStatus(XFactor_Status::DroppingOff) != SafeBox_Status::CommunicationError)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_CONFIRM_DROP_OFF);
+        XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
+      }
+    }
+  }
+  else
+  {
+    SafeBox_ChangeLidState(true);
+  }
 }
 
 /**
@@ -626,7 +645,7 @@ void Execute_PackageDropOff()
  */
 void Execute_ConfirmDropOff()
 {
-
+  
 }
 
 /**
