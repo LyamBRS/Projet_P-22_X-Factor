@@ -14,6 +14,8 @@
 // - INCLUDES - //
 #include "Movements/Positions.hpp"
 
+RobotPosition robotPosition;
+
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be
@@ -83,7 +85,11 @@ bool ResetPositions()
  */
 float GetSavedRotation()
 {
-    return 0.0f;
+  // MAYBE VALIDATE WITH ACCELEROMETER TO REALIGN THAT BIG BOI ???
+  int totalLeftPulses = robotPosition.positionXLeft_encoderPulses + robotPosition.positionYLeft_encoderPulses;
+  int totalRightPulses = robotPosition.positionXRight_encoderPulses + robotPosition.positionYRight_encoderPulses;
+  // use 3200 in #define when PID gotten there
+  return (float)atan((double)(totalLeftPulses % 3200) / (double)(totalRightPulses % 3200)) * (180 / 3.14); // converting in degrees since atan works in radians
 }
 
 /**
@@ -96,5 +102,6 @@ float GetSavedRotation()
  */
 float GetSavedDistance()
 {
-    return 0.0f;
+  float totalLeftPulses = robotPosition.positionXLeft_encoderPulses + robotPosition.positionYLeft_encoderPulses;
+  return totalLeftPulses;
 }
