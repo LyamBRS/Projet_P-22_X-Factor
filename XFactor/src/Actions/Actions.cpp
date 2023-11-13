@@ -380,25 +380,34 @@ void Execute_SearchForPackage()
 
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
 
-  // MOVE IN ZIG ZAG
+  
 
-  if (Package_Detected())
+  while (GetAvailableVectors() != 0)
   {
-    XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
-    SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
-    return;
-  }
+    // MOVE IN ZIG ZAG
 
-  while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
-  {
-    currentCommunicationAttempts++;
-    if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+    if (Package_Detected())
     {
-      SetNewExecutionFunction(FUNCTION_ID_ALARM);
-      XFactor_SetNewStatus(XFactor_Status::Alarm);
+      XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+      SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
       return;
     }
+
+    while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+    {
+      currentCommunicationAttempts++;
+      if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        XFactor_SetNewStatus(XFactor_Status::Alarm);
+        return;
+      }
+    }
   }
+
+  // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 }
 
 /**
@@ -558,7 +567,16 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
+  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 
+  ResetVectors();
+  ResetMovements();
+
+  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  {
+    Package_AlignWithSafeBox();
+  }
 }
 
 /**
