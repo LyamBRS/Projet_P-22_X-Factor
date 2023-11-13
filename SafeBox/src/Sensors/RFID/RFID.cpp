@@ -51,11 +51,11 @@ bool RFID_Init(int RFIDPin)
  */
 bool RFID_HandleCard()
 {
-  const unsigned long long int VALID_CARD_NUMBER = 842024496;
+  unsigned long long VALID_CARD_NUMBER = 842024496;
 
     if (RFID_GetCardNumber() == VALID_CARD_NUMBER) {
-        Serial.print("");
-        Serial.print(static_cast<unsigned long>(VALID_CARD_NUMBER));
+      //  Serial.print("");
+      //  Serial.print(static_cast<unsigned long>(VALID_CARD_NUMBER));
         Serial.print("Bonne Carte");
         return true;
     } else {
