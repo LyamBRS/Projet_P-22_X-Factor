@@ -95,14 +95,6 @@ enum class XFactor_Status {
     Alarm = 255
 };
 
-/**
- * @brief Global variable used to store the last
- * status that was retrieved from SafeBox.
- * Declared as extern in @ref Status.hpp but
- * initialised in @ref SafeBox_Init.
- */
-extern XFactor_Status XFactorStatus;
-
 //#pragma endregion
 
 //#pragma region [FUNCTIONS]
