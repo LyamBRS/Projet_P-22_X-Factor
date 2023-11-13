@@ -68,7 +68,6 @@ float PID(float proportional, float integral, float derivative, float currentVal
     //if (PID == ovf) return 0.0f;
 
     return PID;
-    
 }
 
 /**
