@@ -13,6 +13,10 @@
 // - INCLUDE - //
 #include "Movements/PID.hpp"
 
+// - VARIABLES - //
+float previousValue = 0.0f;
+float errorSum = 0.0f;
+
 /**
  * @brief Basic PID function that returns an
  * adjusted value over time based on a wanted
@@ -53,7 +57,17 @@
  */
 float PID(float proportional, float integral, float derivative, float currentValue, float wantedValue, float startingValue)
 {
-    return 0.0f;
+    float error = wantedValue-currentValue;
+    float derivativeError = currentValue-(previousValue);
+    errorSum += error;
+
+    float PID = startingValue + proportional*error + integral*(errorSum) + derivative*(derivativeError);
+
+    previousValue = currentValue;
+
+    //if (PID == ovf) return 0.0f;
+
+    return PID;
 }
 
 /**
@@ -69,5 +83,9 @@ float PID(float proportional, float integral, float derivative, float currentVal
  */
 bool ResetPID()
 {
-    return false;
+    previousValue = 0.0f;
+    errorSum = 0.0f;
+    
+    if (previousValue == 0 && errorSum == 0) return true;
+    else return false;
 }
