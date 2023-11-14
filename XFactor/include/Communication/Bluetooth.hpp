@@ -17,6 +17,10 @@
 // - INCLUDES - //
 #include "Arduino.h"
 
+// - DEFINES - //
+#define BT_HC05_BAUDRATE 19200
+#define BT_SERIAL Serial1
+
 /**
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART

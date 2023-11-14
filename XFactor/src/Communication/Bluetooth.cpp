@@ -34,7 +34,8 @@
  */
 bool BT_Init()
 {
-    return false;
+    BT_SERIAL.begin(BT_HC05_BAUDRATE);
+    return true;
 }
 
 /**
@@ -52,6 +53,7 @@ bool BT_Init()
  */
 bool BT_SendString(String message)
 {
+    BT_SERIAL.flush();
     return false;
 }
 
