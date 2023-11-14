@@ -42,6 +42,7 @@
 #define FUNCTION_ID_ERROR 13
 #define FUNCTION_ID_RETURN_INSIDE_GARAGE 14
 #define FUNCTION_ID_END_OF_PROGRAM 15
+#define FUNCTION_ID_UNLOCKED 16
 
 //#pragma endregion
 
@@ -455,4 +456,12 @@ void Execute_ReturnInsideGarage();
  */
 void Execute_EndOfProgram();
 
+/**
+ * @brief
+ * Action function that is executed whenever
+ * the user unlocks SafeBox, which means that the
+ * robot must stop, keep stuck there until it is
+ * reset by the user
+ */
+void Execute_Unlocked();
 //#pragma endregion

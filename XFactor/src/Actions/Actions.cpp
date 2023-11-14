@@ -99,6 +99,10 @@ void Execute_CurrentFunction(){
             Execute_SearchPreparations();
             break;
 
+        case(FUNCTION_ID_UNLOCKED):
+            Execute_Unlocked();
+            break;
+
         case(FUNCTION_ID_WAIT_AFTER_SAFEBOX):
             Execute_WaitAfterSafeBox();
             break;
@@ -159,6 +163,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_RETURN_INSIDE_GARAGE):
         case(FUNCTION_ID_SEARCH_FOR_PACKAGE):
         case(FUNCTION_ID_SEARCH_PREPARATIONS):
+        case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_WAIT_AFTER_SAFEBOX):
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
             // The specified function is indeed a valid function ID.
@@ -206,13 +211,16 @@ unsigned char GetCurrentExecutionFunction()
 void Execute_WaitAfterSafeBox()
 {
   SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
-  XFactor_SetNewStatus(XFactor_Status::Off); // will need to add Initializing status
+  XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
 
-  LEDS_SetColor(0, LED_COLOR_WAITING_FOR_COMMS); // SEE LED NUMBER
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
-  if (SafeBox_ExchangeStatus(XFactor_Status::WaitingForDelivery) != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
+  if (SafeBox_ExchangeStatus())
   {
-    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+    if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
+    {
+      SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+    }
   }
 }
 
@@ -242,7 +250,7 @@ void Execute_WaitForDelivery()
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
 
-  LEDS_SetColor(0, LED_COLOR_COMMUNICATING); // SEE LED NUMBER
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
 
   if (SafeBox_GetDoorBellStatus())
   {
@@ -326,7 +334,7 @@ void Execute_SearchPreparations()
     {
       ResetVectors();
 
-      while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+      while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
         currentCommunicationAttempts++;
         if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
@@ -392,7 +400,12 @@ void Execute_SearchForPackage()
       return;
     }
 
-    while (SafeBox_ExchangeStatus(XFactor_Status::PreparingForTheSearch) == SafeBox_Status::CommunicationError)
+    if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() == SafeBox_Status::Unlocked)
+    {
+      SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+    }
+
+    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
     {
       currentCommunicationAttempts++;
       if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
@@ -487,7 +500,7 @@ void Execute_PickUpPackage()
   SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
   XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
 
-  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
   {
     Package_PickUp();
 
@@ -534,7 +547,7 @@ void Execute_ReturnHome()
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
   
-  if (SafeBox_ExchangeStatus(XFactor_Status::ReturningHome) != SafeBox_Status::CommunicationError)
+  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
   {
     // RETURN HOME WITH VECTORS, etc
   }
@@ -572,7 +585,7 @@ void Execute_PreparingForDropOff()
   ResetVectors();
   ResetMovements();
 
-  if (SafeBox_ExchangeStatus(XFactor_GetStatus()) != SafeBox_Status::CommunicationError)
+  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
   {
     if (Package_AlignWithSafeBox())
     {
@@ -613,7 +626,7 @@ void Execute_PackageDropOff()
     {
       SafeBox_ChangeLidState(false);
 
-      if (SafeBox_ExchangeStatus(XFactor_Status::DroppingOff) != SafeBox_Status::CommunicationError)
+      if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
         SetNewExecutionFunction(FUNCTION_ID_CONFIRM_DROP_OFF);
         XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
@@ -670,27 +683,24 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
-  //AlarmEvent: Which function do we need to call in AlarmEvent?
-  // What is the ledNumber?
-
   unsigned long timeStart = millis();
   unsigned long timeNow;
   int status = 0; // everything is closed
-  while (SafeBox_ExchangeStatus(XFactor_Status::Alarm) != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
+  while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
   {
     timeNow = millis();
     if ((timeNow - timeStart) >= 1000)
     {
-      SafeBox_ExchangeStatus(XFactor_Status::Alarm);
+      //SafeBox_ExchangeStatus(XFactor_Status::Alarm); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
       if (status == 1)
       {
-        LEDS_SetColor(0,LED_COLOR_ALARM); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
         AX_BuzzerON();
         status = 0;
       }
       else if (status == 0)
       {
-        LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
         AX_BuzzerOFF();
         status = 1;
       }
@@ -731,20 +741,20 @@ void Execute_Error()
     int status = 0; // everything is closed
     XFactor_SetNewStatus(XFactor_Status::Error);
     Serial.println("ERROR CODE");
-    while (SafeBox_ExchangeStatus(XFactor_Status::Error) != SafeBox_Status::Off) // ADD SafceBox_Status::Reset 
+    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // ADD SafceBox_Status::Reset 
     {
         timeNow = millis();
         if ((timeNow - timeStart) >= 1000)
         {
-           SafeBox_ExchangeStatus(XFactor_Status::Error); 
+           //SafeBox_ExchangeStatus(XFactor_Status::Error); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
            if (status == 1)
            {
-            LEDS_SetColor(0,LED_COLOR_ERROR); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
             status = 0;
            }
            else if (status == 0)
            {
-            LEDS_SetColor(0,LED_COLOR_OFFLINE); //CHANGER LE NUMÉRO DE LA LED QUAND ON A LES DEFINES
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
             status = 1;
            }
         }   
@@ -789,6 +799,18 @@ void Execute_ReturnInsideGarage()
  * program.
  */
 void Execute_EndOfProgram()
+{
+
+}
+
+/**
+ * @brief
+ * Action function that is executed whenever
+ * the user unlocks SafeBox, which means that the
+ * robot must stop, keep stuck there until it is
+ * reset by the user
+ */
+void Execute_Unlocked()
 {
 
 }
