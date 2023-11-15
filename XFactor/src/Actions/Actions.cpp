@@ -406,7 +406,7 @@ void Execute_SearchForPackage()
     while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
     {
       currentCommunicationAttempts++;
-      if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
+      if (currentCommunicationAttempts >= MAX_COMMUNICATION_ATTEMPTS)
       {
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
