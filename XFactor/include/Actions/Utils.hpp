@@ -52,6 +52,20 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId);
 
 /**
  * @brief Function that checks
+ * if XFactor can communicate with
+ * SafeBox and if it doesn't return
+ * the communication error status
+ * @param attempts
+ * The number of times communication is tried before 
+ * it gives up
+ * @return bool:
+ * If it has succeeded to get a good communication
+ * in the specified amount of attempts
+ */
+bool ExecutionUtils_CommunicationCheck(int attempts);
+
+/**
+ * @brief Function that checks
  * if communication has been severed with
  * SafeBox, in which case XFactor goes into Alarm status,
  * as it may mean that the robot has been taken away
@@ -59,9 +73,12 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId);
  * The id of the current execution function.
  * @param attempts
  * The number of times communication is tried before the
- * alarm gets triggered.
+ * it gives up
+ * @param isArmed
+ * If it gives up, determines whether or not it
+ * will start the alarm
  * @return int:
  * Value of the new execution function id to execute, 
  * currentExecutionFunctionId if no changes
  */
-int ExecutionUtils_AlarmCommunicationCheck(int currentExecutionFunctionId, int attempts);
+int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attempts, bool isArmed);

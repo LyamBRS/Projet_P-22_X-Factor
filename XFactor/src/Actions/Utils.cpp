@@ -29,10 +29,10 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
   {
     switch (SafeBox_GetStatus())
     {
-    case SafeBox_Status::Unlocked:
-      return FUNCTION_ID_UNLOCKED;
-    default:
-      return currentExecutionFunctionId;
+      case SafeBox_Status::Unlocked:
+        return FUNCTION_ID_UNLOCKED;
+      default:
+        return currentExecutionFunctionId;
     }
   }
 
@@ -48,12 +48,15 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
  * The id of the current execution function.
  * @param attempts
  * The number of times communication is tried before the
- * alarm gets triggered.
+ * it gives up
+ * @param isArmed
+ * If it gives up, determines whether or not it
+ * will start the alarm
  * @return int:
  * Value of the new execution function id to execute, 
  * currentExecutionFunctionId if no changes
  */
-int ExecutionUtils_AlarmCommunicationCheck(int currentExecutionFunctionId, int attempts)
+int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attempts, bool isArmed)
 {
   for (int currentAttempt = 0; currentAttempt < attempts; currentAttempt ++)
   {
@@ -70,5 +73,12 @@ int ExecutionUtils_AlarmCommunicationCheck(int currentExecutionFunctionId, int a
     }
   }
 
-  return FUNCTION_ID_ALARM;
+  if (isArmed)
+  {
+    return FUNCTION_ID_ALARM;
+  }
+  else
+  {
+    return FUNCTION_ID_ERROR;
+  }
 }

@@ -325,27 +325,22 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
-  int currentCommunicationAttempts = 0;
-
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
   
   if (!SafeBox_GetGarageState())
   {
     if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
     {
+      int checkFunctionId;
       ResetVectors();
 
-      while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+      checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
+
+      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
       {
-        currentCommunicationAttempts++;
-        if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
-        {
-          SetNewExecutionFunction(FUNCTION_ID_ALARM);
-          return;
-        }
+        SetNewExecutionFunction(checkFunctionId);
       }
-      
-      if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+      else
       {
         SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
       }
