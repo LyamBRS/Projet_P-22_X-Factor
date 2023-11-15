@@ -95,7 +95,7 @@ bool RFID_CheckIfCardIsThere()
  * The Card ID. If 0, there is no card.
  */
 String RFID_GetCardNumber() {
-  byte crecu, i, incoming = 0;
+  byte crecu, incoming = 0;
   String id_tag;
 
   
@@ -108,7 +108,6 @@ String RFID_GetCardNumber() {
         case 0x02:
           // START OF TRANSMIT
           digitalWrite(13, HIGH);
-          i = 0;
           incoming = 1;
           Serial.println("case 2");
           break;
@@ -125,8 +124,9 @@ String RFID_GetCardNumber() {
 
         default:
           if (incoming)
-           id_tag.concat(crecu);
-           Serial.println(id_tag);
+          {
+            id_tag.concat(crecu);
+          }
           break;
       }
     }
