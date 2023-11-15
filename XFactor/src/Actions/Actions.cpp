@@ -391,6 +391,8 @@ void Execute_SearchForPackage()
 {
   int currentCommunicationAttempts = 0;
 
+  XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+  
   while (GetAvailableVectors() != 0)
   {
     // MOVE IN ZIG ZAG
@@ -421,7 +423,6 @@ void Execute_SearchForPackage()
 
   // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
-  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 }
 
 /**
@@ -578,7 +579,7 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
-  XFactor_SetNewStatus(XFactor_Status::DroppingOff);
+  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 
   ResetVectors();
   ResetMovements();
