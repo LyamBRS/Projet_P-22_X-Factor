@@ -17,7 +17,7 @@
 // - INCLUDES - //
 #include "Sensors/Doorbell/Doorbell.hpp"
 #include "LED/LED.hpp"
-#include "Communication/Bluetooth.hpp"
+#include "SafeBox/Communication.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
