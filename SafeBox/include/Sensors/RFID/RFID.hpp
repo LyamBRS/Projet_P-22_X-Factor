@@ -13,7 +13,7 @@
 #pragma once
 
 // - INCLUDE - //
-
+#include <Arduino.h>
 /**
  * @brief
  * Function that initialises what is required to
@@ -65,6 +65,6 @@ bool RFID_CheckIfCardIsThere();
  * @return unsigned long long:
  * The Card ID. If 0, there is no card.
  */
-unsigned long long RFID_GetCardNumber();
+String RFID_GetCardNumber();
 
-bool isReadingRFID = false;
+

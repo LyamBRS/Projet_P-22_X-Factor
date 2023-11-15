@@ -13,6 +13,8 @@
 #include "Sensors/RFID/RFID.hpp"
 #include <Arduino.h>
 
+bool isReadingRFID = false;
+
 /**
  * @brief
  * Function that initialises what is required to
@@ -51,11 +53,9 @@ bool RFID_Init(int RFIDPin)
  */
 bool RFID_HandleCard()
 {
-  unsigned long long VALID_CARD_NUMBER = 842024496;
+  const String VALID_CARD_NUMBER("4870485055685448534852481310");
 
-    if (RFID_GetCardNumber() == VALID_CARD_NUMBER) {
-      //  Serial.print("");
-      //  Serial.print(static_cast<unsigned long>(VALID_CARD_NUMBER));
+    if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
         Serial.print("Bonne Carte");
         return true;
     } else {
@@ -76,9 +76,9 @@ bool RFID_HandleCard()
  */
 bool RFID_CheckIfCardIsThere()
 {
-    // si elle li une carte, elle ne doit pas lire
-    if (isReadingRFID == true) return true;
-    // elle ne li pas de carte, elle peut lire une carte. 
+    // Si elle lu la bonne carte, plus besoin de lire 
+    if (RFID_HandleCard() == true) return true;
+    // elle n'a pas lu la bonne carte 
     return false;
 }
 
@@ -94,11 +94,9 @@ bool RFID_CheckIfCardIsThere()
  * @return unsigned long long:
  * The Card ID. If 0, there is no card.
  */
-unsigned long long RFID_GetCardNumber() {
-  unsigned long long int resultedID = 0;
-  unsigned long long int temporaryBigNumber = 0;
+String RFID_GetCardNumber() {
   byte crecu, i, incoming = 0;
-  byte id_tag[20];
+  String id_tag;
 
   
   isReadingRFID = true;
@@ -121,27 +119,17 @@ unsigned long long RFID_GetCardNumber() {
           Serial.println("case 3");
 
           for (int i = 0; i < 10; i++)
-            Serial.println(id_tag[i]);
-
           Serial.println("");
-
-          for (int i = 0; i < 8; i++) {
-            temporaryBigNumber = id_tag[i];
-            temporaryBigNumber = temporaryBigNumber << (8 * i);
-            Serial.println(static_cast<unsigned long>(resultedID));
-            resultedID = resultedID + temporaryBigNumber;
-          }
-         Serial.println(static_cast<unsigned long>(resultedID));
-
           isReadingRFID = false;
-          return resultedID;
+          return id_tag;
 
         default:
           if (incoming)
-            id_tag[i++] = crecu;
+           id_tag.concat(crecu);
+           Serial.println(id_tag);
           break;
       }
     }
   }
-  return 0;
+  return "";
 }
