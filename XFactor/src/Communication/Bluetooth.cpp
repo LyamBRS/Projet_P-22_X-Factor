@@ -15,6 +15,10 @@
 // - INCLUDE - //
 #include "Communication/Bluetooth.hpp"
 
+// - GLOBAL LOCAL ACCESS - //
+String currentMessage = "";
+String receivedBTMessages[4] = {};
+
 /**
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART
@@ -35,7 +39,30 @@
 bool BT_Init()
 {
     BT_SERIAL.begin(BT_HC05_BAUDRATE);
-    return true;
+
+    // Reserves X amount of memory for the string to use and fill as data comes in
+    if(currentMessage.reserve(BT_MAX_MESSAGE_LENGTH))
+    {
+        for(int index=0; index<BT_SIZE_OF_MESSAGE_BUFFER; index++)
+        {
+            if(receivedBTMessages[index].reserve(BT_MAX_MESSAGE_LENGTH))
+            {
+                // SUCCESS
+            }
+            else
+            {
+                Serial.println("ERR: BT_Init: String buffer reserve init failed.");
+                return false;
+            }
+        }
+        return true;
+    }
+    else
+    {
+        // Maybe the value of @ref BT_MAX_MESSAGE_LENGTH is too big.
+        Serial.println("ERR: BT_Init: String reserve init failed.");
+        return false;
+    }
 }
 
 /**
@@ -53,8 +80,24 @@ bool BT_Init()
  */
 bool BT_SendString(String message)
 {
+    // - PRELIMINARY CHECKS - //
+    if (message.length() > BT_MAX_MESSAGE_LENGTH)
+    {
+        Serial.println("ERR: BT_SendString: Message is too large.");
+        return false;
+    }
+
+    // - FUNCTION EXECUTION - //
+    unsigned int byteSent = BT_SERIAL.println(message);
     BT_SERIAL.flush();
-    return false;
+
+    // - AFTERMATH CHECKS - //
+    if (byteSent < message.length())
+    {
+        Serial.println("ERR: BT_SendString: less bytes were sent.");
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -67,7 +110,21 @@ bool BT_SendString(String message)
  */
 int BT_MessagesAvailable()
 {
-    return 0;
+    unsigned char messageCount = 0;
+
+    for (unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
+    {
+        if(receivedBTMessages[messageIndex].length() > 0)
+        {
+            messageCount++;
+        }
+        else
+        {
+            // Buffer is no longer full. No point in continuing to check other indexes.
+            return messageCount;
+        }
+    }
+    return messageCount;
 }
 
 /**
@@ -83,7 +140,11 @@ int BT_MessagesAvailable()
  */
 bool BT_ClearAllMessages()
 {
-    return false;
+    for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
+    {
+        receivedBTMessages[messageIndex] = "";
+    }
+    return true;
 }
 
 /**
@@ -92,6 +153,15 @@ bool BT_ClearAllMessages()
  * message is received during the specified time
  * reception window. If no messages is detected,
  * the function will return a fail.
+ *
+ * @bug
+ * If the program runs for ~49 days, there is a
+ * small window where, if this function is called
+ * it will immediately timeout because the millis
+ * value + the timeout in milliseconds will be
+ * bigger than the max value of an unsigned long.
+ * This is not fixed because it can't happen for
+ * our project.
  *
  * @param millisecondsTimeOut
  * How long should the program wait for a message
@@ -104,6 +174,35 @@ bool BT_ClearAllMessages()
  */
 bool BT_WaitForAMessage(int millisecondsTimeOut)
 {
+    // - VARIABLES - //
+    unsigned long currentTime = millis();
+    unsigned long timeOutTime = currentTime + millisecondsTimeOut;
+    int messagesReceived = BT_MessagesAvailable();
+
+    // - PRELIMINARY CHECKS - //
+    if(messagesReceived > 0)
+    {
+        // Why wait for a message when there is already some waiting for you?
+        return true;
+    }
+
+    if(timeOutTime < currentTime)
+    {
+        Serial.println("ERR: BT_WaitForAMessage: Time out millis overflow. (How tf did you manage that?)");
+        return false;
+    }
+
+    while(currentTime < timeOutTime)
+    {
+        currentTime = millis();
+        messagesReceived = BT_MessagesAvailable();
+        if(messagesReceived > 0)
+        {
+            // Less go, we finally got some messages fr
+            return true;
+        }
+    }
+    Serial.println("INF: BT_WaitForAMessage: Timedout");
     return false;
 }
 
@@ -114,15 +213,41 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
  * available, the string will be empty
  *
  * @attention
- * It is preferred that @ref BT_MessagesAvailable
- * is called before you call this function.
+ * This function calls @ref BT_MessagesAvailable
+ * and returns @ref BT_NO_MESSAGE if there is no
+ * available message to return.
+ *
+ * @warning
+ * THIS WILL AUTOMATICALLY CLEAR THE BUFFER
+ * OF THE LATEST MESSAGE.
  *
  * @return string: The oldest message stored in
  * the reception buffer.
  */
 String BT_GetLatestMessage()
 {
-    return "ERROR_FUNCTION_NOT_MADE";
+    // - VARIABLES - //
+    int availableMessages = 0;
+    String oldestMessage = BT_NO_MESSAGE;
+
+    // - PRELIMINARY CHECKS - //
+    availableMessages = BT_MessagesAvailable();
+    if(availableMessages == 0) return BT_NO_MESSAGE;
+
+    // - FUNCTION EXECUTION - //
+    oldestMessage = receivedBTMessages[0];
+
+    // brings buffer forwards by one.
+    if(BT_SIZE_OF_MESSAGE_BUFFER>1)
+    {
+        for(unsigned char messageIndex = 0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER-1; messageIndex++)
+        {
+            receivedBTMessages[messageIndex] = receivedBTMessages[messageIndex+1];
+        }
+    }
+    // Clear last message to avoid duplicates
+    receivedBTMessages[BT_SIZE_OF_MESSAGE_BUFFER-1] = "";
+    return oldestMessage;
 }
 
 /**
@@ -156,5 +281,13 @@ String BT_GetLatestMessage()
  */
 String BT_MessageExchange(String message, int millisecondsTimeOut)
 {
+    // Firstly send the message.
+    if(!BT_SendString(message))
+    {
+        Serial.println("ERR: BT_MessageExchange: TX failure");
+        return BT_ERROR_MESSAGE;
+    }
+
+
     return "ERROR_FUNCTION_NOT_MADE";
 }
