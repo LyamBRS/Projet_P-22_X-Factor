@@ -45,6 +45,7 @@ bool SafeBox_SetNewStatus(SafeBox_Status newStatus)
         case(SafeBox_Status::WaitingForDelivery):
         case(SafeBox_Status::WaitingForRetrieval):
         case(SafeBox_Status::WaitingForReturn):
+        case(SafeBox_Status::WaitingForXFactor):
         case(SafeBox_Status::ReadyForDropOff):
         case(SafeBox_Status::Unlocked):
         case(SafeBox_Status::DroppingOff):
