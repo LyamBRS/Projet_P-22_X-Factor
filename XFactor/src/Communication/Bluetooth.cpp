@@ -17,7 +17,7 @@
 
 // - GLOBAL LOCAL ACCESS - //
 String currentMessage = "";
-String receivedBTMessages[4] = {};
+String receivedBTMessages[BT_SIZE_OF_MESSAGE_BUFFER] = {};
 
 /**
  * @brief Function that initialises Bluetooth on
@@ -51,7 +51,7 @@ bool BT_Init()
             }
             else
             {
-                Serial.println("ERR: BT_Init: String buffer reserve init failed.");
+                Debug_Error("Bluetooth", "BT_Init", "String buffer reserve failure");
                 return false;
             }
         }
@@ -60,7 +60,7 @@ bool BT_Init()
     else
     {
         // Maybe the value of @ref BT_MAX_MESSAGE_LENGTH is too big.
-        Serial.println("ERR: BT_Init: String reserve init failed.");
+        Debug_Error("Bluetooth", "BT_Init", "String reserve failure");
         return false;
     }
 }
@@ -83,7 +83,7 @@ bool BT_SendString(String message)
     // - PRELIMINARY CHECKS - //
     if (message.length() > BT_MAX_MESSAGE_LENGTH)
     {
-        Serial.println("ERR: BT_SendString: Message is too large.");
+        Debug_Error("Bluetooth", "BT_SendString", "Message is too large.");
         return false;
     }
 
@@ -94,7 +94,7 @@ bool BT_SendString(String message)
     // - AFTERMATH CHECKS - //
     if (byteSent < message.length())
     {
-        Serial.println("ERR: BT_SendString: less bytes were sent.");
+        Debug_Error("Bluetooth", "BT_SendString", "Not enough bytes sent");
         return false;
     }
     return true;
@@ -188,7 +188,7 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
 
     if(timeOutTime < currentTime)
     {
-        Serial.println("ERR: BT_WaitForAMessage: Time out millis overflow. (How tf did you manage that?)");
+        Debug_Error("Bluetooth", "BT_WaitForAMessage", "Time out millis overflow. (How tf did you manage that?)");
         return false;
     }
 
@@ -202,7 +202,7 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
             return true;
         }
     }
-    Serial.println("INF: BT_WaitForAMessage: Timedout");
+    Debug_Warning("Bluetooth", "BT_WaitForAMessage", "Timedout");
     return false;
 }
 
@@ -284,10 +284,18 @@ String BT_MessageExchange(String message, int millisecondsTimeOut)
     // Firstly send the message.
     if(!BT_SendString(message))
     {
-        Serial.println("ERR: BT_MessageExchange: TX failure");
+        Debug_Error("Bluetooth", "BT_MessageExchange", "TX failure");
         return BT_ERROR_MESSAGE;
     }
 
-
-    return "ERROR_FUNCTION_NOT_MADE";
+    // WARNING: Could already be a message in the buffer. Be careful to check for that.
+    if(BT_WaitForAMessage(millisecondsTimeOut))
+    {
+        return BT_GetLatestMessage();
+    }
+    else
+    {
+        Debug_Warning("Bluetooth", "BT_MessageExchange", "Failed to get a reply");
+        return BT_ERROR_MESSAGE;
+    }
 }

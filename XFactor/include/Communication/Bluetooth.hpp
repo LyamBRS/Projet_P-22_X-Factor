@@ -15,6 +15,7 @@
 #pragma once
 
 // - INCLUDES - //
+#include "Debug/Debug.hpp"
 #include "Arduino.h"
 
 // - DEFINES - //
