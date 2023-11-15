@@ -30,11 +30,10 @@ bool isReadingRFID = false;
 bool RFID_Init(int RFIDPin)
 {
    // Set la Del de l'Arduino
-    pinMode(13, OUTPUT);
+    // pinMode(13, OUTPUT);
 
     // Initialise le Serial2 entre le module RFID et l'arduino
-    Serial2.begin(9600);
-    Serial.println("Test du ID-12 sur UART2 (RX2/Digital 17)");
+    RFID_SERIAL.begin(9600);
 
     return true;
 }
@@ -53,12 +52,13 @@ bool RFID_Init(int RFIDPin)
  */
 bool RFID_HandleCard()
 {
-  const String VALID_CARD_NUMBER("4870485055685448534852481310");
+  const String VALID_CARD_NUMBER(RFID_VALID_CARD);
 
     if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
-        Serial.print("Bonne Carte");
+        Debug_Information("RFID","RFID_HandleCard","Valid card");
         return true;
     } else {
+        Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
         Serial.print("Mauvaise Carte");
         return false;
     }
@@ -76,9 +76,9 @@ bool RFID_HandleCard()
  */
 bool RFID_CheckIfCardIsThere()
 {
-    // Si elle lu la bonne carte, plus besoin de lire 
-    if (RFID_HandleCard() == true) return true;
-    // elle n'a pas lu la bonne carte 
+    // Si elle lu la bonne carte, plus besoin de lire
+    if (RFID_HandleCard()) return true;
+    // elle n'a pas lu la bonne carte
     return false;
 }
 
@@ -98,28 +98,23 @@ String RFID_GetCardNumber() {
   byte crecu, incoming = 0;
   String id_tag;
 
-  
   isReadingRFID = true;
 
   while (1) {
-    if (Serial2.available()) {
-      crecu = Serial2.read();
+    if (RFID_SERIAL.available()) {
+      crecu = RFID_SERIAL.read();
       switch (crecu) {
         case 0x02:
           // START OF TRANSMIT
           digitalWrite(13, HIGH);
           incoming = 1;
-          Serial.println("case 2");
           break;
+
         case 0x03:
           // END OF TRANSMIT
-          digitalWrite(13, LOW);
           incoming = 0;
-          Serial.println("case 3");
 
-          for (int i = 0; i < 10; i++)
-          Serial.println("");
-          isReadingRFID = false;
+          for (int i = 0; i < 10; i++) isReadingRFID = false;
           return id_tag;
 
         default:

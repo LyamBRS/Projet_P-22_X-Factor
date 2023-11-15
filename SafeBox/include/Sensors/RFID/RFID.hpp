@@ -14,6 +14,12 @@
 
 // - INCLUDE - //
 #include <Arduino.h>
+#include "Debug/Debug.hpp"
+
+// - DEFINES - //
+#define RFID_VALID_CARD "4870485055685448534852481310"
+#define RFID_SERIAL Serial2
+
 /**
  * @brief
  * Function that initialises what is required to

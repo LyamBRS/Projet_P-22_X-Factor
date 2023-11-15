@@ -23,25 +23,27 @@
  */
 void SafeBox_Init()
 {
-    if (LEDS_Init()){
-        if (BT_Init()){
-            if(Alarm_Init()){
-                if(Package_Init()){
-                    if(Garage_Init()){
-                        if(Lid_Init()){
-                            if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
-                                if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
-                                    // Function is successful.
-                                    return;
+    if(Debug_Init()){
+        if (LEDS_Init()){
+            if (BT_Init()){
+                if(Alarm_Init()){
+                    if(Package_Init()){
+                        if(Garage_Init()){
+                            if(Lid_Init()){
+                                if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
+                                    if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
+                                        // Function is successful.
+                                        return;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            SafeBox_SetNewStatus(SafeBox_Status::Error);
+            SetNewExecutionFunction(FUNCTION_ID_ERROR);
         }
-        SafeBox_SetNewStatus(SafeBox_Status::Error);
-        SetNewExecutionFunction(FUNCTION_ID_ERROR);
     }
     // Cant continue initialisation.
 }
