@@ -59,7 +59,6 @@ bool RFID_HandleCard()
         return true;
     } else {
         Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
-        Serial.print("Mauvaise Carte");
         return false;
     }
 }
@@ -106,7 +105,6 @@ String RFID_GetCardNumber() {
       switch (crecu) {
         case 0x02:
           // START OF TRANSMIT
-          digitalWrite(13, HIGH);
           incoming = 1;
           break;
 
