@@ -384,12 +384,27 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
-  int currentCommunicationAttempts = 0;
-
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
   while (GetAvailableVectors() != 0)
   {
+    int checkFunctionId;
+
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+
+    checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+    if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
     // MOVE IN ZIG ZAG
 
     if (Package_Detected())
@@ -397,23 +412,6 @@ void Execute_SearchForPackage()
       SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
       return;
     }
-
-    if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() == SafeBox_Status::Unlocked)
-    {
-      SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
-    }
-
-    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
-    {
-      currentCommunicationAttempts++;
-      if (currentCommunicationAttempts >= MAX_COMMUNICATION_ATTEMPTS)
-      {
-        SetNewExecutionFunction(FUNCTION_ID_ALARM);
-        return;
-      }
-    }
-
-    //SWITCH CASE POUR CHECK LES CAS AVEC STATUS, EX: UNLOCKED OU ERROR
   }
 
   // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
