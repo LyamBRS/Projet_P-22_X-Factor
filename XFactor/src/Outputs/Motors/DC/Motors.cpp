@@ -46,7 +46,13 @@ bool ResetAllEncoders()
  */
 int GetAnEncoder(int motorNumber)
 {
-    return ENCODER_Read(motorNumber);
+    if (motorNumber == LEFT || motorNumber == RIGHT){
+        return ENCODER_Read(motorNumber);
+    }
+    else {
+        Debug_Error("Motors","GetAnEncoder","Motor called is neither Left (0) or Right (1).");
+        return 0;
+    }
 }
 
 /**
@@ -77,16 +83,21 @@ bool SetMotorSpeed(int motorNumber, float wantedSpeed)
             return true;
         }
         else {
-            
+            Debug_Error("Motors","SetMotorSpeed","Speed not within the thresholds [-1,1].");
+            return false;
         }
     }
-    return false;
+    else {
+        Debug_Error("Motors","SetMotorSpeed","Motor called is neither Left (0) or Right (1).");
+        return false;
+    }
+    
 }
 
 /**
  * @brief Simple function that transforms
  * a number expressed in ticks into its
- * distance equivalensce in centimeters.
+ * distance equivalence in centimeters.
  * This should prevent you from manually
  * having to calculate this conversion
  * each time its needed.
@@ -99,5 +110,25 @@ bool SetMotorSpeed(int motorNumber, float wantedSpeed)
  */
 float EncoderToCentimeters(int ticks)
 {
-    return 0.0f;
+    float distance_cm = ((float)ticks * CIRCUMFERENCE_WHEEL_CM / 3200);
+    return distance_cm;
+}
+
+/**
+ * @brief Simple function that transforms
+ * a number expressed in centimeters into
+ * its distance equivalence in ticks.
+ * This should prevent you from manually
+ * having to calculate this converstion
+ * each time its needed.
+ * @param distance_cm
+ * The number of centimeters you want to 
+ * reach
+ * @return float
+ * value of the centimeters converted to
+ * ticks. 
+ */
+float CentimetersToEncoder(int distance_cm){
+    float pulse = ((float)distance_cm / CIRCUMFERENCE_WHEEL_CM) * 3200.0f;
+    return pulse;
 }
