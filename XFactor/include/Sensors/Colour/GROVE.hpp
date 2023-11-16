@@ -7,15 +7,14 @@
  * @copyright Copyright (c) 2023
  */
 #pragma once
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
 
 /**
  * @brief Initialises one GROVE sensor depending on given
  * pins.
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
  */
-void GROVE_Init(int redPin, int greenPin, int bluePin);
+void GROVE_Init();
 
 /**
  * @brief This function should use the specified colour
@@ -24,10 +23,9 @@ void GROVE_Init(int redPin, int greenPin, int bluePin);
  * and regular numbers automatically. It should combine
  * R,G,B into one big number.
  * 255,255,255 would be 255255255
- *
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
  * @return unsigned int of the hex colour returned by the sensor.
  */
-unsigned int GROVE_GetColor(int redPin, int greenPin, int bluePin);
+unsigned int GROVE_GetColor();
+
+void ColorDetector_detectColor();
+void getRGB(float *r, float *g, float *b);

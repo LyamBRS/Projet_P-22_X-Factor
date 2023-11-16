@@ -11,15 +11,21 @@
 // - INCLUDES -//
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
+#include "Sensors/Colour/GROVE.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
 {
   XFactor_Init();
+  GROVE_Init();
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //Execute_CurrentFunction();
+
+  GROVE_GetColor();
+  //GROVE_GetColor();
+  //Serial.println(color);
 }
