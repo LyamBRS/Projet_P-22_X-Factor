@@ -19,7 +19,7 @@
 #include "Lid/Lid.hpp"
 #include "Garage/Garage.hpp"
 #include "Package/Package.hpp"
-#include "Sensors/Doorbell/Doorbell.hpp"/
+#include "Sensors/Doorbell/Doorbell.hpp"
 
 // - DEFINES - //
 // - DEFINES - //

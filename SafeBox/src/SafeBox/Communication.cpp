@@ -315,7 +315,7 @@ bool SafeBox_ReplyStatus()
     // - Get the command ending.
     switch(currentStatus)
     {
-        case(SafeBox_Status::CommunicationError):   statusEnding = "CE"     break;
+        case(SafeBox_Status::CommunicationError):   statusEnding = "CE";    break;
         case(SafeBox_Status::Off):                  statusEnding = "O";     break;
         case(SafeBox_Status::WaitingForDelivery):   statusEnding = "WFD";   break;
         case(SafeBox_Status::WaitingForRetrieval):  statusEnding = "WFRI";  break;

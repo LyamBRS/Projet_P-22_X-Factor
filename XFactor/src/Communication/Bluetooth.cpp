@@ -44,7 +44,7 @@ BT_SERIAL_EVENT
         else
         {
             // END OF STRING
-            if(receivedCharacter == "\n")
+            if(receivedCharacter == '\n')
             {
                 messageBufferIndex = BT_MessagesAvailable();
 

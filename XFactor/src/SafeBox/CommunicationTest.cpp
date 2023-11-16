@@ -116,11 +116,10 @@ bool TestOneStatus(int testNumber, XFactor_Status status)
     if(SafeBox_ExchangeStatus())
     {
         Debug_Information("TEST", "SafeBox_ExchangeStatus", "SUCCESS");
-        currentTest++;
         return true;
     }
     Debug_Error("TEST", "SafeBox_ExchangeStatus", "CLOSE FAILED");
-    Debug_Error("TEST", "FAILED", testNumber);
+    Debug_Error("TEST", "FAILED", String(testNumber));
     return false;
 }
 
@@ -138,7 +137,7 @@ void TestAllStatusCommunications()
         case(1):
             if(TestOneStatus(1, XFactor_Status::CalculatingRouteHome)) currentTest++;
             return;
-        
+
         case(2):
             if(TestOneStatus(2, XFactor_Status::CommunicationError)) currentTest++;
             return;
