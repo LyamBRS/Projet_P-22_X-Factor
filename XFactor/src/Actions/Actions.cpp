@@ -773,7 +773,45 @@ void Execute_Error()
  */
 void Execute_ReturnInsideGarage()
 {
+  // TO CORRECT xd yé tard
+  int checkFunctionId;
+  bool hasEnteredGarage = false;
 
+  XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
+
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  // MOVE TO THE ENTRANCE
+
+  if (hasEnteredGarage)
+  {
+    if (!SafeBox_GetGarageState())
+    {
+
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(false);
+    }
+  }
+  else
+  {
+    if (SafeBox_GetGarageState())
+    {
+      // DRIVE INTO GARAGE
+      // WILL NEED TO SEE SAFEBOX STATUS
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(true);
+    }
+  }
 }
 
 /**
