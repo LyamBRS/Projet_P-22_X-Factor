@@ -23,6 +23,8 @@
 #define BT_HC05_BAUDRATE 19200
 /// @brief Serial port used on an Arduino Mega. Where the HC-05 BT module will be connected.
 #define BT_SERIAL Serial1
+/// @brieg Serial event called by Arduino when a character is received. MUST BE LINKED WITH @ref BT_SERIAL
+#define BT_SERIAL_EVENT void serialEvent1()
 /// @brief How big in bytes can a message be until its discarded for being gibberish?
 #define BT_MAX_MESSAGE_LENGTH 32
 /// @brief How many strings can the message buffer receive before it overflows?

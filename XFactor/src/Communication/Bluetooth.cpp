@@ -27,7 +27,7 @@ unsigned char currentMessageIndex = 0;
  * @attention
  * DO NOT CALL YOURSELF.
  */
-void serialEvent1()
+BT_SERIAL_EVENT
 {
     // - VARIABLES - //
     char receivedCharacter;
