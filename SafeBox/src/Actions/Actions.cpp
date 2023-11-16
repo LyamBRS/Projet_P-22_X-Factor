@@ -287,8 +287,18 @@ void Execute_DropOff()
  * @ref Execute_WaitForDelivery
  */
 void Execute_Unlocked()
-{
-
+{   
+    SafeBox_CheckAndExecuteMessage();
+    SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
+    
+    if(RFID_CheckIfCardIsThere())
+    {
+        if(RFID_HandleCard())
+        {
+            SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+        }
+    }
 }
 
 /**
