@@ -75,12 +75,52 @@ bool SafeBox_CheckAndExecuteMessage()
     // - ANSWER CHECK - //
     if(latestMessage.endsWith(COMMAND_LID_OPEN))   
     {
+        if(SafeBox_ChangeLidState(true)) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeLidState");
+        return false;
     }
 
     if(latestMessage.endsWith(COMMAND_LID_CLOSE))   
     {
+        if(SafeBox_ChangeLidState(false)) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeLidState");
+        return false;
     }
 
+    if(latestMessage.endsWith(COMMAND_GARAGE_OPEN))   
+    {
+        if(SafeBox_ChangeGarageState(true)) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeGarageState");
+        return false;
+    }
+
+    if(latestMessage.endsWith(COMMAND_GARAGE_CLOSE))   
+    {
+        if(SafeBox_ChangeGarageState(false)) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeGarageState");
+        return false;
+    }
+
+    if(latestMessage.endsWith(COMMAND_CHECK_PACKAGE))
+    {
+        if(SafeBox_ReplyToCheckIfPackageDeposited()) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReplyToCheckIfPackageDeposited");
+        return false;     
+    }
+
+    if(latestMessage.endsWith(COMMAND_GET_PACKAGE_COUNT))
+    {
+        if(SafeBox_ReturnDepositedPackages()) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReturnDepositedPackages");
+        return false;     
+    }
+
+    if(latestMessage.endsWith(COMMAND_STATUS_EXCHANGE))
+    {
+        if(SafeBox_ReplyStatus()) return true;
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReturnDepositedPackages");
+        return false;     
+    }
     return true;
 }
 
@@ -104,19 +144,33 @@ bool SafeBox_ChangeLidState(bool wantedState)
     {
         if(Lid_Open())
         {
-            return true;
+            if(BT_SendString(ANSWER_LID_SUCCESS)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed RX lid open success");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
         }
-        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid failed to open");
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid opening failure");
+
+        if(BT_SendString(ANSWER_LID_FAILED)) return false;
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed RX lid failure");
+        SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+        return false;      
     }
     else
     {
         if(Lid_Close())
         {
-            return true;
+            if(BT_SendString(ANSWER_LID_SUCCESS)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed RX lid close success");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
         }
-        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid failed to close");
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid closing failure");
+
+        if(BT_SendString(ANSWER_LID_FAILED)) return false;
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed RX lid failure");
+        SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+        return false;  
     }
     // Should not reach
     return false;
@@ -140,22 +194,73 @@ bool SafeBox_ChangeGarageState(bool wantedState)
     {
         if(Garage_Open())
         {
-            return true;
+            if(BT_SendString(ANSWER_GARAGE_SUCCESS)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage open success");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
         }
-        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage failed to open");
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage opening failure");
+
+        if(BT_SendString(ANSWER_GARAGE_FAILED)) return false;
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage failure");
+        SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+        return false;      
     }
     else
     {
-        if(Garage_Close())
+        if(Lid_Close())
         {
-            return true;
+            if(BT_SendString(ANSWER_GARAGE_SUCCESS)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage close success");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
         }
-        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage failed to close");
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage closing failure");
+
+        if(BT_SendString(ANSWER_GARAGE_FAILED)) return false;
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage failure");
+        SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+        return false;  
     }
     // Should not reach
     return false;
+}
+
+bool SafeBox_SaveReceivedXFactorStatus(String command)
+{
+    if(command == BT_NO_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Empty message");
+        return false;
+    }
+
+    if(command == BT_ERROR_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Error message");
+        return false;
+    }
+
+    if(command.endsWith("A"))   {XFactor_SetNewStatus(XFactor_Status::Alarm); return true;}
+    if(command.endsWith("CRH")) {XFactor_SetNewStatus(XFactor_Status::CalculatingRouteHome); return true;}
+    if(command.endsWith("CE"))  {XFactor_SetNewStatus(XFactor_Status::CommunicationError); return true;}
+    if(command.endsWith("CDO")) {XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff); return true;}
+    if(command.endsWith("DO")) {XFactor_SetNewStatus(XFactor_Status::DroppingOff); return true;}
+    if(command.endsWith("ESB")) {XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox); return true;}
+    if(command.endsWith("E")) {XFactor_SetNewStatus(XFactor_Status::Error); return true;}
+    if(command.endsWith("EAP")) {XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage); return true;}
+    if(command.endsWith("LSB")) {XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox); return true;}
+    if(command.endsWith("M")) {XFactor_SetNewStatus(XFactor_Status::Maintenance); return true;}
+    if(command.endsWith("NPF")) {XFactor_SetNewStatus(XFactor_Status::NoPackageFound); return true;}
+    if(command.endsWith("O")) {XFactor_SetNewStatus(XFactor_Status::Off); return true;}
+    if(command.endsWith("PDOF")) {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed); return true;}
+    if(command.endsWith("PEF")) {XFactor_SetNewStatus(XFactor_Status::PackageExaminationFailed); return true;}
+    if(command.endsWith("PPUF")) {XFactor_SetNewStatus(XFactor_Status::PackagePickUpFailed); return true;}
+    if(command.endsWith("PFDO")) {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed); return true;}
+    if(command.endsWith("PFTS")) {XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch); return true;}
+    if(command.endsWith("RH")) {XFactor_SetNewStatus(XFactor_Status::ReturningHome); return true;}
+    if(command.endsWith("SFAP")) {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage); return true;}
+    if(command.endsWith("WFD")) {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery); return true;}
+
 }
 
 /**
@@ -205,7 +310,11 @@ bool SafeBox_ReplyStatus()
 
     // - Build command string and send it
     answer = answer.concat(statusEnding);
-    BT_SendString(answer);
+    if(BT_SendString(answer))
+    {
+        Debug_Error("Communication", "SafeBox_ReplyStatus", "Status TX failed");
+        return false;
+    }
 
     return true;
 }
