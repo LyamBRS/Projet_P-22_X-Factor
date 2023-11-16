@@ -57,7 +57,6 @@ unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
     resultedColor = resultedColor + temporaryLargeValue;
 
     return resultedColor;
-
 }
 
 /**
@@ -78,7 +77,49 @@ unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
  */
 bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsigned long maxValue)
 {
-  return false;
+    // - VARIABLES - //
+    int lowRed      = Colour_GetRed(lowValue);
+    int lowGreen    = Colour_GetBlue(lowGreen);
+    int lowBlue     = Colour_GetGreen(lowBlue);
+    int lowClear    = Colour_GetClear(lowValue);
+
+    int currentRed      = Colour_GetRed(currentValue);
+    int currentGreen    = Colour_GetBlue(currentValue);
+    int currentBlue     = Colour_GetGreen(currentValue);
+    int currentClear    = Colour_GetClear(currentValue);
+
+    int maxRed      = Colour_GetRed(maxValue);
+    int maxGreen    = Colour_GetGreen(maxValue);
+    int maxBlue     = Colour_GetBlue(maxValue);
+    int maxClear    = Colour_GetClear(maxValue);
+
+    // - Check thresholds - //
+    if(!(lowRed <= currentRed && maxRed >= currentRed))
+    {
+        // The value is not within the red threshold.
+        return false;
+    }
+
+    if(!(lowGreen <= currentGreen && maxGreen >= currentGreen))
+    {
+        // The value is not within the green threshold.
+        return false;
+    }
+
+    if(!(lowBlue <= currentBlue && maxBlue >= currentBlue))
+    {
+        // The value is not within the blue threshold.
+        return false;
+    }
+
+    if(!(lowClear <= currentClear && maxClear >= currentClear))
+    {
+        // The value is not within the clear threshold.
+        return false;
+    }
+
+    // All RGB values are within the threshold
+    return true;
 }
 
 /**
@@ -92,7 +133,12 @@ bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsign
  */
 int Colour_GetRed(unsigned long hexValue)
 {
-  return 0; 
+    // - VARIABLES - //
+    int result = 0;
+
+    result = (int)(hexValue >> 24);
+    result = 0xFF & result;
+    return result; 
 }
 
 /**
@@ -106,7 +152,13 @@ int Colour_GetRed(unsigned long hexValue)
  */
 int Colour_GetGreen(unsigned long hexValue)
 {
-  return 0; 
+    // - VARIABLES - //
+    int result = 0;
+
+    hexValue = hexValue >> 16;
+    hexValue = hexValue & 0xFF;
+    result = (int)hexValue;
+    return result; 
 }
 
 /**
@@ -120,7 +172,13 @@ int Colour_GetGreen(unsigned long hexValue)
  */
 int Colour_GetBlue(unsigned long hexValue)
 {
-  return 0; 
+    // - VARIABLES - //
+    int result = 0;
+
+    hexValue = hexValue >> 8;
+    hexValue = hexValue & 0xFF;
+    result = (int)hexValue;
+    return result; 
 }
 
 /**
@@ -134,5 +192,10 @@ int Colour_GetBlue(unsigned long hexValue)
  */
 int Colour_GetClear(unsigned long hexValue)
 {
-  return 0;  
+    // - VARIABLES - //
+    int result = 0;
+
+    hexValue = hexValue & 0xFF;
+    result = (int)hexValue;
+    return result; 
 }
