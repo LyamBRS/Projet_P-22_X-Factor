@@ -10,11 +10,14 @@
  */
 
 #pragma once
+
+// - INCLUDES - //
 #include <Wire.h>
 #include <Arduino.h>
 
-#define BAUD_RATE 9600
-#define CLOCK_SPEED 400000           // 400kHz I2C clock
+// - DEFINES - //
+//#define BAUD_RATE 9600
+#define MPU6050_CLOCK_SPEED 400000           // 400kHz I2C clock
 #define MPU6050_ADDRESS_AD0_LOW 0x68 // MPU6050 low I2c address
 #define ACCEL_XOUT_H 0x3B            // Accelometer first high register
 #define GYRO_XOUT_H 0x43             // Gyroscope first high register
@@ -25,11 +28,19 @@
 // TODO: make this as a function of the scale, use AFS_SEL registers
 #define ACCELOMETER_SENSIVITY 16384.0f //  in deg/s for a scale of +- 2g, see the datasheet
 #define GYROSCOPE_SENSIVITY 131.0f     //  in g for scale of +- 250 deg/s, see the datasheet
-#define DATA_SIZE 6                    // Read 6 values in total, each axis value is stored in 2 registers
+#define MPU6050_DATA_SIZE 6                    // Read 6 values in total, each axis value is stored in 2 registers
 
 // uncomment this to calibrate the sensor
 // #define SENSOR_CALIBRATE 1
 
+/**
+ * @brief enum containing all the possible scales
+ * that the accelerometer can have. Used to send
+ * on Wire (i2c/spi)
+ * 
+ * @warning
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ */
 typedef enum
 {
     TWO_G = 0x00, // +- 2g full scale range
@@ -38,6 +49,14 @@ typedef enum
     SIXTEEN_G = 0x11
 } accelometer_scale;
 
+/**
+ * @brief enum containing all the possible scales
+ * that the gyro can have. Used to send
+ * on Wire (i2c/spi)
+ * 
+ * @warning
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ */
 typedef enum
 {
     TWO_FIFTY_DEG_PER_SEC = 0x00, // +- 250 deg/sec full scale
@@ -46,20 +65,19 @@ typedef enum
     TWO_THOUSAND_DEG_PER_SEC = 0x11
 } gyro_scale;
 
+/**
+ * @brief enum containing all the axes of the
+ * accelerometer. Used on Wire (i2c/spi)
+ * 
+ * @warning
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ */
 typedef enum
 {
     x_axis = 0,
     y_axis,
     z_axis
 } axes;
-
-// Offset calibration function
-// CAUSTION: place the IMU flat in order to get the proper values
-void calculate_IMU_error(unsigned correctionCount);
-
-// scales are defined in the datasheet
-void set_accelometer_scale(accelometer_scale scale);
-void set_gyro_scale(gyro_scale scale);
 
 /**
  * @brief
@@ -123,3 +141,27 @@ float Accelerometer_GetZ();
  * execute properly.
  */
 float Accelerometer_GetCompass();
+
+// Offset calibration function
+// CAUSTION: place the IMU flat in order to get the proper values
+void calculate_IMU_error(unsigned correctionCount);
+
+/**
+ * @brief
+ * Sets the axis scales of the accelerometer.
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ * 
+ * Scales are defined in the datasheet
+ * @param scale 
+ */
+void set_accelometer_scale(accelometer_scale scale);
+
+/**
+ * @brief
+ * Sets the axis scales of the gyro.
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ * 
+ * Scales are defined in the datasheet
+ * @param scale 
+ */
+void set_gyro_scale(gyro_scale scale);

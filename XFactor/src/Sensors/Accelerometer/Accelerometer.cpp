@@ -1,5 +1,145 @@
+/**
+ * @file Accelerometer.cpp
+ * @author Mohamed El Hadi
+ * @brief
+ * File containing functions
+ * used to make a basic accelerometer work.
+ * @version 1
+ * @date 2023-11-16
+ * @copyright Copyright (c) 2023
+ */
 #include "Sensors/Accelerometer/Accelerometer.hpp"
 
+/**
+ * @brief
+ * Initialises an accelerometer to be used on
+ * XFactor. The name of the accelerometer will
+ * define how these functions are called.
+ * @return true:
+ * Successfully initialised the accelerometer
+ * using the specifed pins.
+ * @return false:
+ * Failed to initialise the accelerometer.
+ */
+bool Accelerometer_Init()
+{
+    Wire.begin(); // Initialize comunication
+    Wire.setClock(MPU6050_CLOCK_SPEED);
+    Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
+    Wire.write(PWR_MGMT_1);                          // Talk to the power management
+    Wire.write(0x0);                                 // Make a reset
+    Wire.endTransmission(true);                      // end the transmission
+
+#ifdef SENSOR_CALIBRATE
+    calculate_IMU_error(10000);
+    delay(100);
+#endif
+
+    return true;
+}
+
+/**
+ * @brief
+ * Function that returns the value of an axis
+ * This is a backend function, do not use outside
+ * of Accelerometer functions.
+ * @param axe
+ * Which axe to read from.
+ * @return float 
+ */
+float getAccelometer_data(axes axe)
+{
+    // === Read acceleromter data === //
+    Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
+    Wire.write(ACCEL_XOUT_H); // Start with register 0x3B (ACCEL_XOUT_H)
+    Wire.endTransmission(false);
+    Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, MPU6050_DATA_SIZE, true);
+
+    // For a range of +-2g, we need to divide the raw values by 16384, according to the datasheet
+    float AccX = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // X-axis value
+    float AccY = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // Y-axis value
+    float AccZ = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // Z-axis value
+
+    switch (axe)
+    {
+    case x_axis:
+        return AccX;
+    case y_axis:
+        return AccY;
+    case z_axis:
+        return AccZ;
+    default:
+        return 0.0f; // pseudo-error code
+    }
+}
+
+/**
+ * @brief
+ * Function that returns the X value of the
+ * accelerometer using functions from an arduino
+ * library. The value is raw and not converted.
+ * @return float:
+ * If 0 is returned, the function failed to
+ * execute properly.
+ */
+float Accelerometer_GetX()
+{
+    return getAccelometer_data(x_axis);
+}
+
+/**
+ * @brief
+ * Function that returns the Y value of the
+ * accelerometer using functions from an arduino
+ * library. The value is raw and not converted.
+ * @return float:
+ * If 0 is returned, the function failed to
+ * execute properly.
+ */
+float Accelerometer_GetY()
+{
+    return getAccelometer_data(y_axis);
+}
+
+/**
+ * @brief
+ * Function that returns the Y value of the
+ * accelerometer using functions from an arduino
+ * library. The value is raw and not converted.
+ * @return float:
+ * If 0 is returned, the function failed to
+ * execute properly.
+ */
+float Accelerometer_GetZ()
+{
+    return getAccelometer_data(z_axis);
+}
+
+/**
+ * @brief
+ * Function that returns the Compass value of the
+ * accelerometer using functions from an arduino
+ * library. The value is raw and not converted.
+ * @return float:
+ * If 0 is returned, the function failed to
+ * execute properly.
+ */
+float Accelerometer_GetCompass()
+{
+    return 0.0f;
+}
+
+
+
+
+
+
+/**
+ * @brief
+ * Sets the axis scales of the accelerometer.
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ * @param scale 
+ */
 void set_accelometer_scale(accelometer_scale scale)
 {
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
@@ -8,6 +148,12 @@ void set_accelometer_scale(accelometer_scale scale)
     Wire.endTransmission(true);
 }
 
+/**
+ * @brief
+ * Sets the axis scales of the gyro.
+ * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
+ * @param scale 
+ */
 void set_gyro_scale(gyro_scale scale)
 {
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
@@ -36,7 +182,7 @@ void calculate_IMU_error(unsigned correctionCount)
         Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
         Wire.write(ACCEL_XOUT_H);
         Wire.endTransmission(false);
-        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, DATA_SIZE, true);
+        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, MPU6050_DATA_SIZE, true);
         AccX = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY;
         AccY = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY;
         AccZ = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY;
@@ -55,7 +201,7 @@ void calculate_IMU_error(unsigned correctionCount)
         Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
         Wire.write(GYRO_XOUT_H);
         Wire.endTransmission(false);
-        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, DATA_SIZE, true);
+        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, MPU6050_DATA_SIZE, true);
         GyroX = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSIVITY;
         GyroY = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSIVITY;
         GyroZ = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSIVITY;
@@ -71,81 +217,14 @@ void calculate_IMU_error(unsigned correctionCount)
     GyroErrorZ /= correctionCount;
 
     // Print the error values on the Serial Monitor
-    Serial.print("AccErrorX: ");
-    Serial.println(AccErrorX);
-    Serial.print("AccErrorY: ");
-    Serial.println(AccErrorY);
-    Serial.print("GyroErrorX: ");
-    Serial.println(GyroErrorX);
-    Serial.print("GyroErrorY: ");
-    Serial.println(GyroErrorY);
-    Serial.print("GyroErrorZ: ");
-    Serial.println(GyroErrorZ);
-}
-
-bool Accelerometer_Init()
-{
-    Serial.begin(BAUD_RATE);
-    if (!Serial)
-        return false;
-
-    Wire.begin(); // Initialize comunication
-    Wire.setClock(CLOCK_SPEED);
-    Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
-    Wire.write(PWR_MGMT_1);                          // Talk to the power management
-    Wire.write(0x0);                                 // Make a reset
-    Wire.endTransmission(true);                      // end the transmission
-
-#ifdef SENSOR_CALIBRATE
-    calculate_IMU_error(10000);
-    delay(100);
-#endif
-
-    return true;
-}
-
-float getAccelometer_data(axes axe)
-{
-    // === Read acceleromter data === //
-    Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
-    Wire.write(ACCEL_XOUT_H); // Start with register 0x3B (ACCEL_XOUT_H)
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, DATA_SIZE, true);
-
-    // For a range of +-2g, we need to divide the raw values by 16384, according to the datasheet
-    float AccX = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // X-axis value
-    float AccY = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // Y-axis value
-    float AccZ = (Wire.read() << 8 | Wire.read()) / ACCELOMETER_SENSIVITY; // Z-axis value
-
-    switch (axe)
-    {
-    case x_axis:
-        return AccX;
-    case y_axis:
-        return AccY;
-    case z_axis:
-        return AccZ;
-    default:
-        return 0.0f; // pseudo-error code
-    }
-}
-
-float Accelerometer_GetX()
-{
-    return getAccelometer_data(x_axis);
-}
-
-float Accelerometer_GetY()
-{
-    return getAccelometer_data(y_axis);
-}
-
-float Accelerometer_GetZ()
-{
-    return getAccelometer_data(z_axis);
-}
-
-float Accelerometer_GetCompass()
-{
-    return 0.0f;
+    //Serial.print("AccErrorX: ");
+    //Serial.println(AccErrorX);
+    //Serial.print("AccErrorY: ");
+    //Serial.println(AccErrorY);
+    //Serial.print("GyroErrorX: ");
+    //Serial.println(GyroErrorX);
+    //Serial.print("GyroErrorY: ");
+    //Serial.println(GyroErrorY);
+    //Serial.print("GyroErrorZ: ");
+    //Serial.println(GyroErrorZ);
 }
