@@ -20,6 +20,7 @@
 #include "LED/LED.hpp"
 #include "Alarm/Alarm.hpp"
 #include "Package/Package.hpp"
+#include "Debug/Debug.hpp"
 
 /**
  * @brief

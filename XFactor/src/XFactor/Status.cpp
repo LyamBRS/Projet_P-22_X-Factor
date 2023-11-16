@@ -59,6 +59,7 @@ bool XFactor_SetNewStatus(XFactor_Status newStatus)
         case(XFactor_Status::ReturningHome):
         case(XFactor_Status::SearchingForAPackage):
         case(XFactor_Status::WaitingForDelivery):
+        case(XFactor_Status::WaitingAfterSafeBox):
             CurrentXFactorStatus = newStatus;
             return true;
 
@@ -84,7 +85,7 @@ bool XFactor_SetNewStatus(XFactor_Status newStatus)
  */
 XFactor_Status XFactor_GetStatus()
 {
-    return XFactorStatus;
+    return CurrentXFactorStatus;
 }
 
 //#pragma endregion
