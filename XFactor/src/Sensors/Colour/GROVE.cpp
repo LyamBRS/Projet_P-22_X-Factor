@@ -13,59 +13,26 @@
 // - INCLUDE - //
 #include "Sensors/Colour/GROVE.hpp"
 
-
-
-byte gammatable[256];
-
-
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 /**
  * @brief Initialises one GROVE sensor depending on given
  * pins.
+ * 
+ * @return true:
+ * Successfully initialised the GROVE sensor.
+ * @return false:
+ * Failed to initialise the GROVE sensor.
  */
-void GROVE_Init()
+bool GROVE_Init()
 {
-    Serial.begin(9600);
-    Serial.println("Color View Test!");
-
     if (tcs.begin()) {
-        Serial.println("Found sensor");
+        Debug_Information("GROVE", "GROVE_Init", "Sensor initialised");
+        return true;
     } else {
-        Serial.println("No TCS34725 found ... check your connections");
-        while (1); // halt!
+        Debug_Error("GROVE", "GROVE_Init", "Failed to find a GROVE colour sensor.");
+        return false;
     }
 }
-
-/*void ColorDetector_detectColor() {
-    uint16_t clear, red, green, blue;
-    unsigned long clair=0;
-    unsigned long rouge=0;
-    unsigned long vert=0;
-    unsigned long bleu=0;
-
-    tcs.setInterrupt(false);      // turn on LED
-
-    delay(60);  // takes 50ms to read
-
-    tcs.getRawData(&red, &green, &blue, &clear);
-
-    tcs.setInterrupt(true);  // turn off LED
-
-    Serial.print("C1:\t"); Serial.print(clear);
-    Serial.print("\tR1:\t"); Serial.print(red);
-    Serial.print("\tG1:\t"); Serial.print(green);
-    Serial.print("\tB1:\t"); Serial.println(blue);
-
-    rouge = (unsigned long) (((float)red/1024)*255);
-    vert = (unsigned long) (((float)green/1024)*255);
-    bleu = (unsigned long)(((float)blue/1024)*255);
-    clair = (unsigned long)(((float)clear/1024)*255);
-
-    Serial.print("C:\t"); Serial.print(clear);
-    Serial.print("\tR:\t"); Serial.print(red);
-    Serial.print("\tG:\t"); Serial.print(green);
-    Serial.print("\tB:\t"); Serial.println(blue);
-}*/
 
 /**
  * @brief This function should use the specified colour
@@ -79,6 +46,7 @@ void GROVE_Init()
  */
 unsigned long GROVE_GetColor()
 {
+    // - VARIABLES - //
     uint16_t clear, red, green, blue;
     //unsigned int colorHex;
     int clair=0;
@@ -96,32 +64,15 @@ unsigned long GROVE_GetColor()
 
     rouge = (int) (((float)red/1024)*255);
     vert =  (int) (((float)green/1024)*255);
-    bleu =  (int)(((float)blue/1024)*255);
-    clair = (int)(((float)clear/1024)*255);
+    bleu =  (int) (((float)blue/1024)*255);
+    clair = (int) (((float)clear/1024)*255);
 
-    Serial.print("C:\t"); Serial.print(clair);
-    Serial.print("\tR:\t"); Serial.print(rouge);
-    Serial.print("\tG:\t"); Serial.print(vert);
-    Serial.print("\tB:\n"); Serial.println(bleu);
-
-    
+    //Serial.print("C:\t"); Serial.print(clair);
+    //Serial.print("\tR:\t"); Serial.print(rouge);
+    //Serial.print("\tG:\t"); Serial.print(vert);
+    //Serial.print("\tB:\n"); Serial.println(bleu);
 
     return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
 
 }
-/*void getRGB(float *r, float *g, float *b) {
-  uint16_t red, green, blue, clear;
-  tcs.getRawData(&red, &green, &blue, &clear);
-  uint32_t sum = clear;
-
-  // Avoid divide by zero errors ... if clear = 0 return black
-  if (clear == 0) {
-    *r = *g = *b = 0;
-    return;
-  }
-
-  *r = (float)red / sum * 255.0;
-  *g = (float)green / sum * 255.0;
-  *b = (float)blue / sum * 255.0;
-}*/
 

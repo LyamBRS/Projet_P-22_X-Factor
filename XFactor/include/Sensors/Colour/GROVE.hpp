@@ -11,14 +11,18 @@
 #include <Wire.h>
 #include "Adafruit_TCS34725.h"
 #include "Colour/Colour.hpp"
+#include "Debug/Debug.hpp"
 
 /**
  * @brief Initialises one GROVE sensor depending on given
  * pins.
  * 
- * 
+ * @return true:
+ * Successfully initialised the GROVE sensor.
+ * @return false:
+ * Failed to initialise the GROVE sensor.
  */
-void GROVE_Init();
+bool GROVE_Init();
 
 /**
  * @brief This function should use the specified colour
