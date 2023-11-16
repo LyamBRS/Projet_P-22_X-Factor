@@ -13,14 +13,26 @@
 // - INCLUDE - //
 #include "Sensors/Colour/GROVE.hpp"
 
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
 /**
  * @brief Initialises one GROVE sensor depending on given
  * pins.
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
+ * 
+ * @return true:
+ * Successfully initialised the GROVE sensor.
+ * @return false:
+ * Failed to initialise the GROVE sensor.
  */
-void GROVE_Init(int redPin, int greenPin, int bluePin);
+bool GROVE_Init()
+{
+    if (tcs.begin()) {
+        Debug_Information("GROVE", "GROVE_Init", "Sensor initialised");
+        return true;
+    } else {
+        Debug_Error("GROVE", "GROVE_Init", "Failed to find a GROVE colour sensor.");
+        return false;
+    }
+}
 
 /**
  * @brief This function should use the specified colour
@@ -30,9 +42,37 @@ void GROVE_Init(int redPin, int greenPin, int bluePin);
  * R,G,B into one big number.
  * 255,255,255 would be 255255255
  *
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
- * @return unsigned int of the hex colour returned by the sensor.
+ * @return unsigned long of the hex colour returned by the sensor.
  */
-unsigned int GROVE_GetColor(int redPin, int greenPin, int bluePin);
+unsigned long GROVE_GetColor()
+{
+    // - VARIABLES - //
+    uint16_t clear, red, green, blue;
+    //unsigned int colorHex;
+    int clair=0;
+    int rouge=0;
+    int vert=0;
+    int bleu=0;
+
+    tcs.setInterrupt(false);      // turn on LED
+
+    delay(60);  // takes 50ms to read
+
+    tcs.getRawData(&red, &green, &blue, &clear);
+
+    tcs.setInterrupt(true);  // turn off LED
+
+    rouge = (int) (((float)red/1024)*255);
+    vert =  (int) (((float)green/1024)*255);
+    bleu =  (int) (((float)blue/1024)*255);
+    clair = (int) (((float)clear/1024)*255);
+
+    //Serial.print("C:\t"); Serial.print(clair);
+    //Serial.print("\tR:\t"); Serial.print(rouge);
+    //Serial.print("\tG:\t"); Serial.print(vert);
+    //Serial.print("\tB:\n"); Serial.println(bleu);
+
+    return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
+
+}
+

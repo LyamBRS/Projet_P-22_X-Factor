@@ -11,6 +11,7 @@
 // - INCLUDES -//
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
+#include "Sensors/Colour/GROVE.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
