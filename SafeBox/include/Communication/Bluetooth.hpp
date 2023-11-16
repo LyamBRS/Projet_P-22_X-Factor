@@ -15,7 +15,22 @@
 #pragma once
 
 // - INCLUDES - //
+#include "Debug/Debug.hpp"
 #include "Arduino.h"
+
+// - DEFINES - //
+/// @brief The baudrate of the Serial port which talks to the HC-05 module.
+#define BT_HC05_BAUDRATE 19200
+/// @brief Serial port used on an Arduino Mega. Where the HC-05 BT module will be connected.
+#define BT_SERIAL Serial1
+/// @brief How big in bytes can a message be until its discarded for being gibberish?
+#define BT_MAX_MESSAGE_LENGTH 32
+/// @brief How many strings can the message buffer receive before it overflows?
+#define BT_SIZE_OF_MESSAGE_BUFFER 4
+/// @brief Returned by BT_GetMessage functions to indicate that there was no message to get.
+#define BT_NO_MESSAGE "%_NAN_%"
+/// @brief Returned whenever an error occur in a function that returns and handles communications.
+#define BT_ERROR_MESSAGE "%_ERROR_%"
 
 /**
  * @brief Function that initialises Bluetooth on
