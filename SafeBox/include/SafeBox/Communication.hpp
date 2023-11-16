@@ -18,6 +18,8 @@
 #include "SafeBox/Status.hpp"
 #include "Lid/Lid.hpp"
 #include "Garage/Garage.hpp"
+#include "Package/Package.hpp"
+#include "Sensors/Doorbell/Doorbell.hpp"/
 
 // - DEFINES - //
 // - DEFINES - //
@@ -190,4 +192,18 @@ bool SafeBox_ReturnDepositedPackages();
  * Failed to handle the doorbell request.
  */
 bool SafeBox_GetDoorBellStatus();
+
+/**
+ * @brief 
+ * Saves the status of XFactor that it has sent
+ * through Bluetooth in the getter setter
+ * functions.
+ * @param command
+ * The string received through Bluetooth
+ * @return true:
+ * Successfully saved the status of XFactor.
+ * @return false:
+ * Failed to save the status of XFactor.
+ */
+bool SafeBox_SaveReceivedXFactorStatus(String command);
 // #pragma endregion

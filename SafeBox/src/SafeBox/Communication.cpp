@@ -61,17 +61,6 @@ bool SafeBox_CheckAndExecuteMessage()
         return false; 
     }
 
-//#define COMMAND_LID_OPEN  "C_LID_O"
-//#define COMMAND_LID_CLOSE "C_LID_C"
-//#define COMMAND_LID_GET "C_LID_G"
-//#define COMMAND_GARAGE_OPEN   "C_GAR_O"
-//#define COMMAND_GARAGE_CLOSE  "C_GAR_C"
-//#define COMMAND_GARAGE_GET  "C_GAR_G"
-//#define COMMAND_DOORBELL_GET  "C_DRB_G"
-//#define COMMAND_GET_PACKAGE_COUNT "C_PCK_G"
-//#define COMMAND_CHECK_PACKAGE     "C_PCK_C"
-//#define COMMAND_STATUS_EXCHANGE   "C_STE_"
-
     // - ANSWER CHECK - //
     if(latestMessage.endsWith(COMMAND_LID_OPEN))   
     {
@@ -117,9 +106,31 @@ bool SafeBox_CheckAndExecuteMessage()
 
     if(latestMessage.endsWith(COMMAND_STATUS_EXCHANGE))
     {
-        if(SafeBox_ReplyStatus()) return true;
+        if(SafeBox_ReplyStatus())
+        {
+            if(SafeBox_SaveReceivedXFactorStatus(latestMessage)) return true;
+            Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to save received status");
+            return false;
+        }
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReturnDepositedPackages");
+
+        if(SafeBox_SaveReceivedXFactorStatus(latestMessage)) 
+        {
+            Debug_Warning("Communication", "SafeBox_CheckAndExecuteMessage", "Saved new XFactor status but failed to reply SafeBox status");
+            return false;
+        }
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to save received status & reply status to XFactor");
         return false;     
+    }
+    
+    if(latestMessage.endsWith(COMMAND_DOORBELL_GET))
+    {
+        if(SafeBox_GetDoorBellStatus())
+        {
+            return true;
+        }
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed GetDoorBellStatus");
+        return false;
     }
     return true;
 }
@@ -226,6 +237,18 @@ bool SafeBox_ChangeGarageState(bool wantedState)
     return false;
 }
 
+/**
+ * @brief 
+ * Saves the status of XFactor that it has sent
+ * through Bluetooth in the getter setter
+ * functions.
+ * @param command
+ * The string received through Bluetooth
+ * @return true:
+ * Successfully saved the status of XFactor.
+ * @return false:
+ * Failed to save the status of XFactor.
+ */
 bool SafeBox_SaveReceivedXFactorStatus(String command)
 {
     if(command == BT_NO_MESSAGE)
@@ -240,27 +263,29 @@ bool SafeBox_SaveReceivedXFactorStatus(String command)
         return false;
     }
 
-    if(command.endsWith("A"))   {XFactor_SetNewStatus(XFactor_Status::Alarm); return true;}
-    if(command.endsWith("CRH")) {XFactor_SetNewStatus(XFactor_Status::CalculatingRouteHome); return true;}
-    if(command.endsWith("CE"))  {XFactor_SetNewStatus(XFactor_Status::CommunicationError); return true;}
-    if(command.endsWith("CDO")) {XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff); return true;}
-    if(command.endsWith("DO")) {XFactor_SetNewStatus(XFactor_Status::DroppingOff); return true;}
-    if(command.endsWith("ESB")) {XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox); return true;}
-    if(command.endsWith("E")) {XFactor_SetNewStatus(XFactor_Status::Error); return true;}
-    if(command.endsWith("EAP")) {XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage); return true;}
-    if(command.endsWith("LSB")) {XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox); return true;}
-    if(command.endsWith("M")) {XFactor_SetNewStatus(XFactor_Status::Maintenance); return true;}
-    if(command.endsWith("NPF")) {XFactor_SetNewStatus(XFactor_Status::NoPackageFound); return true;}
-    if(command.endsWith("O")) {XFactor_SetNewStatus(XFactor_Status::Off); return true;}
-    if(command.endsWith("PDOF")) {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed); return true;}
-    if(command.endsWith("PEF")) {XFactor_SetNewStatus(XFactor_Status::PackageExaminationFailed); return true;}
-    if(command.endsWith("PPUF")) {XFactor_SetNewStatus(XFactor_Status::PackagePickUpFailed); return true;}
-    if(command.endsWith("PFDO")) {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed); return true;}
-    if(command.endsWith("PFTS")) {XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch); return true;}
-    if(command.endsWith("RH")) {XFactor_SetNewStatus(XFactor_Status::ReturningHome); return true;}
-    if(command.endsWith("SFAP")) {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage); return true;}
-    if(command.endsWith("WFD")) {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery); return true;}
+    if(command.endsWith("A"))       {XFactor_SetNewStatus(XFactor_Status::Alarm);                       return true;}
+    if(command.endsWith("CRH"))     {XFactor_SetNewStatus(XFactor_Status::CalculatingRouteHome);        return true;}
+    if(command.endsWith("CE"))      {XFactor_SetNewStatus(XFactor_Status::CommunicationError);          return true;}
+    if(command.endsWith("CDO"))     {XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);           return true;}
+    if(command.endsWith("DO"))      {XFactor_SetNewStatus(XFactor_Status::DroppingOff);                 return true;}
+    if(command.endsWith("ESB"))     {XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);             return true;}
+    if(command.endsWith("E"))       {XFactor_SetNewStatus(XFactor_Status::Error);                       return true;}
+    if(command.endsWith("EAP"))     {XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);         return true;}
+    if(command.endsWith("LSB"))     {XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);              return true;}
+    if(command.endsWith("M"))       {XFactor_SetNewStatus(XFactor_Status::Maintenance);                 return true;}
+    if(command.endsWith("NPF"))     {XFactor_SetNewStatus(XFactor_Status::NoPackageFound);              return true;}
+    if(command.endsWith("O"))       {XFactor_SetNewStatus(XFactor_Status::Off);                         return true;}
+    if(command.endsWith("PDOF"))    {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed);        return true;}
+    if(command.endsWith("PEF"))     {XFactor_SetNewStatus(XFactor_Status::PackageExaminationFailed);    return true;}
+    if(command.endsWith("PPUF"))    {XFactor_SetNewStatus(XFactor_Status::PackagePickUpFailed);         return true;}
+    if(command.endsWith("PFDO"))    {XFactor_SetNewStatus(XFactor_Status::PackageDropOffFailed);        return true;}
+    if(command.endsWith("PFTS"))    {XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);       return true;}
+    if(command.endsWith("RH"))      {XFactor_SetNewStatus(XFactor_Status::ReturningHome);               return true;}
+    if(command.endsWith("SFAP"))    {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);        return true;}
+    if(command.endsWith("WFD"))     {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);          return true;}
 
+    Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Unknown XFactor status");
+    return false;
 }
 
 /**
@@ -338,6 +363,19 @@ bool SafeBox_ReplyStatus()
  */
 bool SafeBox_ReplyToCheckIfPackageDeposited()
 {
+    if(Package_IsDeposited())
+    {
+        if(BT_SendString(ANSWER_PACKAGE_CHECK_SUCCESS)) return true;
+        Debug_Error("Communication", "SafeBox_ReplyToCheckIfPackageDeposited", "Failed TX BT SUCCESS");
+        return false;
+    }
+    else
+    {
+        if(BT_SendString(ANSWER_PACKAGE_CHECK_FAILED)) return true;
+        Debug_Error("Communication", "SafeBox_ReplyToCheckIfPackageDeposited", "Failed TX BT FAIL");
+        return false;
+    }
+
     return false;
 }
 
@@ -377,6 +415,19 @@ bool SafeBox_ReturnDepositedPackages()
  */
 bool SafeBox_GetDoorBellStatus()
 {
+    if(Doorbell_GetState())
+    {
+        if(BT_SendString(ANSWER_DOORBELL_RANG)) return true;
+        Debug_Error("Communication", "SafeBox_GetDoorBellStatus", "Failed TX BT RANG");
+        return false;
+    }
+    else
+    {
+        if(BT_SendString(ANSWER_DOORBELL_NOT_RANG)) return true;
+        Debug_Error("Communication", "SafeBox_GetDoorBellStatus", "Failed TX BT UNRANG");
+        return false;
+    }
+
     return false;
 }
 // #pragma endregion
