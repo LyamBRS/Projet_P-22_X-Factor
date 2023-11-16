@@ -127,6 +127,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_DROP_OFF):
+        case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
         case(FUNCTION_ID_WAIT_FOR_RETRIEVAL):
         case(FUNCTION_ID_WAIT_FOR_RETURN):
             // The specified function is indeed a valid function ID.

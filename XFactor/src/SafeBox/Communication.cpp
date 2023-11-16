@@ -190,15 +190,23 @@ bool SafeBox_ExchangeStatus()
         case(XFactor_Status::ReturningHome):            statusEnding = "RH";    break;
         case(XFactor_Status::SearchingForAPackage):     statusEnding = "SFAP";  break;
         case(XFactor_Status::WaitingForDelivery):       statusEnding = "WFD";   break;
+        case(XFactor_Status::WaitingAfterSafeBox):      statusEnding = "WASB";  break;
 
         default:
             Debug_Error("Communication", "SafeBox_ExchangeStatus", "Unknown XFactor status");
+            Debug_Error("Communication", "SafeBox_ExchangeStatus", String((int)currentStatus));
             return false;
     }
 
     // - Build command string and send it
     command = command.concat(statusEnding);
     answer = BT_MessageExchange(command, COMMS_TIMEOUT_MS);
+
+    if (answer == BT_ERROR_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_ExchangeStatus", "BT_MessageExchange Failed");
+        return false;
+    }
 
     // - ANSWER CHECK - //
     if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  return true;}
