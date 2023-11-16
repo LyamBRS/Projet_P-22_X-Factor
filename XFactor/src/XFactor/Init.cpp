@@ -25,23 +25,32 @@ void XFactor_Init()
 {
     BoardInit();
 
-    if (LEDS_Init()){
-        if (BT_Init()){
+    if (Debug_Init()){
+        if (LEDS_Init()){
             if(Alarm_Init()){
                 if(Package_Init()){
-                    if(Debug_Init()){
+                    if(BT_Init()){
                         if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
-                                // Function is successful.
+                                Debug_Information("Init", "XFactor_Init", "Successful initialisation");
                                 return;
                             }
-                        }
-                    }
-                }
-            }
+                            else Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Failed");
+                        } else Debug_Error("Init", "XFactor_Init", "XFactor_SetNewStatus Failed");
+                    } else Debug_Error("Init", "XFactor_Init", "BT_Init Failed");
+                } else Debug_Error("Init", "XFactor_Init", "Package_Init Failed");
+            } else Debug_Error("Init", "XFactor_Init", "Alarm_Init Failed");
+        } else Debug_Error("Init", "XFactor_Init", "LEDS_Init Failed");
+
+        if(!XFactor_SetNewStatus(XFactor_Status::Error))
+        {
+            Debug_Error("Init", "XFactor_Init", "XFactor_SetNewStatus Error Failed");
         }
-        XFactor_SetNewStatus(XFactor_Status::Error);
-        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+
+        if(!SetNewExecutionFunction(FUNCTION_ID_ERROR))
+        {
+            Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Error Failed");
+        }
     }
     // Cant continue initialisation.
 }

@@ -34,15 +34,23 @@ void SafeBox_Init()
                                     if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                         // Function is successful.
                                         return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                                    } else Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction Failed");
+                                } else Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus Failed");
+                            } else Debug_Error("Init", "SafeBox_Init", "Lid_Init Failed");
+                        } else Debug_Error("Init", "SafeBox_Init", "Garage_Init Failed");
+                    } else Debug_Error("Init", "SafeBox_Init", "Package_Init Failed");
+                } else Debug_Error("Init", "SafeBox_Init", "Alarm_Init Failed");
+            } else Debug_Error("Init", "SafeBox_Init", "BT_Init Failed");
+
+            if(!SafeBox_SetNewStatus(SafeBox_Status::Error))
+            {
+                Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus error Failed");
             }
-            SafeBox_SetNewStatus(SafeBox_Status::Error);
-            SetNewExecutionFunction(FUNCTION_ID_ERROR);
+
+            if(!SetNewExecutionFunction(FUNCTION_ID_ERROR))
+            {
+                Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction error Failed");
+            }
         }
     }
     // Cant continue initialisation.
