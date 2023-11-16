@@ -26,7 +26,7 @@
 bool Package_Init()
 {
     int redPin = 0, greenPin = 0, bluePin = 0;
-    GROVE_Init(redPin, greenPin, bluePin);
+    GROVE_Init();
     return false;
 }
 
