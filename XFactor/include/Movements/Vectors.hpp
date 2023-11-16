@@ -11,7 +11,25 @@
  */
 #pragma once
 
+typedef struct 
+{
+    float rotation_rad;
+    float distance_cm;
+} MovementVector;
+
+#define VECTOR_BUFFER_SIZE 32 // MAY NEED TO CHANGE
 // #pragma region -Vector Handling-
+
+/**
+ * @brief Fills up
+ * the vector buffer with
+ * "empty" values
+ * @return bool
+ * true if it has worked, false if
+ * a problem has occurred
+ */
+bool Vectors_Init();
+
 /**
  * @brief Returns how many
  * vectors can still be saved.

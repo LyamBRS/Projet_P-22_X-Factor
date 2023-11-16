@@ -13,6 +13,29 @@
 // - INCLUDES - //
 #include "Movements/Vectors.hpp"
 
+MovementVector vectorBuffer[VECTOR_BUFFER_SIZE];
+
+/**
+ * @brief Fills up
+ * the vector buffer with
+ * "empty" values
+ * @return bool
+ * true if it has worked, false if
+ * a problem has occurred
+ */
+bool Vectors_Init()
+{
+    MovementVector emptyMovementVector;
+    emptyMovementVector.distance_cm = 0.0f;
+    emptyMovementVector.rotation_rad = 0.0f;
+
+    for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
+    {
+        vectorBuffer[i] = emptyMovementVector;
+    }
+    return true;
+}
+
 /**
  * @brief Returns how many
  * vectors can still be saved.
