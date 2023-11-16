@@ -179,7 +179,6 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
-
 }
 
 /**
@@ -211,7 +210,14 @@ void Execute_WaitForDelivery()
  */
 void Execute_StartOfDelivery()
 {
-
+    // There's no status for the Safebox when the doorbell is heard
+    if (Doorbell_GetState() == true)
+    {
+      
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
+        //SafeBox_ReplyStatus(); WAIT FOR THE RIGHT COMM FUNCTION
+        return;
+    }
 }
 
 /**
@@ -281,8 +287,18 @@ void Execute_DropOff()
  * @ref Execute_WaitForDelivery
  */
 void Execute_Unlocked()
-{
-
+{   
+    SafeBox_CheckAndExecuteMessage();
+    SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
+    
+    if(RFID_CheckIfCardIsThere())
+    {
+        if(RFID_HandleCard())
+        {
+            SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+        }
+    }
 }
 
 /**

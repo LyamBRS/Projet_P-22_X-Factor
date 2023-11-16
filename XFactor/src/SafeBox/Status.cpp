@@ -42,6 +42,7 @@ bool SafeBox_SetNewStatus(SafeBox_Status newStatus)
     {
         case(SafeBox_Status::CommunicationError):
         case(SafeBox_Status::Off):
+        case(SafeBox_Status::WaitingForXFactor):
         case(SafeBox_Status::WaitingForDelivery):
         case(SafeBox_Status::WaitingForRetrieval):
         case(SafeBox_Status::WaitingForReturn):

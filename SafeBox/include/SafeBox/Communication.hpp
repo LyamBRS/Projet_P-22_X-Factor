@@ -15,6 +15,45 @@
 // - INCLUDES - //
 #include "XFactor/Status.hpp"           //// Used to store the status of SafeBox and get the enumeration of its possible values
 #include "Communication/Bluetooth.hpp"  //// Used to communicate information and receive information from SafeBox
+#include "SafeBox/Status.hpp"
+#include "Lid/Lid.hpp"
+#include "Garage/Garage.hpp"
+#include "Package/Package.hpp"
+#include "Sensors/Doorbell/Doorbell.hpp"/
+
+// - DEFINES - //
+// - DEFINES - //
+#define COMMS_TIMEOUT_MS 1000
+
+#define COMMAND_LID_OPEN  "C_LID_O"
+#define COMMAND_LID_CLOSE "C_LID_C"
+#define COMMAND_LID_GET "C_LID_G"
+#define COMMAND_GARAGE_OPEN   "C_GAR_O"
+#define COMMAND_GARAGE_CLOSE  "C_GAR_C"
+#define COMMAND_GARAGE_GET  "C_GAR_G"
+#define COMMAND_DOORBELL_GET  "C_DRB_G"
+#define COMMAND_GET_PACKAGE_COUNT "C_PCK_G"
+#define COMMAND_CHECK_PACKAGE     "C_PCK_C"
+#define COMMAND_STATUS_EXCHANGE   "C_STE_"
+
+#define ANSWER_LID_OPEN      "A_LID_O"
+#define ANSWER_LID_CLOSED    "A_LID_C"
+#define ANSWER_LID_SUCCESS   "A_LID_S"
+#define ANSWER_LID_FAILED    "A_LID_S"
+
+#define ANSWER_GARAGE_OPEN      "A_GAR_O"
+#define ANSWER_GARAGE_CLOSED    "A_GAR_C"
+#define ANSWER_GARAGE_SUCCESS   "A_GAR_S"
+#define ANSWER_GARAGE_FAILED    "A_GAR_S"
+
+#define ANSWER_DOORBELL_RANG     "A_DRB_R"
+#define ANSWER_DOORBELL_NOT_RANG "A_DRB_N"
+
+#define ANSWER_PACKAGE_COUNT         "A_PCK_C"
+#define ANSWER_PACKAGE_CHECK_SUCCESS "A_PCK_S"
+#define ANSWER_PACKAGE_CHECK_FAILED  "A_PCK_F"
+
+#define ANSWER_STATUS_EXCHANGE       "A_STE_"
 
 // #pragma region [Command_Requests]
 
@@ -153,4 +192,18 @@ bool SafeBox_ReturnDepositedPackages();
  * Failed to handle the doorbell request.
  */
 bool SafeBox_GetDoorBellStatus();
+
+/**
+ * @brief 
+ * Saves the status of XFactor that it has sent
+ * through Bluetooth in the getter setter
+ * functions.
+ * @param command
+ * The string received through Bluetooth
+ * @return true:
+ * Successfully saved the status of XFactor.
+ * @return false:
+ * Failed to save the status of XFactor.
+ */
+bool SafeBox_SaveReceivedXFactorStatus(String command);
 // #pragma endregion
