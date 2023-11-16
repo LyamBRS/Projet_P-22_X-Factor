@@ -38,7 +38,50 @@
  */
 bool SafeBox_CheckAndExecuteMessage()
 {
-    return false;
+    // - VARIABLES - //
+    String latestMessage = "";
+
+    if(BT_MessagesAvailable() == 0)
+    {
+        // There is no messages in the reception buffer
+        return false;
+    }
+
+    latestMessage = BT_GetLatestMessage();
+
+    if(latestMessage == BT_ERROR_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Error message returned");
+        return false;
+    }
+
+    if(latestMessage == BT_NO_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "BT_MessagesAvailable failure");
+        return false; 
+    }
+
+//#define COMMAND_LID_OPEN  "C_LID_O"
+//#define COMMAND_LID_CLOSE "C_LID_C"
+//#define COMMAND_LID_GET "C_LID_G"
+//#define COMMAND_GARAGE_OPEN   "C_GAR_O"
+//#define COMMAND_GARAGE_CLOSE  "C_GAR_C"
+//#define COMMAND_GARAGE_GET  "C_GAR_G"
+//#define COMMAND_DOORBELL_GET  "C_DRB_G"
+//#define COMMAND_GET_PACKAGE_COUNT "C_PCK_G"
+//#define COMMAND_CHECK_PACKAGE     "C_PCK_C"
+//#define COMMAND_STATUS_EXCHANGE   "C_STE_"
+
+    // - ANSWER CHECK - //
+    if(latestMessage.endsWith(COMMAND_LID_OPEN))   
+    {
+    }
+
+    if(latestMessage.endsWith(COMMAND_LID_CLOSE))   
+    {
+    }
+
+    return true;
 }
 
 /**
@@ -57,6 +100,25 @@ bool SafeBox_CheckAndExecuteMessage()
  */
 bool SafeBox_ChangeLidState(bool wantedState)
 {
+    if(wantedState)
+    {
+        if(Lid_Open())
+        {
+            return true;
+        }
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid failed to open");
+        return false;
+    }
+    else
+    {
+        if(Lid_Close())
+        {
+            return true;
+        }
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "Lid failed to close");
+        return false;
+    }
+    // Should not reach
     return false;
 }
 
@@ -74,6 +136,25 @@ bool SafeBox_ChangeLidState(bool wantedState)
  */
 bool SafeBox_ChangeGarageState(bool wantedState)
 {
+    if(wantedState)
+    {
+        if(Garage_Open())
+        {
+            return true;
+        }
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage failed to open");
+        return false;
+    }
+    else
+    {
+        if(Garage_Close())
+        {
+            return true;
+        }
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Garage failed to close");
+        return false;
+    }
+    // Should not reach
     return false;
 }
 
@@ -96,7 +177,37 @@ bool SafeBox_ChangeGarageState(bool wantedState)
  */
 bool SafeBox_ReplyStatus()
 {
-    return false;
+    // - VARIABLES - //
+    String answer = ANSWER_STATUS_EXCHANGE;
+    String statusEnding = "";
+    SafeBox_Status currentStatus = SafeBox_GetStatus();
+
+    // - Get the command ending.
+    switch(currentStatus)
+    {
+        case(SafeBox_Status::CommunicationError):   statusEnding = "CE"     break;
+        case(SafeBox_Status::Off):                  statusEnding = "O";     break;
+        case(SafeBox_Status::WaitingForDelivery):   statusEnding = "WFD";   break;
+        case(SafeBox_Status::WaitingForRetrieval):  statusEnding = "WFRI";  break;
+        case(SafeBox_Status::WaitingForReturn):     statusEnding = "WFR";   break;
+        case(SafeBox_Status::WaitingForXFactor):    statusEnding = "RFDO";  break;
+        case(SafeBox_Status::ReadyForDropOff):      statusEnding = "RFDO";  break;
+        case(SafeBox_Status::Unlocked):             statusEnding = "U";     break;
+        case(SafeBox_Status::DroppingOff):          statusEnding = "DO";    break;
+        case(SafeBox_Status::Maintenance):          statusEnding = "M";     break;
+        case(SafeBox_Status::Error):                statusEnding = "E";     break;
+        case(SafeBox_Status::Alarm):                statusEnding = "A";     break;
+
+        default:
+            Debug_Error("Communication", "SafeBox_ReplyStatus", "Unknown SafeBox status");
+            return false;
+    }
+
+    // - Build command string and send it
+    answer = answer.concat(statusEnding);
+    BT_SendString(answer);
+
+    return true;
 }
 
 /**
