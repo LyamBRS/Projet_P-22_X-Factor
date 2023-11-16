@@ -34,8 +34,7 @@ void XFactor_Init()
                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
                                 Debug_Information("Init", "XFactor_Init", "Successful initialisation");
                                 return;
-                            }
-                            else Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Failed");
+                            } else Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Failed");
                         } else Debug_Error("Init", "XFactor_Init", "XFactor_SetNewStatus Failed");
                     } else Debug_Error("Init", "XFactor_Init", "BT_Init Failed");
                 } else Debug_Error("Init", "XFactor_Init", "Package_Init Failed");
