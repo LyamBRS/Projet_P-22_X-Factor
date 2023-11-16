@@ -179,7 +179,6 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
-
 }
 
 /**
@@ -211,7 +210,14 @@ void Execute_WaitForDelivery()
  */
 void Execute_StartOfDelivery()
 {
-
+    // There's no status for the Safebox when the doorbell is heard
+    if (Doorbell_GetState() == true)
+    {
+      
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
+        //SafeBox_ReplyStatus(); WAIT FOR THE RIGHT COMM FUNCTION
+        return;
+    }
 }
 
 /**
