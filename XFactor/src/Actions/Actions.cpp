@@ -210,9 +210,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
-  SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX);
   XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
-
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
   if (SafeBox_ExchangeStatus())
@@ -247,9 +245,7 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
-  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
-
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
 
   if (SafeBox_GetDoorBellStatus())
@@ -288,9 +284,14 @@ void Execute_GettingOutOfGarage()
   {
     if (MoveFromVector(0, 50.0f, false)) //Add define for distances to get outta the box
     {
-      // EXCHANGE STATUS
-      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
-      XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
+      if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
+      }
+    }
+    else
+    {
+      SetNewExecutionFunction(FUNCTION_ID_ERROR);
     }
   }
   else
@@ -324,30 +325,29 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
-  int currentCommunicationAttempts = 0;
-
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
   
   if (!SafeBox_GetGarageState())
   {
     if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
     {
+      int checkFunctionId;
       ResetVectors();
 
-      while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+      checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
+
+      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
       {
-        currentCommunicationAttempts++;
-        if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
-        {
-          SetNewExecutionFunction(FUNCTION_ID_ALARM);
-          XFactor_SetNewStatus(XFactor_Status::Alarm);
-          return;
-        }
+        SetNewExecutionFunction(checkFunctionId);
       }
-      
-      // EXCHANGE STATUS
-      SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
-      XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+      else
+      {
+        SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+      }
+    }
+    else
+    {
+      SetNewExecutionFunction(FUNCTION_ID_ERROR);
     }
   }
   else
@@ -384,42 +384,38 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
-  int currentCommunicationAttempts = 0;
-
-  SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
-
+  
   while (GetAvailableVectors() != 0)
   {
+    int checkFunctionId;
+
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+
+    checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+    if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
     // MOVE IN ZIG ZAG
 
     if (Package_Detected())
     {
-      XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
       SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
       return;
-    }
-
-    if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() == SafeBox_Status::Unlocked)
-    {
-      SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
-    }
-
-    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
-    {
-      currentCommunicationAttempts++;
-      if (currentCommunicationAttempts >= PREPARING_THE_SEACRH_MAX_COMMUNICATION_ATTEMPTS)
-      {
-        SetNewExecutionFunction(FUNCTION_ID_ALARM);
-        XFactor_SetNewStatus(XFactor_Status::Alarm);
-        return;
-      }
     }
   }
 
   // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
-  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 }
 
 /**
@@ -497,7 +493,7 @@ void Execute_ExamineFoundPackage()
 void Execute_PickUpPackage()
 {
   int pickUpAttempt = 1;
-  SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+
   XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
 
   if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
@@ -508,7 +504,7 @@ void Execute_PickUpPackage()
     {
       if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
       {
-        XFactor_SetNewStatus(XFactor_Status::Error);
+        // If we have time, undo the last vectors then redo ExamineFoundPackage
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
         return;
       }
@@ -516,7 +512,6 @@ void Execute_PickUpPackage()
       Package_PickUp();
     }
     SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
-    XFactor_SetNewStatus(XFactor_Status::ReturningHome);
   }
 }
 
@@ -543,17 +538,15 @@ void Execute_PickUpPackage()
  * SafeBox is still possible.
  */
 void Execute_ReturnHome()
-{
-  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+{ 
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
-  
+
   if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
   {
     // RETURN HOME WITH VECTORS, etc
   }
 
   SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
-  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 }
 
 /**
@@ -579,7 +572,6 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
-  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
   XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 
   ResetVectors();
@@ -590,7 +582,6 @@ void Execute_PreparingForDropOff()
     if (Package_AlignWithSafeBox())
     {
       SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
-      XFactor_SetNewStatus(XFactor_Status::DroppingOff);
     }
   }
 }
@@ -617,7 +608,6 @@ void Execute_PreparingForDropOff()
  */
 void Execute_PackageDropOff()
 {
-  SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
   XFactor_SetNewStatus(XFactor_Status::DroppingOff);
 
   if (SafeBox_GetLidState())
@@ -629,7 +619,6 @@ void Execute_PackageDropOff()
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
         SetNewExecutionFunction(FUNCTION_ID_CONFIRM_DROP_OFF);
-        XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
       }
     }
   }
@@ -683,6 +672,8 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
+  XFactor_SetNewStatus(XFactor_Status::Alarm);
+
   unsigned long timeStart = millis();
   unsigned long timeNow;
   int status = 0; // everything is closed
@@ -732,14 +723,11 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-    // There's no error code for the XFactor. In the file XFactor/Status, the only error code is for the SafeBox which is Error = 51.
-    // I didn't find the status for the reset.
-    // What is the lednumber?
-    // what error code do we have to write with the Serial.print. Is it only "Error code" or we have to be more specific?
+    XFactor_SetNewStatus(XFactor_Status::Error);
+
     unsigned long timeStart = millis();
     unsigned long timeNow;
     int status = 0; // everything is closed
-    XFactor_SetNewStatus(XFactor_Status::Error);
     Serial.println("ERROR CODE");
     while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // ADD SafceBox_Status::Reset 
     {
@@ -785,7 +773,45 @@ void Execute_Error()
  */
 void Execute_ReturnInsideGarage()
 {
+  // TO CORRECT xd yé tard
+  int checkFunctionId;
+  bool hasEnteredGarage = false;
 
+  XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
+
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  // MOVE TO THE ENTRANCE
+
+  if (hasEnteredGarage)
+  {
+    if (!SafeBox_GetGarageState())
+    {
+
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(false);
+    }
+  }
+  else
+  {
+    if (SafeBox_GetGarageState())
+    {
+      // DRIVE INTO GARAGE
+      // WILL NEED TO SEE SAFEBOX STATUS
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(true);
+    }
+  }
 }
 
 /**
