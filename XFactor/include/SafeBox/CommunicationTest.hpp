@@ -27,3 +27,5 @@
  * between XFactor and SafeBox.
  */
 void TestGoodCommunications();
+bool TestOneStatus(int testNumber, XFactor_Status status);
+void TestAllStatusCommunications();
