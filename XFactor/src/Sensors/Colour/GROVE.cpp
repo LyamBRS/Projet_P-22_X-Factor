@@ -22,9 +22,6 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
 /**
  * @brief Initialises one GROVE sensor depending on given
  * pins.
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
  */
 void GROVE_Init()
 {
@@ -78,19 +75,16 @@ void GROVE_Init()
  * R,G,B into one big number.
  * 255,255,255 would be 255255255
  *
- * @param redPin Arduino pins for the red input
- * @param greenPin Arduino pins for the green input
- * @param bluePin Arduino pins for the blue input
- * @return unsigned int of the hex colour returned by the sensor.
+ * @return unsigned long of the hex colour returned by the sensor.
  */
-unsigned int GROVE_GetColor()
+unsigned long GROVE_GetColor()
 {
     uint16_t clear, red, green, blue;
     //unsigned int colorHex;
-    unsigned long clair=0;
-    unsigned long rouge=0;
-    unsigned long vert=0;
-    unsigned long bleu=0;
+    int clair=0;
+    int rouge=0;
+    int vert=0;
+    int bleu=0;
 
     tcs.setInterrupt(false);      // turn on LED
 
@@ -100,43 +94,19 @@ unsigned int GROVE_GetColor()
 
     tcs.setInterrupt(true);  // turn off LED
 
-    rouge = (unsigned long) (((float)red/1024)*255);
-    vert = (unsigned long) (((float)green/1024)*255);
-    bleu = (unsigned long)(((float)blue/1024)*255);
-    clair = (unsigned long)(((float)clear/1024)*255);
+    rouge = (int) (((float)red/1024)*255);
+    vert =  (int) (((float)green/1024)*255);
+    bleu =  (int)(((float)blue/1024)*255);
+    clair = (int)(((float)clear/1024)*255);
 
     Serial.print("C:\t"); Serial.print(clair);
     Serial.print("\tR:\t"); Serial.print(rouge);
     Serial.print("\tG:\t"); Serial.print(vert);
     Serial.print("\tB:\n"); Serial.println(bleu);
 
-    unsigned long resultedColor = 0;
-    unsigned long temporaryLargeValue = 0;
+    
 
-    //lowest value is the clear value, it thus does not need to be shifted.
-    resultedColor = resultedColor + clair;
-    Serial.print("convertedColorClear:\t"); Serial.print(resultedColor);
-    //third value is the blue value; it needs to be shifted by 8 bits, We thus need to use a new type to hold
-
-    temporaryLargeValue = bleu;
-    temporaryLargeValue = temporaryLargeValue << 8;
-    resultedColor = resultedColor + temporaryLargeValue;
-    Serial.print("\nconvertedColorClear+Blue\t"); Serial.print(resultedColor);
-
-    //second value is the green value, it needs to be shifted by 16 bits.
-    temporaryLargeValue = vert;
-    temporaryLargeValue = temporaryLargeValue << 16;
-    resultedColor = resultedColor + temporaryLargeValue;
-    Serial.print("\nconvertedColorClear+Blue+Green:\t"); Serial.print(resultedColor);
-
-    //first value is the red value; it needs to be shifted by 24 bits.
-
-    temporaryLargeValue = rouge;
-    temporaryLargeValue = temporaryLargeValue << 24;
-    resultedColor = resultedColor + temporaryLargeValue;
-    Serial.print("\nconvertedColorClear+RGB:\t"); Serial.print(resultedColor);
-
-    return 0;
+    return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
 
 }
 /*void getRGB(float *r, float *g, float *b) {

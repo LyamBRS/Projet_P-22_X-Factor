@@ -33,6 +33,30 @@
  */
 unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
 {
+    unsigned long resultedColor = 0;
+    unsigned long temporaryLargeValue = 0;
+
+    //lowest value is the clear value, it thus does not need to be shifted.
+    resultedColor = resultedColor + (unsigned long) clear;
+
+    //third value is the blue value; it needs to be shifted by 8 bits, We thus need to use a new type to hold
+
+    temporaryLargeValue = (unsigned long) blue;
+    temporaryLargeValue = temporaryLargeValue << 8;
+    resultedColor = resultedColor + temporaryLargeValue;
+
+    //second value is the green value, it needs to be shifted by 16 bits.
+    temporaryLargeValue = (unsigned long) green;
+    temporaryLargeValue = temporaryLargeValue << 16;
+    resultedColor = resultedColor + temporaryLargeValue;
+
+    //first value is the red value; it needs to be shifted by 24 bits.
+
+    temporaryLargeValue = (unsigned long) red;
+    temporaryLargeValue = temporaryLargeValue << 24;
+    resultedColor = resultedColor + temporaryLargeValue;
+
+    return resultedColor;
 
 }
 
@@ -54,7 +78,7 @@ unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
  */
 bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsigned long maxValue)
 {
-
+  return false;
 }
 
 /**
@@ -68,7 +92,7 @@ bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsign
  */
 int Colour_GetRed(unsigned long hexValue)
 {
-
+  return 0; 
 }
 
 /**
@@ -82,7 +106,7 @@ int Colour_GetRed(unsigned long hexValue)
  */
 int Colour_GetGreen(unsigned long hexValue)
 {
-
+  return 0; 
 }
 
 /**
@@ -96,7 +120,7 @@ int Colour_GetGreen(unsigned long hexValue)
  */
 int Colour_GetBlue(unsigned long hexValue)
 {
-
+  return 0; 
 }
 
 /**
@@ -108,7 +132,7 @@ int Colour_GetBlue(unsigned long hexValue)
  * @return int
  * value from 0 to 255
  */
-int Colour_GetClear(unsigned long hexValue);
+int Colour_GetClear(unsigned long hexValue)
 {
-    
+  return 0;  
 }
