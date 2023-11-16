@@ -49,7 +49,10 @@ bool SafeBox_ChangeLidState(bool wantedState)
  * @return false:
  * Failed to ask SafeBox to open the garage door.
  */
-bool SafeBox_ChangeGarageState(bool wantedState);
+bool SafeBox_ChangeGarageState(bool wantedState)
+{
+  return false;
+}
 
 /**
  * @brief Asks SafeBox to identify if a package
@@ -72,7 +75,9 @@ bool SafeBox_CheckIfPackageDeposited()
  * status. This is used when an alarm is
  * detected for example and allows both SafeBox
  * and XFactor to exchange their current status at
- * any time.
+ * any time. Use Status functions to set and
+ * compare their status. This one is only used to
+ * exchange the status.
  *
  * @attention
  * This function needs to be called at roughly
@@ -80,14 +85,14 @@ bool SafeBox_CheckIfPackageDeposited()
  * event happens. XFactor is the one to initiate
  * this handshake, not SafeBox.
  *
- * @param xFactorStatus
- * The current status of XFactor.
- * @return int: The value of SafeBox's status.
- * If -1, no status were returned.
+ * @return true: 
+ * Successfully exchanged the status.
+ * @return false:
+ * Failed to exchange the status.
  */
-int SafeBox_ExchangeStatus(int xFactorStatus)
+bool SafeBox_ExchangeStatus()
 {
-    return -1;
+    return false;
 }
 
 //#pragma endregion

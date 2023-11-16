@@ -13,6 +13,17 @@
 
 #pragma once
 
+#include "math.h"
+
+typedef struct 
+{
+  int positionXLeft_encoderPulses;
+  int positionYLeft_encoderPulses;
+
+  int positionXRight_encoderPulses;
+  int positionYRight_encoderPulses;
+} RobotPosition;
+
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be

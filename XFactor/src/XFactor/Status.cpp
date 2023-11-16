@@ -13,6 +13,13 @@
 // - INCLUDES - //
 #include "XFactor/Status.hpp"
 
+/**
+ * @brief 
+ * Local global variable used to store XFactor's
+ * current status.
+ */
+XFactor_Status CurrentXFactorStatus = XFactor_Status::Off;
+
 //#pragma region [FUNCTIONS]
 /**
  * @brief
@@ -28,8 +35,39 @@
  * The specified status does not match available
  * status of @ref XFactor_StatusEnum
  */
-bool XFactor_SetNewStatus(unsigned char newStatus)
+bool XFactor_SetNewStatus(XFactor_Status newStatus)
 {
+    switch(newStatus)
+    {
+        case(XFactor_Status::Alarm):
+        case(XFactor_Status::CalculatingRouteHome):
+        case(XFactor_Status::CommunicationError):
+        case(XFactor_Status::ConfirmingDropOff):
+        case(XFactor_Status::DroppingOff):
+        case(XFactor_Status::EnteringSafeBox):
+        case(XFactor_Status::Error):
+        case(XFactor_Status::ExaminatingAPackage):
+        case(XFactor_Status::LeavingSafeBox):
+        case(XFactor_Status::Maintenance):
+        case(XFactor_Status::NoPackageFound):
+        case(XFactor_Status::Off):
+        case(XFactor_Status::PackageDropOffFailed):
+        case(XFactor_Status::PackageExaminationFailed):
+        case(XFactor_Status::PackagePickUpFailed):
+        case(XFactor_Status::PreparingForDropOff):
+        case(XFactor_Status::PreparingForTheSearch):
+        case(XFactor_Status::ReturningHome):
+        case(XFactor_Status::SearchingForAPackage):
+        case(XFactor_Status::WaitingForDelivery):
+            CurrentXFactorStatus = newStatus;
+            return true;
+
+        default:
+            CurrentXFactorStatus = XFactor_Status::Error;
+            return false;
+    }
+
+    //Should not reach here.
     return false;
 }
 
@@ -44,7 +82,7 @@ bool XFactor_SetNewStatus(unsigned char newStatus)
  * value from @ref XFactor_StatusEnum which
  * corresponds to XFactor's current status.
  */
-unsigned char XFactor_GetStatus()
+XFactor_Status XFactor_GetStatus()
 {
     return XFactorStatus;
 }
