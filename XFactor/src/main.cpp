@@ -17,15 +17,10 @@
 void setup()
 {
   XFactor_Init();
-  GROVE_Init();
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  //Execute_CurrentFunction();
-
-  GROVE_GetColor();
-  //GROVE_GetColor();
-  //Serial.println(color);
+  Execute_CurrentFunction();
 }
