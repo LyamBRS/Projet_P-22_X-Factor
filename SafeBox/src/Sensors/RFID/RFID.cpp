@@ -11,6 +11,9 @@
 
 // - INCLUDE - //
 #include "Sensors/RFID/RFID.hpp"
+#include <Arduino.h>
+
+bool isReadingRFID = false;
 
 /**
  * @brief
@@ -26,8 +29,15 @@
  */
 bool RFID_Init(int RFIDPin)
 {
-    return false;
+   // Set la Del de l'Arduino
+    // pinMode(13, OUTPUT);
+
+    // Initialise le Serial2 entre le module RFID et l'arduino
+    RFID_SERIAL.begin(9600);
+
+    return true;
 }
+
 
 /**
  * @brief
@@ -42,7 +52,15 @@ bool RFID_Init(int RFIDPin)
  */
 bool RFID_HandleCard()
 {
-    return false;
+  const String VALID_CARD_NUMBER(RFID_VALID_CARD);
+
+    if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
+        Debug_Information("RFID","RFID_HandleCard","Valid card");
+        return true;
+    } else {
+        Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
+        return false;
+    }
 }
 
 /**
@@ -57,6 +75,9 @@ bool RFID_HandleCard()
  */
 bool RFID_CheckIfCardIsThere()
 {
+    // Si elle lu la bonne carte, plus besoin de lire
+    if (RFID_HandleCard()) return true;
+    // elle n'a pas lu la bonne carte
     return false;
 }
 
@@ -72,7 +93,36 @@ bool RFID_CheckIfCardIsThere()
  * @return unsigned long long:
  * The Card ID. If 0, there is no card.
  */
-unsigned long long RFID_GetCardNumber()
-{
-    return 0;
+String RFID_GetCardNumber() {
+  byte crecu, incoming = 0;
+  String id_tag;
+
+  isReadingRFID = true;
+
+  while (1) {
+    if (RFID_SERIAL.available()) {
+      crecu = RFID_SERIAL.read();
+      switch (crecu) {
+        case 0x02:
+          // START OF TRANSMIT
+          incoming = 1;
+          break;
+
+        case 0x03:
+          // END OF TRANSMIT
+          incoming = 0;
+
+          for (int i = 0; i < 10; i++) isReadingRFID = false;
+          return id_tag;
+
+        default:
+          if (incoming)
+          {
+            id_tag.concat(crecu);
+          }
+          break;
+      }
+    }
+  }
+  return "";
 }

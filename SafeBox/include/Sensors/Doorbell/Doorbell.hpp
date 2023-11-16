@@ -1,16 +1,16 @@
 /**
- * @file Doorbell.cpp
- * @author LyamBRS (lyam.brs@gmail.com)
+ * @file Doorbell.hpp
+ * @author your name (you@domain.com)
  * @brief
- * File containing the functions used to handle
- * the doorbell reading done by SafeBox.
+ * File containing the header definitions of
+ * functions used to handle the doorbell reading
+ * done by SafeBox.
  * @version 0.1
  * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
-// - INCLUDE - //
-#include "Sensors/Doorbell/Doorbell.hpp"
+#pragma once
 
 /**
  * @brief
@@ -27,10 +27,7 @@
  * Failed to initialised the doorbell used on
  * SafeBox.
  */
-bool Doorbell_Init(int doorbellPin)
-{
-    return false;
-}
+bool Doorbell_Init(int doorbellPin);
 
 /**
  * @brief
@@ -41,7 +38,4 @@ bool Doorbell_Init(int doorbellPin)
  * @return false:
  * No doorbell detected.
  */
-bool Doorbell_GetState()
-{
-    return false;
-}
+bool Doorbell_GetState();
