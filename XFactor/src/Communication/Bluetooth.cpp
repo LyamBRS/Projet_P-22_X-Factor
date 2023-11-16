@@ -18,6 +18,51 @@
 // - GLOBAL LOCAL ACCESS - //
 String currentMessage = "";
 String receivedBTMessages[BT_SIZE_OF_MESSAGE_BUFFER] = {};
+unsigned char currentMessageIndex = 0;
+
+/**
+ * @brief
+ * ARDUINO function executed automatically
+ * whenever Serial1 receives characters.
+ * @attention
+ * DO NOT CALL YOURSELF.
+ */
+void serialEvent1()
+{
+    // - VARIABLES - //
+    char receivedCharacter;
+    int messageBufferIndex = 0;
+
+    // Empty the internal buffer
+    while(BT_SERIAL.available())
+    {
+        receivedCharacter = (char)BT_SERIAL.read();
+        if(receivedCharacter >= 32 && receivedCharacter <= 126)
+        {
+            currentMessage += receivedCharacter;
+        }
+        else
+        {
+            // END OF STRING
+            if(receivedCharacter == "\n")
+            {
+                messageBufferIndex = BT_MessagesAvailable();
+
+                if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
+                {
+                    // Oh shit... Whos spamming? lmfao
+                    Debug_Error("Bluetooth", "serialEvent1", "BUFFER OVERFLOW. Message lost.");
+                    currentMessage = "";
+                }
+                else
+                {
+                    receivedBTMessages[messageBufferIndex] = currentMessage;
+                    currentMessage = "";
+                }
+            }
+        }
+    }
+}
 
 /**
  * @brief Function that initialises Bluetooth on
