@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Movements/Positions.hpp"
+#include "Debug/Debug.hpp"
 
 typedef struct 
 {
