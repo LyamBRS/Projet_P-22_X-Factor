@@ -79,8 +79,8 @@ bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsign
 {
     // - VARIABLES - //
     int lowRed      = Colour_GetRed(lowValue);
-    int lowGreen    = Colour_GetBlue(lowGreen);
-    int lowBlue     = Colour_GetGreen(lowBlue);
+    int lowGreen    = Colour_GetBlue(lowValue);
+    int lowBlue     = Colour_GetGreen(lowValue);
     int lowClear    = Colour_GetClear(lowValue);
 
     int currentRed      = Colour_GetRed(currentValue);
