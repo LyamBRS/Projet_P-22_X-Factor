@@ -13,6 +13,20 @@
  */
 
 #pragma once
+#include "LibRobus.h"
+
+// Diameter of the wheel (cm)
+#define DIAMETER_WHEEL_CM 7.7f 
+
+// Calculate the circumference of the whell depending on its diameter
+#define CIRCUMFERENCE_WHEEL_CM (3.1416*DIAMETER_WHEEL)
+
+// Diameter between the wheels ; used for turning //18.6f A et 19.2f B
+#define DISTANCE_BT_WHEEL_CM 18.6f 
+
+
+
+
 
 /**
  * @brief Function that resets

@@ -25,7 +25,9 @@
  */
 bool ResetAllEncoders()
 {
-    return false;
+    ENCODER_Reset(LEFT);
+    ENCODER_Reset(RIGHT);
+    return true;
 }
 
 /**
@@ -44,7 +46,7 @@ bool ResetAllEncoders()
  */
 int GetAnEncoder(int motorNumber)
 {
-    return 0;
+    return ENCODER_Read(motorNumber);
 }
 
 /**
@@ -69,6 +71,15 @@ int GetAnEncoder(int motorNumber)
  */
 bool SetMotorSpeed(int motorNumber, float wantedSpeed)
 {
+    if (motorNumber == LEFT || motorNumber == RIGHT){
+        if(wantedSpeed >= -1 && wantedSpeed <= 1){
+            MOTOR_SetSpeed(motorNumber, wantedSpeed);
+            return true;
+        }
+        else {
+            
+        }
+    }
     return false;
 }
 
