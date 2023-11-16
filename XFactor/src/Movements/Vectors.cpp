@@ -14,6 +14,7 @@
 #include "Movements/Vectors.hpp"
 
 MovementVector vectorBuffer[VECTOR_BUFFER_SIZE];
+MovementVector emptyMovementVector;
 
 /**
  * @brief Fills up
@@ -25,13 +26,12 @@ MovementVector vectorBuffer[VECTOR_BUFFER_SIZE];
  */
 bool Vectors_Init()
 {
-    MovementVector emptyMovementVector;
     emptyMovementVector.distance_cm = 0.0f;
     emptyMovementVector.rotation_rad = 0.0f;
 
-    for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
     {
-        vectorBuffer[i] = emptyMovementVector;
+        vectorBuffer[vectorBufferIndex] = emptyMovementVector;
     }
     return true;
 }
@@ -50,6 +50,13 @@ bool Vectors_Init()
  */
 int GetAvailableVectors()
 {
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (!(vectorBuffer[vectorBufferIndex].distance_cm == 0.0f && vectorBuffer[vectorBufferIndex].rotation_rad == 0.0f))
+        {
+            return VECTOR_BUFFER_SIZE - vectorBufferIndex;
+        }
+    }
     return 0;
 }
 
@@ -73,7 +80,18 @@ int GetAvailableVectors()
  */
 bool SaveNewVector()
 {
-    return false;
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (vectorBuffer[vectorBufferIndex].distance_cm == 0.0f && vectorBuffer[vectorBufferIndex].rotation_rad == 0.0f)
+        {
+            if (vectorBufferIndex > 0)
+            {
+                MovementVector newMovementVector;
+                newMovementVector.rotation_rad = GetSavedRotation();
+                newMovementVector.distance_cm = GetSavedDistance();
+            }
+        }
+    }
 }
 
 /**

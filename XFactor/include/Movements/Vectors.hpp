@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#include "Movements/Positions.hpp"
+
 typedef struct 
 {
     float rotation_rad;
