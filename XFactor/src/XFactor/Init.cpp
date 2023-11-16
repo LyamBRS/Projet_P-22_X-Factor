@@ -27,8 +27,8 @@ void XFactor_Init()
 
     if (Debug_Init()){
         if (LEDS_Init()){
-            if(Alarm_Init()){
-                if(Package_Init()){
+            if(Alarm_Init() || true){
+                if(Package_Init() || true){
                     if(BT_Init()){
                         if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){

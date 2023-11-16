@@ -26,13 +26,14 @@ void SafeBox_Init()
     if(Debug_Init()){
         if (LEDS_Init()){
             if (BT_Init()){
-                if(Alarm_Init()){
-                    if(Package_Init()){
-                        if(Garage_Init()){
-                            if(Lid_Init()){
+                if(Alarm_Init() || true){
+                    if(Package_Init() || true){
+                        if(Garage_Init() || true){
+                            if(Lid_Init() || true){
                                 if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
                                     if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                         // Function is successful.
+                                        Debug_Information("Init", "SafeBox_Init", "Successful initialisation");
                                         return;
                                     } else Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction Failed");
                                 } else Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus Failed");
