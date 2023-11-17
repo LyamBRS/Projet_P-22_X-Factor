@@ -1,13 +1,1 @@
 main.cpp
-
-XFactor/.pio
-XFactor/.vscode/.browse.c_cpp.db*
-XFactor/.vscode/c_cpp_properties.json
-XFactor/.vscode/launch.json
-XFactor/.vscode/ipch
-
-SafeBox/.pio
-SafeBox/.vscode/.browse.c_cpp.db*
-SafeBox/.vscode/c_cpp_properties.json
-SafeBox/.vscode/launch.json
-SafeBox/.vscode/ipch
