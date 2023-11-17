@@ -161,6 +161,18 @@ BT_SERIAL_EVENT
                 }
             }
         }
+
+        /**
+         * @brief
+         * DO NOT TOUCH THIS DELAY.
+         * Its the sole reason communication works.
+         * Without it we go out of the interrupt, the
+         * string of received characters will be lost
+         * and so will your message.
+         *
+         * This allows more characters to be received while
+         * the functions loops.
+         */
         delay(10);
     }
 }
