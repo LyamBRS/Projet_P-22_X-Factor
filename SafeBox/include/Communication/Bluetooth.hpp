@@ -26,13 +26,33 @@
 /// @brieg Serial event called by Arduino when a character is received. MUST BE LINKED WITH @ref BT_SERIAL
 #define BT_SERIAL_EVENT void serialEvent1()
 /// @brief How big in bytes can a message be until its discarded for being gibberish?
-#define BT_MAX_MESSAGE_LENGTH 32
+#define BT_MAX_MESSAGE_LENGTH 200
 /// @brief How many strings can the message buffer receive before it overflows?
 #define BT_SIZE_OF_MESSAGE_BUFFER 4
 /// @brief Returned by BT_GetMessage functions to indicate that there was no message to get.
 #define BT_NO_MESSAGE "%_NAN_%"
 /// @brief Returned whenever an error occur in a function that returns and handles communications.
 #define BT_ERROR_MESSAGE "%_ERROR_%"
+
+/**
+ * @brief
+ * Returns wether the program is in an interrupt
+ * or not.
+ * @return true:
+ * DO NOT REMOVE INTERRUPTS
+ * @return false:
+ * Not in an RX interrupt.
+ */
+bool BT_GetRXFlag();
+
+/**
+ * @brief
+ * Sets the interrupt flag value.
+ * Use these to check if you can
+ * stop interrupts or not.
+ */
+void BT_SetRXFlag(bool flagValue);
+
 
 /**
  * @brief Function that initialises Bluetooth on
@@ -154,3 +174,5 @@ String BT_GetLatestMessage();
  * SafeBox.
  */
 String BT_MessageExchange(String message, int millisecondsTimeOut);
+
+String MessageBuffer(String newMessage, unsigned char bufferIndex, int action);

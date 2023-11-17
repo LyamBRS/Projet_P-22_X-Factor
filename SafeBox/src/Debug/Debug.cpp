@@ -104,3 +104,28 @@ void Debug_Information(String fileName, String functionName, String informationM
         #endif
     #endif
 }
+
+
+void Debug_Start(String functionName)
+{
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            DEBUG_SERIAL.print("[START]: ");
+            DEBUG_SERIAL.print(functionName);
+            DEBUG_SERIAL.print("\n\r");
+            DEBUG_SERIAL.flush();
+        #endif
+    #endif
+}
+
+void Debug_End(String functionName)
+{
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            DEBUG_SERIAL.print("[END]: ");
+            DEBUG_SERIAL.print(functionName);
+            DEBUG_SERIAL.print("\n\r");
+            DEBUG_SERIAL.flush();
+        #endif
+    #endif
+}

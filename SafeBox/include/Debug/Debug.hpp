@@ -72,3 +72,7 @@ void Debug_Warning(String fileName, String functionName, String warningMessage);
  * @param informationMessage Short, unique warning message
  */
 void Debug_Information(String fileName, String functionName, String informationMessage);
+
+void Debug_Start(String functionName);
+
+void Debug_End(String functionName);

@@ -163,8 +163,8 @@ bool SafeBox_ExchangeStatus()
 {
     // - VARIABLES - //
     String command = COMMAND_STATUS_EXCHANGE;
-    String statusEnding = "";
-    String answer = "";
+    String statusEnding = "     ";
+    String answer = "     ";
     XFactor_Status currentStatus = XFactor_GetStatus();
 
     // - Get the command ending.
@@ -199,7 +199,7 @@ bool SafeBox_ExchangeStatus()
     }
 
     // - Build command string and send it
-    command = command.concat(statusEnding);
+    command.concat(statusEnding);
     answer = BT_MessageExchange(command, COMMS_TIMEOUT_MS);
 
     if (answer == BT_ERROR_MESSAGE)

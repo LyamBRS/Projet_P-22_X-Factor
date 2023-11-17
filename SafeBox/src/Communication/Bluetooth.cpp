@@ -16,9 +16,82 @@
 #include "Communication/Bluetooth.hpp"
 
 // - GLOBAL LOCAL ACCESS - //
-String currentMessage = "";
-String receivedBTMessages[BT_SIZE_OF_MESSAGE_BUFFER] = {};
 unsigned char currentMessageIndex = 0;
+
+/**
+ * @brief
+ * This stupid function is the result of Arduino
+ * wonderful String memory leaks! This function
+ * handles a table of strings that contains the
+ * messages received over Bluetooth that would
+ * otherwise be global as its accessed by a lot
+ * of Bluetooth functions.
+ * @param newMessage
+ * If you want to save a new message at a specified index, or concat a message.
+ * @param bufferIndex
+ * @param Action
+ * 0: Read
+ * 1: Write
+ * 2: check if address is "E"mpty or "F"illed
+ * @return String:
+ * Always returns
+ */
+String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
+{
+    static String messageA = "";
+    static String messageB = "";
+    static String messageC = "";
+    static String messageD = "";
+    String wantedMessage = "";
+
+    switch(bufferIndex)
+    {
+        case(0): wantedMessage = messageA; break;
+        case(1): wantedMessage = messageB; break;
+        case(2): wantedMessage = messageC; break;
+        case(3): wantedMessage = messageD; break;
+    }
+
+    if(bufferIndex >= BT_SIZE_OF_MESSAGE_BUFFER)
+    {
+        Debug_Error("Bluetooth", "MessageBuffer", "Specified index is too large");
+        return BT_ERROR_MESSAGE;
+    }
+
+    if(action > 2 || action < 0)
+    {
+        Debug_Error("Bluetooth", "MessageBuffer", "Specified action is wrong");
+        return BT_ERROR_MESSAGE;
+    }
+
+    // Is there a string at the specified index?
+    if(action == 2)
+    {
+        return (wantedMessage.length()>0) ? "F" : "E";
+    }
+
+    // Read the buffer
+    if(action == 0)
+    {
+        return wantedMessage;
+    }
+
+    // Write the buffer
+    if(action == 1)
+    {
+        switch(bufferIndex)
+        {
+            case(0): messageA = newMessage; break;
+            case(1): messageB = newMessage; break;
+            case(2): messageC = newMessage; break;
+            case(3): messageD = newMessage; break;
+        }
+        return newMessage;
+    }
+
+    return BT_ERROR_MESSAGE;
+}
+
 
 /**
  * @brief
@@ -30,34 +103,62 @@ unsigned char currentMessageIndex = 0;
 BT_SERIAL_EVENT
 {
     // - VARIABLES - //
-    char receivedCharacter;
+    static String _currentMessage = "";
+    char receivedCharacter = 0;
     int messageBufferIndex = 0;
+    int fuckUpCounter = 0;
 
     // Empty the internal buffer
     while(BT_SERIAL.available())
     {
+        fuckUpCounter++;
+        if(fuckUpCounter > BT_MAX_MESSAGE_LENGTH)
+        {
+            return;
+        }
+
         receivedCharacter = (char)BT_SERIAL.read();
         if(receivedCharacter >= 32 && receivedCharacter <= 126)
         {
-            currentMessage += receivedCharacter;
+            Serial.print("RX: '");
+            Serial.print(receivedCharacter);
+            Serial.print("' before: \"");
+            Serial.print(_currentMessage);
+            Serial.print("\" after:\"");
+            _currentMessage += receivedCharacter;
+            Serial.print(_currentMessage);
+            Serial.println("\"");
         }
         else
         {
             // END OF STRING
-            if(receivedCharacter == "\n")
+            if(receivedCharacter == '\n')
             {
                 messageBufferIndex = BT_MessagesAvailable();
 
                 if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
                 {
                     // Oh shit... Whos spamming? lmfao
-                    Debug_Error("Bluetooth", "serialEvent1", "BUFFER OVERFLOW. Message lost.");
-                    currentMessage = "";
+                    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
+                    _currentMessage = "";
                 }
                 else
                 {
-                    receivedBTMessages[messageBufferIndex] = currentMessage;
-                    currentMessage = "";
+                    //receivedBTMessages[messageBufferIndex] = _currentMessage;
+                    MessageBuffer(_currentMessage, messageBufferIndex, 1);
+                    Debug_Information("Bluetooth", "BT_SERIAL_EVENT", "New message saved");
+                    _currentMessage = "";
+                }
+            }
+            else
+            {
+                if(receivedCharacter == '\r')
+                {
+                    // Expected. Disregarded
+                }
+                else
+                {
+                    Debug_Warning("Bluetooth", "BT_SERIAL_EVENT", "Unknown character");
                 }
             }
         }
@@ -84,30 +185,31 @@ BT_SERIAL_EVENT
 bool BT_Init()
 {
     BT_SERIAL.begin(BT_HC05_BAUDRATE);
+    return true;
 
     // Reserves X amount of memory for the string to use and fill as data comes in
-    if(currentMessage.reserve(BT_MAX_MESSAGE_LENGTH))
-    {
-        for(int index=0; index<BT_SIZE_OF_MESSAGE_BUFFER; index++)
-        {
-            if(receivedBTMessages[index].reserve(BT_MAX_MESSAGE_LENGTH))
-            {
+    // if(_currentMessage.reserve(BT_MAX_MESSAGE_LENGTH))
+    // {
+        // for(int index=0; index<BT_SIZE_OF_MESSAGE_BUFFER; index++)
+        // {
+            // if(receivedBTMessages[index].reserve(BT_MAX_MESSAGE_LENGTH))
+            // {
                 // SUCCESS
-            }
-            else
-            {
-                Debug_Error("Bluetooth", "BT_Init", "String buffer reserve failure");
-                return false;
-            }
-        }
-        return true;
-    }
-    else
-    {
+            // }
+            // else
+            // {
+                // Debug_Error("Bluetooth", "BT_Init", "String buffer reserve failure");
+                // return false;
+            // }
+        // }
+        // return true;
+    // }
+    // else
+    // {
         // Maybe the value of @ref BT_MAX_MESSAGE_LENGTH is too big.
-        Debug_Error("Bluetooth", "BT_Init", "String reserve failure");
-        return false;
-    }
+        // Debug_Error("Bluetooth", "BT_Init", "String reserve failure");
+        // return false;
+    // }
 }
 
 /**
@@ -133,6 +235,7 @@ bool BT_SendString(String message)
     }
 
     // - FUNCTION EXECUTION - //
+    Debug_Information("Bluetooth", "BT_SendString", message);
     unsigned int byteSent = BT_SERIAL.println(message);
     BT_SERIAL.flush();
 
@@ -159,7 +262,7 @@ int BT_MessagesAvailable()
 
     for (unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
-        if(receivedBTMessages[messageIndex].length() > 0)
+        if(MessageBuffer("", messageIndex, 2) == String("F"))
         {
             messageCount++;
         }
@@ -187,7 +290,7 @@ bool BT_ClearAllMessages()
 {
     for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
-        receivedBTMessages[messageIndex] = "";
+        MessageBuffer("", messageIndex, 1);
     }
     return true;
 }
@@ -280,18 +383,19 @@ String BT_GetLatestMessage()
     if(availableMessages == 0) return BT_NO_MESSAGE;
 
     // - FUNCTION EXECUTION - //
-    oldestMessage = receivedBTMessages[0];
+    oldestMessage = MessageBuffer("", 0, 0);
 
     // brings buffer forwards by one.
     if(BT_SIZE_OF_MESSAGE_BUFFER>1)
     {
         for(unsigned char messageIndex = 0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER-1; messageIndex++)
         {
-            receivedBTMessages[messageIndex] = receivedBTMessages[messageIndex+1];
+            String message = MessageBuffer("", messageIndex+1, 0);
+            MessageBuffer(message, messageIndex, 1);
         }
     }
     // Clear last message to avoid duplicates
-    receivedBTMessages[BT_SIZE_OF_MESSAGE_BUFFER-1] = "";
+    MessageBuffer("", BT_SIZE_OF_MESSAGE_BUFFER-1, 1);
     return oldestMessage;
 }
 

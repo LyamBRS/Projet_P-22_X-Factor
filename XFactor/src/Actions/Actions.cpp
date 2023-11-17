@@ -217,6 +217,7 @@ void Execute_WaitAfterSafeBox()
   {
     if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
     {
+      Debug_Information("Actions", "Execute_WaitAfterSafeBox", "SafeBox detected");
       SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
     }
   }

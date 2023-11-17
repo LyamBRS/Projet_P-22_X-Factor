@@ -22,4 +22,5 @@ void setup()
 void loop()
 {
   Execute_CurrentFunction();
+  delay(500);
 }

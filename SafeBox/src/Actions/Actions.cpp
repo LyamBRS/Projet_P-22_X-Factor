@@ -180,6 +180,25 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
+
+    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
+    {
+        Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
+        return;
+    }
+    delay(100);
+
+    if(SafeBox_CheckAndExecuteMessage())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
+        // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        return;
+    }
+    else
+    {
+        Debug_Warning("-","-","No XFactor");
+    }
 }
 
 /**
