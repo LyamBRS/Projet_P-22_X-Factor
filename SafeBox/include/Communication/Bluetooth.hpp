@@ -35,26 +35,6 @@
 #define BT_ERROR_MESSAGE "%_ERROR_%"
 
 /**
- * @brief
- * Returns wether the program is in an interrupt
- * or not.
- * @return true:
- * DO NOT REMOVE INTERRUPTS
- * @return false:
- * Not in an RX interrupt.
- */
-bool BT_GetRXFlag();
-
-/**
- * @brief
- * Sets the interrupt flag value.
- * Use these to check if you can
- * stop interrupts or not.
- */
-void BT_SetRXFlag(bool flagValue);
-
-
-/**
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART
  * module. It initialises the used pins correctly
@@ -175,4 +155,32 @@ String BT_GetLatestMessage();
  */
 String BT_MessageExchange(String message, int millisecondsTimeOut);
 
+/**
+ * @brief
+ * This stupid function is the result of Arduino
+ * wonderful String memory leaks! This function
+ * handles a table of strings that contains the
+ * messages received over Bluetooth that would
+ * otherwise be global as its accessed by a lot
+ * of Bluetooth functions.
+ * @param newMessage
+ * If you want to save a new message at a specified index, or concat a message.
+ * @param bufferIndex
+ * @param Action
+ * 0: Read
+ * 1: Write
+ * 2: check if address is "E"mpty or "F"illed
+ * @return String:
+ * Always returns
+ */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action);
+
+/**
+ * @brief
+ * Wonderful function attempting to fix the bug
+ * located in Init.cpp
+ * @param newMessage
+ * If "$$$" the message wont be overwrote.
+ * @return String
+ */
+String CurrentMessage(String newMessage);

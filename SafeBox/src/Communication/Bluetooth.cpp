@@ -16,7 +16,7 @@
 #include "Communication/Bluetooth.hpp"
 
 // - GLOBAL LOCAL ACCESS - //
-unsigned char currentMessageIndex = 0;
+bool _messageReceived = false;
 
 /**
  * @brief
@@ -38,18 +38,10 @@ unsigned char currentMessageIndex = 0;
  */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 {
-    static String messageA = "";
-    static String messageB = "";
-    static String messageC = "";
-    static String messageD = "";
-    String wantedMessage = "";
-
-    switch(bufferIndex)
+    static String messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER] = {};
+    for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
-        case(0): wantedMessage = messageA; break;
-        case(1): wantedMessage = messageB; break;
-        case(2): wantedMessage = messageC; break;
-        case(3): wantedMessage = messageD; break;
+        messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER].reserve(BT_MAX_MESSAGE_LENGTH);
     }
 
     if(bufferIndex >= BT_SIZE_OF_MESSAGE_BUFFER)
@@ -67,31 +59,43 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
     // Is there a string at the specified index?
     if(action == 2)
     {
-        return (wantedMessage.length()>0) ? "F" : "E";
+        return (messageBuffer[bufferIndex].length()>0) ? "F" : "E";
     }
 
-    // Read the buffer
+    //Read the buffer
     if(action == 0)
     {
-        return wantedMessage;
+        return messageBuffer[bufferIndex];
     }
 
-    // Write the buffer
+    //Write the buffer
     if(action == 1)
     {
-        switch(bufferIndex)
-        {
-            case(0): messageA = newMessage; break;
-            case(1): messageB = newMessage; break;
-            case(2): messageC = newMessage; break;
-            case(3): messageD = newMessage; break;
-        }
+        messageBuffer[bufferIndex] = newMessage;
         return newMessage;
     }
-
     return BT_ERROR_MESSAGE;
 }
 
+/**
+ * @brief
+ * Wonderful function attempting to fix the bug
+ * located in Init.cpp
+ * @param newMessage
+ * If "$$$" the message wont be overwrote.
+ * @return String
+ */
+String CurrentMessage(String newMessage)
+{
+    String currentMessage = "";
+
+    if(newMessage == "$$$")
+    {
+        return currentMessage;
+    }
+
+    currentMessage = newMessage;
+}
 
 /**
  * @brief
@@ -103,31 +107,24 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 BT_SERIAL_EVENT
 {
     // - VARIABLES - //
-    static String _currentMessage = "";
     char receivedCharacter = 0;
     int messageBufferIndex = 0;
-    int fuckUpCounter = 0;
+    static String _currentMessage = "";
 
     // Empty the internal buffer
     while(BT_SERIAL.available())
     {
-        fuckUpCounter++;
-        if(fuckUpCounter > BT_MAX_MESSAGE_LENGTH)
-        {
-            return;
-        }
-
         receivedCharacter = (char)BT_SERIAL.read();
         if(receivedCharacter >= 32 && receivedCharacter <= 126)
         {
-            Serial.print("RX: '");
-            Serial.print(receivedCharacter);
-            Serial.print("' before: \"");
-            Serial.print(_currentMessage);
-            Serial.print("\" after:\"");
+            // Serial.print("RX: '");
+            // Serial.print(receivedCharacter);
+            // Serial.print("' before: \"");
+            // Serial.print(_currentMessage);
+            // Serial.print("\" after:\"");
             _currentMessage += receivedCharacter;
-            Serial.print(_currentMessage);
-            Serial.println("\"");
+            // Serial.print(_currentMessage);
+            // Serial.println("\"");
         }
         else
         {
@@ -141,13 +138,15 @@ BT_SERIAL_EVENT
                     // Oh shit... Whos spamming? lmfao
                     Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
                     _currentMessage = "";
+                    _messageReceived = false;
                 }
                 else
                 {
                     //receivedBTMessages[messageBufferIndex] = _currentMessage;
                     MessageBuffer(_currentMessage, messageBufferIndex, 1);
-                    Debug_Information("Bluetooth", "BT_SERIAL_EVENT", "New message saved");
+                    Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
                     _currentMessage = "";
+                    _messageReceived = true;
                 }
             }
             else
@@ -162,6 +161,7 @@ BT_SERIAL_EVENT
                 }
             }
         }
+        delay(10);
     }
 }
 
@@ -349,6 +349,15 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
             // Less go, we finally got some messages fr
             return true;
         }
+
+        if(_messageReceived)
+        {
+            // FOUND MESSAGE LESS GO
+            Debug_Information("Bluetooth", "BT_WaitForAMessage", "Flag raised");
+            return true;
+        }
+
+        serialEvent1();
     }
     Debug_Warning("Bluetooth", "BT_WaitForAMessage", "Timedout");
     return false;
@@ -431,6 +440,7 @@ String BT_GetLatestMessage()
 String BT_MessageExchange(String message, int millisecondsTimeOut)
 {
     // Firstly send the message.
+    _messageReceived = false;
     if(!BT_SendString(message))
     {
         Debug_Error("Bluetooth", "BT_MessageExchange", "TX failure");

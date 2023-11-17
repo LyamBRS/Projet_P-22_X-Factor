@@ -181,23 +181,20 @@ unsigned char GetCurrentExecutionFunction()
 void Execute_WaitAfterXFactor()
 {
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
+    // Debug_Information("","","");
 
     if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
     {
         Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
         return;
     }
-    delay(100);
 
     if(SafeBox_CheckAndExecuteMessage())
     {
         Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
         // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        BT_ClearAllMessages();
         return;
-    }
-    else
-    {
-        Debug_Warning("-","-","No XFactor");
     }
 }
 

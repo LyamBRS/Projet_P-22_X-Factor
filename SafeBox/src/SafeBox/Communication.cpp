@@ -338,7 +338,7 @@ bool SafeBox_ReplyStatus()
 
     // - Build command string and send it
     answer.concat(statusEnding);
-    if(BT_SendString(answer))
+    if(!BT_SendString(answer))
     {
         Debug_Error("Communication", "SafeBox_ReplyStatus", "Status TX failed");
         return false;

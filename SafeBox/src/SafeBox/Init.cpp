@@ -23,9 +23,41 @@
  */
 void SafeBox_Init()
 {
+    /**
+     * @brief
+     * DO NOT TOUCH
+     * @bug
+     * If this isn't there, the static String
+     * inside of this function will be created
+     * later in the program. While you may think
+     * that its not an issue, turns out that this
+     * somehow started to clash with the WS2812
+     * class. It would cause the program to
+     * literally STOP after 2 execution. Void
+     * loop would literally no longer be executed
+     *
+     * This was either fixed by removing 2 lines
+     * of "pixels" inside WS2812 functions we
+     * made (pixels.show()) OR by removing the
+     * "static" from the strings in this function
+     *
+     * Obviously, we need the strings to be static
+     * How else would we keep track of the buffer
+     * of received messages? A global variable?
+     * yeah, that fucked up too and caused the
+     * Strings to clash with other Serial ports
+     * buffers somehow.
+     *
+     * So this fix allows the code to continue
+     * executing normally... go figure bruh.
+     */
+    MessageBuffer("", 0, 0);
+
     if(Debug_Init()){
-        if (LEDS_Init()){
-            if (BT_Init()){
+        if (BT_Init()){
+            if (LEDS_Init()){
+                LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
+                delay(1000);
                 if(Alarm_Init() || true){
                     if(Package_Init() || true){
                         if(Garage_Init() || true){
