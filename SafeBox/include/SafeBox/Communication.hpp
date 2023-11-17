@@ -19,11 +19,11 @@
 #include "Lid/Lid.hpp"
 #include "Garage/Garage.hpp"
 #include "Package/Package.hpp"
-#include "Sensors/Doorbell/Doorbell.hpp"/
+#include "Sensors/Doorbell/Doorbell.hpp"
 
 // - DEFINES - //
 // - DEFINES - //
-#define COMMS_TIMEOUT_MS 1000
+#define COMMS_TIMEOUT_MS 5000
 
 #define COMMAND_LID_OPEN  "C_LID_O"
 #define COMMAND_LID_CLOSE "C_LID_C"

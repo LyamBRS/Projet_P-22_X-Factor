@@ -210,6 +210,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
+  Debug_Information("","","");
   XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
@@ -217,7 +218,9 @@ void Execute_WaitAfterSafeBox()
   {
     if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
     {
-      SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+      Debug_Information("Actions", "Execute_WaitAfterSafeBox", "SafeBox detected");
+      SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+      BT_ClearAllMessages();
     }
   }
 }
@@ -246,7 +249,7 @@ void Execute_WaitAfterSafeBox()
 void Execute_WaitForDelivery()
 {
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
   if (SafeBox_GetDoorBellStatus())
   {
@@ -894,7 +897,7 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
-
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
 }
 
 //#pragma endregion

@@ -58,71 +58,70 @@ bool SafeBox_CheckAndExecuteMessage()
     if(latestMessage == BT_NO_MESSAGE)
     {
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "BT_MessagesAvailable failure");
-        return false; 
+        return false;
     }
 
     // - ANSWER CHECK - //
-    if(latestMessage.endsWith(COMMAND_LID_OPEN))   
+    if(latestMessage.endsWith(COMMAND_LID_OPEN))
     {
-        if(SafeBox_ChangeLidState(true)) return true;
+        if(SafeBox_ChangeLidState(true)) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeLidState");
         return false;
     }
 
-    if(latestMessage.endsWith(COMMAND_LID_CLOSE))   
+    if(latestMessage.endsWith(COMMAND_LID_CLOSE))
     {
-        if(SafeBox_ChangeLidState(false)) return true;
+        if(SafeBox_ChangeLidState(false)) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeLidState");
         return false;
     }
 
-    if(latestMessage.endsWith(COMMAND_GARAGE_OPEN))   
+    if(latestMessage.endsWith(COMMAND_GARAGE_OPEN))
     {
-        if(SafeBox_ChangeGarageState(true)) return true;
+        if(SafeBox_ChangeGarageState(true)) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeGarageState");
         return false;
     }
 
-    if(latestMessage.endsWith(COMMAND_GARAGE_CLOSE))   
+    if(latestMessage.endsWith(COMMAND_GARAGE_CLOSE))
     {
-        if(SafeBox_ChangeGarageState(false)) return true;
+        if(SafeBox_ChangeGarageState(false)) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeGarageState");
         return false;
     }
 
     if(latestMessage.endsWith(COMMAND_CHECK_PACKAGE))
     {
-        if(SafeBox_ReplyToCheckIfPackageDeposited()) return true;
+        if(SafeBox_ReplyToCheckIfPackageDeposited()) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReplyToCheckIfPackageDeposited");
-        return false;     
+        return false;
     }
 
     if(latestMessage.endsWith(COMMAND_GET_PACKAGE_COUNT))
     {
-        if(SafeBox_ReturnDepositedPackages()) return true;
+        if(SafeBox_ReturnDepositedPackages()) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReturnDepositedPackages");
-        return false;     
+        return false;
     }
 
-    if(latestMessage.endsWith(COMMAND_STATUS_EXCHANGE))
+    if(latestMessage.startsWith(COMMAND_STATUS_EXCHANGE))
     {
         if(SafeBox_ReplyStatus())
         {
-            if(SafeBox_SaveReceivedXFactorStatus(latestMessage)) return true;
+            if(SafeBox_SaveReceivedXFactorStatus(latestMessage)) {return true;};
             Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to save received status");
             return false;
         }
-        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed ReturnDepositedPackages");
 
-        if(SafeBox_SaveReceivedXFactorStatus(latestMessage)) 
+        if(SafeBox_SaveReceivedXFactorStatus(latestMessage))
         {
             Debug_Warning("Communication", "SafeBox_CheckAndExecuteMessage", "Saved new XFactor status but failed to reply SafeBox status");
             return false;
         }
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to save received status & reply status to XFactor");
-        return false;     
+        return false;
     }
-    
+
     if(latestMessage.endsWith(COMMAND_DOORBELL_GET))
     {
         if(SafeBox_GetDoorBellStatus())
@@ -132,7 +131,10 @@ bool SafeBox_CheckAndExecuteMessage()
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed GetDoorBellStatus");
         return false;
     }
-    return true;
+
+    Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Unknown command received");
+    Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", latestMessage);
+    return false;
 }
 
 /**
@@ -215,7 +217,7 @@ bool SafeBox_ChangeGarageState(bool wantedState)
         if(BT_SendString(ANSWER_GARAGE_FAILED)) return false;
         Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage failure");
         SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
-        return false;      
+        return false;
     }
     else
     {
@@ -231,7 +233,7 @@ bool SafeBox_ChangeGarageState(bool wantedState)
         if(BT_SendString(ANSWER_GARAGE_FAILED)) return false;
         Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage failure");
         SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
-        return false;  
+        return false; 
     }
     // Should not reach
     return false;
@@ -283,6 +285,7 @@ bool SafeBox_SaveReceivedXFactorStatus(String command)
     if(command.endsWith("RH"))      {XFactor_SetNewStatus(XFactor_Status::ReturningHome);               return true;}
     if(command.endsWith("SFAP"))    {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);        return true;}
     if(command.endsWith("WFD"))     {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);          return true;}
+    if(command.endsWith("WASB"))    {XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);         return true;}
 
     Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Unknown XFactor status");
     return false;
@@ -315,7 +318,7 @@ bool SafeBox_ReplyStatus()
     // - Get the command ending.
     switch(currentStatus)
     {
-        case(SafeBox_Status::CommunicationError):   statusEnding = "CE"     break;
+        case(SafeBox_Status::CommunicationError):   statusEnding = "CE";    break;
         case(SafeBox_Status::Off):                  statusEnding = "O";     break;
         case(SafeBox_Status::WaitingForDelivery):   statusEnding = "WFD";   break;
         case(SafeBox_Status::WaitingForRetrieval):  statusEnding = "WFRI";  break;
@@ -334,13 +337,13 @@ bool SafeBox_ReplyStatus()
     }
 
     // - Build command string and send it
-    answer = answer.concat(statusEnding);
-    if(BT_SendString(answer))
+    answer.concat(statusEnding);
+    if(!BT_SendString(answer))
     {
         Debug_Error("Communication", "SafeBox_ReplyStatus", "Status TX failed");
         return false;
     }
-
+    Debug_Information("Communication", "SafeBox_ReplyStatus","Success");
     return true;
 }
 

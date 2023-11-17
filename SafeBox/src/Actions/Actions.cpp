@@ -127,6 +127,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_DROP_OFF):
+        case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
         case(FUNCTION_ID_WAIT_FOR_RETRIEVAL):
         case(FUNCTION_ID_WAIT_FOR_RETURN):
             // The specified function is indeed a valid function ID.
@@ -179,6 +180,22 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
+    // Debug_Information("","","");
+
+    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
+    {
+        Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
+        return;
+    }
+
+    if(SafeBox_CheckAndExecuteMessage())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
+        // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        BT_ClearAllMessages();
+        return;
+    }
 }
 
 /**

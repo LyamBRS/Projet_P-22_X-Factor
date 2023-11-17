@@ -22,7 +22,7 @@
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
 /// @brief Which serial port is used for debugging the program.
-#define DEBUG_SERIAL Serial2
+#define DEBUG_SERIAL Serial
 /// @brief Debug port speed.
 #define DEBUG_BAUD_RATE 115200
 
@@ -72,3 +72,7 @@ void Debug_Warning(String fileName, String functionName, String warningMessage);
  * @param informationMessage Short, unique warning message
  */
 void Debug_Information(String fileName, String functionName, String informationMessage);
+
+void Debug_Start(String functionName);
+
+void Debug_End(String functionName);
