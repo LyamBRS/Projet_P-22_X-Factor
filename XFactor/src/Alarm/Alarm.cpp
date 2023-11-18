@@ -27,7 +27,7 @@
  */
 bool Alarm_Init()
 {
-    return false;
+    return true;
 }
 
 /**

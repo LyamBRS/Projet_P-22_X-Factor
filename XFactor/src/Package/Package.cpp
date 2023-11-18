@@ -13,6 +13,8 @@
 // - INCLUDES - //
 #include "Package/Package.hpp"
 
+bool package_setUp = false;
+bool pickup = false;
 /**
  * @brief
  * Initialisation function that initialises the
@@ -25,6 +27,24 @@
  */
 bool Package_Init()
 {
+    Debug_Start("Package_Init");
+    if(GROVE_Init())
+    {
+        if(Claws_Init())
+        {
+            Debug_End();
+            return true;
+        }
+        else
+        {
+            Debug_Error("Package", "Package_Init", "Failed to initialise Claws");
+        }
+    }
+    else
+    {
+        Debug_Error("Package", "Package_Init", "Failed to initialise GROVE");
+    }
+    Debug_End();
     return false;
 }
 
@@ -45,6 +65,13 @@ bool Package_Init()
  */
 bool Package_Release()
 {
+    if (package_setUp == false && pickup == false){
+        return false;
+    }
+    if (Claws_SetGrabbers(75/100) == true){
+        pickup = false;
+        return true;
+    }
     return false;
 }
 
@@ -65,6 +92,12 @@ bool Package_Release()
  */
 bool Package_PickUp()
 {
+    if(pickup == false){
+    Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+    Claws_CloseUntilDetection();
+    pickup = true;
+    return true;
+    }
     return false;
 }
 
@@ -84,6 +117,9 @@ bool Package_PickUp()
  */
 bool Package_AlignWithSafeBox()
 {
+    // une longueur deja pres etablie, 90 a gauche, avance,
+    MoveFromVector(3.14159/2,0,false);
+
     return false;
 }
 
@@ -103,7 +139,10 @@ bool Package_AlignWithSafeBox()
  */
 bool Package_StoreClaw()
 {
-    return false;
+    if (package_setUp == true){
+        return false;
+    }
+    return Claws_SetDeployment(true);
 }
 
 /**
@@ -119,8 +158,8 @@ bool Package_StoreClaw()
  */
 bool Package_DeployClaw()
 {
-    return false;
-}
+    return Claws_SetDeployment(true);
+} 
 
 /**
  * @brief
@@ -142,6 +181,7 @@ bool Package_DeployClaw()
  */
 bool Package_Transport()
 {
+    Claws_SetHeight(PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT);
     return false;
 }
 
@@ -162,6 +202,13 @@ bool Package_Transport()
  */
 bool Package_Detected()
 {
+    unsigned long currentColour = 0;
+
+    currentColour = GROVE_GetColor();
+    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+        return true;
+    }
+
     return false;
 }
 
@@ -190,6 +237,11 @@ bool Package_Detected()
  */
 bool Package_SetStatus(bool newPackageStatus)
 {
+    package_setUp = newPackageStatus;
+    if (Package_Detected() == true && Package_DeployClaw() == true){
+        return true;
+    }
+    package_setUp = false;
     return false;
 }
 
@@ -205,5 +257,8 @@ bool Package_SetStatus(bool newPackageStatus)
  */
 bool Package_GetStatus()
 {
+    if (package_setUp == true){
+        return true;
+    }
     return false;
 }
