@@ -16,7 +16,6 @@
 void setup()
 {
   XFactor_Init();
-  // LEDS_Init();
 }
 
 /// @brief Arduino's while(1) function.

@@ -784,32 +784,24 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-    XFactor_SetNewStatus(XFactor_Status::Error);
+  // - VARIABLES - //
+  static bool status = false; // everything is closed
 
-    unsigned long timeStart = millis();
-    unsigned long timeNow;
-    int status = 0; // everything is closed
-    Serial.println("ERROR CODE");
-    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // ADD SafceBox_Status::Reset 
-    {
-        timeNow = millis();
-        if ((timeNow - timeStart) >= 1000)
-        {
-           //SafeBox_ExchangeStatus(XFactor_Status::Error); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
-           if (status == 1)
-           {
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
-            status = 0;
-           }
-           else if (status == 0)
-           {
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-            status = 1;
-           }
-        }   
-        timeStart = timeNow;
-    }
-    return;
+  // - PROGRAM - //
+  XFactor_SetNewStatus(XFactor_Status::Error);
+
+  SafeBox_ExchangeStatus();
+
+  status = !status;
+  if (status == true)
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
+  }
+  if (status == false)
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
+  }
+  return;
 }
 
 /**
