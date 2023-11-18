@@ -26,8 +26,8 @@
 #define PWR_MGMT_1 0X6B              // Power management 1 register
 
 // TODO: make this as a function of the scale, use AFS_SEL registers
-#define ACCELEROMETER_SENSIVITY 16384.0f //  in deg/s for a scale of +- 2g, see the data sheet
-#define GYROSCOPE_SENSIVITY 131.0f     //  in g for scale of +- 250 deg/s, see the data sheet
+#define ACCELEROMETER_SENSITIVITY 16384.0f //  in deg/s for a scale of +- 2g, see the data sheet
+#define GYROSCOPE_SENSITIVITY 131.0f     //  in g for scale of +- 250 deg/s, see the data sheet
 #define MPU6050_DATA_SIZE 6                    // Read 6 values in total, each axis value is stored in 2 registers
 
 // uncomment this to calibrate the sensor
@@ -60,7 +60,7 @@ typedef enum
 typedef enum
 {
     TWO_FIFTY_DEG_PER_SEC = 0x00, // +- 250 deg/sec full scale
-    FIVE_HUNDREND_DEG_PER_SEC = 0x1,
+    FIVE_HUNDRED_DEG_PER_SEC = 0x1,
     THOUSAND_DEG_PER_SEC = 0x10,
     TWO_THOUSAND_DEG_PER_SEC = 0x11
 } gyro_scale;
