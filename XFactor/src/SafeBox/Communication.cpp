@@ -163,8 +163,8 @@ bool SafeBox_ExchangeStatus()
 {
     // - VARIABLES - //
     String command = COMMAND_STATUS_EXCHANGE;
-    String statusEnding = "";
-    String answer = "";
+    String statusEnding = "     ";
+    String answer = "     ";
     XFactor_Status currentStatus = XFactor_GetStatus();
 
     // - Get the command ending.
@@ -190,32 +190,44 @@ bool SafeBox_ExchangeStatus()
         case(XFactor_Status::ReturningHome):            statusEnding = "RH";    break;
         case(XFactor_Status::SearchingForAPackage):     statusEnding = "SFAP";  break;
         case(XFactor_Status::WaitingForDelivery):       statusEnding = "WFD";   break;
+        case(XFactor_Status::WaitingAfterSafeBox):      statusEnding = "WASB";  break;
 
         default:
             Debug_Error("Communication", "SafeBox_ExchangeStatus", "Unknown XFactor status");
+            Debug_Error("Communication", "SafeBox_ExchangeStatus", String((int)currentStatus));
             return false;
     }
 
     // - Build command string and send it
-    command = command.concat(statusEnding);
+    command.concat(statusEnding);
     answer = BT_MessageExchange(command, COMMS_TIMEOUT_MS);
+    BT_ClearAllMessages();
+
+    if (answer == BT_ERROR_MESSAGE)
+    {
+        Debug_Error("Communication", "SafeBox_ExchangeStatus", "BT_MessageExchange Failed");
+        BT_ClearAllMessages();
+        return false;
+    }
 
     // - ANSWER CHECK - //
-    if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  return true;}
-    if(answer.endsWith("O"))    {SafeBox_SetNewStatus(SafeBox_Status::Off);                 return true;}
-    if(answer.endsWith("WFX"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);   return true;}
-    if(answer.endsWith("WFD"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);  return true;}
-    if(answer.endsWith("WFRI")) {SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval); return true;}
-    if(answer.endsWith("WFR"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);    return true;}
-    if(answer.endsWith("RFDO")) {SafeBox_SetNewStatus(SafeBox_Status::ReadyForDropOff);     return true;}
-    if(answer.endsWith("U"))    {SafeBox_SetNewStatus(SafeBox_Status::Unlocked);            return true;}
-    if(answer.endsWith("DO"))   {SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);         return true;}
-    if(answer.endsWith("M"))    {SafeBox_SetNewStatus(SafeBox_Status::Maintenance);         return true;}
-    if(answer.endsWith("E"))    {SafeBox_SetNewStatus(SafeBox_Status::Error);               return true;}
-    if(answer.endsWith("A"))    {SafeBox_SetNewStatus(SafeBox_Status::Alarm);               return true;}
+    if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("O"))    {SafeBox_SetNewStatus(SafeBox_Status::Off);                 BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("WFX"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);   BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("WFD"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);  BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("WFRI")) {SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval); BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("WFR"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);    BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("RFDO")) {SafeBox_SetNewStatus(SafeBox_Status::ReadyForDropOff);     BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("U"))    {SafeBox_SetNewStatus(SafeBox_Status::Unlocked);            BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("DO"))   {SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);         BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("M"))    {SafeBox_SetNewStatus(SafeBox_Status::Maintenance);         BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("E"))    {SafeBox_SetNewStatus(SafeBox_Status::Error);               BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("A"))    {SafeBox_SetNewStatus(SafeBox_Status::Alarm);               BT_ClearAllMessages(); return true;}
 
     Debug_Error("Communication", "SafeBox_ExchangeStatus", "Received answer did not match:");
     Debug_Error("Communication", "SafeBox_ExchangeStatus", answer);
+
+    BT_ClearAllMessages();
     return false;
 }
 

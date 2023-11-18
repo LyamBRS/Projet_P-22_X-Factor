@@ -210,6 +210,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
+  Debug_Information("","","");
   XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
@@ -217,7 +218,9 @@ void Execute_WaitAfterSafeBox()
   {
     if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
     {
-      SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+      Debug_Information("Actions", "Execute_WaitAfterSafeBox", "SafeBox detected");
+      SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+      BT_ClearAllMessages();
     }
   }
 }
@@ -246,7 +249,7 @@ void Execute_WaitAfterSafeBox()
 void Execute_WaitForDelivery()
 {
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
   if (SafeBox_GetDoorBellStatus())
   {
@@ -384,11 +387,12 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
+  int checkFunctionId;
+
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
   while (GetAvailableVectors() != 0)
   {
-    int checkFunctionId;
 
     checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
@@ -405,6 +409,7 @@ void Execute_SearchForPackage()
       SetNewExecutionFunction(checkFunctionId);
       return;
     }
+
     // MOVE IN ZIG ZAG
 
     if (Package_Detected())
@@ -465,7 +470,23 @@ void Execute_AvoidObstacle()
  */
 void Execute_ExamineFoundPackage()
 {
-  // WILL SEE
+  int checkFunctionId;
+  XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+  // ALIGN WITH POTENTIAL PACKAGE
+
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  if (Package_Detected())
+  {
+    // NOTIFY SAFEBOX
+    SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+  }
 }
 
 /**
@@ -493,26 +514,32 @@ void Execute_ExamineFoundPackage()
 void Execute_PickUpPackage()
 {
   int pickUpAttempt = 1;
+  int checkFunctionId;
 
   XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
 
-  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
-  {
-    Package_PickUp();
+  Package_PickUp();
 
-    while(!Package_Detected())
+  while(!Package_Detected())
+  {
+    if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
-      if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
-      {
-        // If we have time, undo the last vectors then redo ExamineFoundPackage
-        SetNewExecutionFunction(FUNCTION_ID_ERROR);
-        return;
-      }
-      pickUpAttempt++;
-      Package_PickUp();
+      // If we have time, undo the last vectors then redo ExamineFoundPackage
+      SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;
     }
-    SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+    pickUpAttempt++;
+
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+    Package_PickUp();
   }
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
 /**
@@ -539,11 +566,17 @@ void Execute_PickUpPackage()
  */
 void Execute_ReturnHome()
 { 
+  int checkFunctionId;
+
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 
-  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+  // RETURN HOME, ALARM CHECK WILL NEED TO BE IN BETWEEN MOVEMENTS
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
   {
-    // RETURN HOME WITH VECTORS, etc
+    SetNewExecutionFunction(checkFunctionId);
+    return;
   }
 
   SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
@@ -572,17 +605,24 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
+  int checkFunctionId;
+
   XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
 
   ResetVectors();
   ResetMovements();
 
-  if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
   {
-    if (Package_AlignWithSafeBox())
-    {
-      SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
-    }
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  if (Package_AlignWithSafeBox())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
   }
 }
 
@@ -608,6 +648,7 @@ void Execute_PreparingForDropOff()
  */
 void Execute_PackageDropOff()
 {
+  // WILL NEED TO SEE WITH CHANGES TO SAFEBOX LAYOUT
   XFactor_SetNewStatus(XFactor_Status::DroppingOff);
 
   if (SafeBox_GetLidState())
@@ -647,7 +688,26 @@ void Execute_PackageDropOff()
  */
 void Execute_ConfirmDropOff()
 {
-  
+  int checkFunctionId;
+
+  XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
+
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  if (SafeBox_CheckIfPackageDeposited())
+  {
+    // GO NEXT
+  }
+  else
+  {
+    SetNewExecutionFunction(FUNCTION_ID_ALARM);
+  }
 }
 
 /**
@@ -773,7 +833,6 @@ void Execute_Error()
  */
 void Execute_ReturnInsideGarage()
 {
-  // TO CORRECT xd yé tard
   int checkFunctionId;
   bool hasEnteredGarage = false;
 
@@ -838,7 +897,7 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
-
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
 }
 
 //#pragma endregion

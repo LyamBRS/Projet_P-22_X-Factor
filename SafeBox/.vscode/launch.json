@@ -12,9 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "C:/Users/chris/OneDrive/Documents/PROJET_ROBUS/Code/XFacteur/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "executable": "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/chris/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/cous5/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -25,18 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "C:/Users/chris/OneDrive/Documents/PROJET_ROBUS/Code/XFacteur/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "executable": "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/chris/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/cous5/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "C:/Users/chris/OneDrive/Documents/PROJET_ROBUS/Code/XFacteur/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "executable": "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/chris/.platformio/packages/toolchain-atmelavr/bin",
+            "toolchainBinDir": "C:/Users/cous5/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

@@ -4,11 +4,11 @@
  * @brief
  * Header file containing all the definitions of
  * Bluetooth functions used throughout the
- * XFactor project. These functions allows the
+ * SafeBox project. These functions allows the
  * robot to communicate with SafeBox and vise
  * versa.
  * @version 0.1
- * @date 2023-10-25
+ * @date 2023-11-10
  * @copyright Copyright (c) 2023
  */
 
@@ -23,8 +23,10 @@
 #define BT_HC05_BAUDRATE 19200
 /// @brief Serial port used on an Arduino Mega. Where the HC-05 BT module will be connected.
 #define BT_SERIAL Serial1
+/// @brieg Serial event called by Arduino when a character is received. MUST BE LINKED WITH @ref BT_SERIAL
+#define BT_SERIAL_EVENT void serialEvent1()
 /// @brief How big in bytes can a message be until its discarded for being gibberish?
-#define BT_MAX_MESSAGE_LENGTH 32
+#define BT_MAX_MESSAGE_LENGTH 200
 /// @brief How many strings can the message buffer receive before it overflows?
 #define BT_SIZE_OF_MESSAGE_BUFFER 4
 /// @brief Returned by BT_GetMessage functions to indicate that there was no message to get.
@@ -36,7 +38,7 @@
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART
  * module. It initialises the used pins correctly
- * and makes XFactor ready for Bluetooth
+ * and makes SafeBox ready for Bluetooth
  * communications.
  *
  * @attention
@@ -114,13 +116,8 @@ bool BT_WaitForAMessage(int millisecondsTimeOut);
  * available, the string will be empty
  *
  * @attention
- * This function calls @ref BT_MessagesAvailable
- * and returns @ref BT_NO_MESSAGE if there is no
- * available message to return.
- *
- * @warning
- * THIS WILL AUTOMATICALLY CLEAR THE BUFFER
- * OF THE LATEST MESSAGE.
+ * It is preferred that @ref BT_MessagesAvailable
+ * is called before you call this function.
  *
  * @return string: The oldest message stored in
  * the reception buffer.
@@ -157,3 +154,33 @@ String BT_GetLatestMessage();
  * SafeBox.
  */
 String BT_MessageExchange(String message, int millisecondsTimeOut);
+
+/**
+ * @brief
+ * This stupid function is the result of Arduino
+ * wonderful String memory leaks! This function
+ * handles a table of strings that contains the
+ * messages received over Bluetooth that would
+ * otherwise be global as its accessed by a lot
+ * of Bluetooth functions.
+ * @param newMessage
+ * If you want to save a new message at a specified index, or concat a message.
+ * @param bufferIndex
+ * @param Action
+ * 0: Read
+ * 1: Write
+ * 2: check if address is "E"mpty or "F"illed
+ * @return String:
+ * Always returns
+ */
+String MessageBuffer(String newMessage, unsigned char bufferIndex, int action);
+
+/**
+ * @brief
+ * Wonderful function attempting to fix the bug
+ * located in Init.cpp
+ * @param newMessage
+ * If "$$$" the message wont be overwrote.
+ * @return String
+ */
+String CurrentMessage(String newMessage);

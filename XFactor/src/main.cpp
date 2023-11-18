@@ -11,12 +11,12 @@
 // - INCLUDES -//
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
-#include "Sensors/Colour/GROVE.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
 {
   XFactor_Init();
+  // LEDS_Init();
 }
 
 /// @brief Arduino's while(1) function.
