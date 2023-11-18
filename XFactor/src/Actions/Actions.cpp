@@ -210,7 +210,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterSafeBox()
 {
-  Debug_Information("","","");
+  Debug_Start("Execute_WaitAfterSafeBox");
   XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
@@ -223,6 +223,7 @@ void Execute_WaitAfterSafeBox()
       BT_ClearAllMessages();
     }
   }
+  Debug_End();
 }
 
 /**

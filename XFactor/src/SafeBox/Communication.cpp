@@ -31,6 +31,7 @@
  */
 bool SafeBox_ChangeLidState(bool wantedState)
 {
+    Debug_Start("SafeBox_ChangeLidState");
     // - VARIABLES - //
     String command = wantedState ? COMMAND_LID_OPEN : COMMAND_LID_CLOSE; //Ternary operators go brrr
     String answer = "";
@@ -40,27 +41,31 @@ bool SafeBox_ChangeLidState(bool wantedState)
     {
         if(answer == ANSWER_LID_FAILED)
         {
-            Debug_Error("Communication", "SafeBox_ChangeLidState", "Received lid failure");
+            Debug_Warning("Communication", "SafeBox_ChangeLidState", "Received lid failure");
+            Debug_End();
             return false;
         }
 
         if(answer == ANSWER_LID_OPEN)
         {
             Debug_Error("Communication", "SafeBox_ChangeLidState", "Received lid open");
+            Debug_End();
             return false;
         }
 
         if(answer == ANSWER_LID_CLOSED)
         {
             Debug_Error("Communication", "SafeBox_ChangeLidState", "Received lid closed");
+            Debug_End();
             return false;
         }
 
         Debug_Error("Communication", "SafeBox_ChangeLidState", "Received unknown answer:");
         Debug_Error("Communication", "SafeBox_ChangeLidState", answer);
+        Debug_End();
         return false;
     }
-
+    Debug_End();
     return true;
 }
 
@@ -81,6 +86,7 @@ bool SafeBox_ChangeLidState(bool wantedState)
  */
 bool SafeBox_ChangeGarageState(bool wantedState)
 {
+    Debug_Start("SafeBox_ChangeLidState");
     // - VARIABLES - //
     String command = wantedState ? COMMAND_GARAGE_OPEN : COMMAND_GARAGE_CLOSE; //Ternary operators go brrr
     String answer = "";
@@ -90,27 +96,31 @@ bool SafeBox_ChangeGarageState(bool wantedState)
     {
         if(answer == ANSWER_GARAGE_FAILED)
         {
-            Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received garage failure");
+            Debug_Warning("Communication", "SafeBox_ChangeGarageState", "Received garage failure");
+            Debug_End();
             return false;
         }
 
         if(answer == ANSWER_GARAGE_OPEN)
         {
             Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received garage open");
+            Debug_End();
             return false;
         }
 
         if(answer == ANSWER_GARAGE_CLOSED)
         {
             Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received garage closed");
+            Debug_End();
             return false;
         }
 
         Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received unknown answer:");
         Debug_Error("Communication", "SafeBox_ChangeGarageState", answer);
+        Debug_End();
         return false;
     }
-
+    Debug_End();
     return true;
 }
 
@@ -127,15 +137,22 @@ bool SafeBox_ChangeGarageState(bool wantedState)
  */
 bool SafeBox_CheckIfPackageDeposited()
 {
+    Debug_Start("SafeBox_CheckIfPackageDeposited");
     // - VARIABLES - //
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_CHECK_PACKAGE, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_PACKAGE_CHECK_SUCCESS) return true;
-    if(answer == ANSWER_PACKAGE_CHECK_FAILED) return false;
+    if(answer == ANSWER_PACKAGE_CHECK_SUCCESS) {Debug_End(); return true;}
+    if(answer == ANSWER_PACKAGE_CHECK_FAILED)
+    {
+        Debug_Warning("Communication", "SafeBox_CheckIfPackageDeposited", "SafeBox returned a failure");
+        Debug_End();
+        return false;
+    }
 
     Debug_Error("Communication", "SafeBox_CheckIfPackageDeposited", "Unknown answer:");
     Debug_Error("Communication", "SafeBox_CheckIfPackageDeposited", answer);
+    Debug_End();
     return false;
 }
 
@@ -161,6 +178,7 @@ bool SafeBox_CheckIfPackageDeposited()
  */
 bool SafeBox_ExchangeStatus()
 {
+    Debug_Start("SafeBox_ExchangeStatus");
     // - VARIABLES - //
     String command = COMMAND_STATUS_EXCHANGE;
     String statusEnding = "     ";
@@ -195,6 +213,7 @@ bool SafeBox_ExchangeStatus()
         default:
             Debug_Error("Communication", "SafeBox_ExchangeStatus", "Unknown XFactor status");
             Debug_Error("Communication", "SafeBox_ExchangeStatus", String((int)currentStatus));
+            Debug_End();
             return false;
     }
 
@@ -207,6 +226,7 @@ bool SafeBox_ExchangeStatus()
     {
         Debug_Error("Communication", "SafeBox_ExchangeStatus", "BT_MessageExchange Failed");
         BT_ClearAllMessages();
+        Debug_End();
         return false;
     }
 
@@ -228,6 +248,7 @@ bool SafeBox_ExchangeStatus()
     Debug_Error("Communication", "SafeBox_ExchangeStatus", answer);
 
     BT_ClearAllMessages();
+    Debug_End();
     return false;
 }
 
@@ -243,15 +264,26 @@ bool SafeBox_ExchangeStatus()
  */
 bool SafeBox_GetLidState()
 {
+    Debug_Start("SafeBox_GetLidState");
     // - VARIABLES - //
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_LID_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_LID_OPEN) return true;
-    if(answer == ANSWER_LID_CLOSED) return false;
+    if(answer == ANSWER_LID_OPEN)
+    {
+        Debug_End();
+        return true;
+    }
+    if(answer == ANSWER_LID_CLOSED)
+    {
+        Debug_Warning("Communication", "SafeBox_GetLidState", "SafeBox returned a failure");
+        Debug_End();
+        return false;
+    }
 
     Debug_Error("Communication", "SafeBox_GetLidState", "Unknown answer:");
     Debug_Error("Communication", "SafeBox_GetLidState", answer);
+    Debug_End();
     return false;
 }
 
@@ -263,15 +295,26 @@ bool SafeBox_GetLidState()
  */
 bool SafeBox_GetGarageState()
 {
+    Debug_Start("SafeBox_GetGarageState");
     // - VARIABLES - //
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_GARAGE_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_GARAGE_OPEN) return true;
-    if(answer == ANSWER_GARAGE_CLOSED) return false;
+    if(answer == ANSWER_GARAGE_OPEN)
+    {
+        Debug_End();
+        return true;
+    }
+    if(answer == ANSWER_GARAGE_CLOSED)
+    {
+        Debug_Warning("Communication", "SafeBox_GetGarageState", "SafeBox returned a failure");
+        Debug_End();
+        return false;
+    }
 
     Debug_Error("Communication", "SafeBox_GetGarageState", "Unknown answer:");
     Debug_Error("Communication", "SafeBox_GetGarageState", answer);
+    Debug_End();
     return false;
 }
 
@@ -299,12 +342,22 @@ int SafeBox_GetPackagesDeposited()
  */
 bool SafeBox_GetDoorBellStatus()
 {
+    Debug_Start("SafeBox_GetDoorBellStatus");
     // - VARIABLES - //
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_DOORBELL_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_DOORBELL_RANG) return true;
-    if(answer == ANSWER_DOORBELL_NOT_RANG) return false;
+    if(answer == ANSWER_DOORBELL_RANG)
+    {
+        Debug_End();
+        return true;
+    }
+    if(answer == ANSWER_DOORBELL_NOT_RANG)
+    {
+        Debug_Warning("Communication", "SafeBox_GetDoorBellStatus", "SafeBox returned a failure");
+        Debug_End();
+        return false;
+    }
 
     Debug_Error("Communication", "SafeBox_GetDoorBellStatus", "Unknown answer:");
     Debug_Error("Communication", "SafeBox_GetDoorBellStatus", answer);

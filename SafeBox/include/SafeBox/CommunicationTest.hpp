@@ -21,6 +21,7 @@
 
 // - FUNCTIONS - //
 
+void ContinuouslyAnswerXFactor();
 /**
  * @brief 
  * Call this in main.cpp to test communications

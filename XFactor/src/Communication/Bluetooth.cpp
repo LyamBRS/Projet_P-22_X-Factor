@@ -38,6 +38,7 @@ bool _messageReceived = false;
  */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 {
+    // Debug_Start("MessageBuffer");
     static String messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER] = {};
     for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
@@ -46,25 +47,29 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 
     if(bufferIndex >= BT_SIZE_OF_MESSAGE_BUFFER)
     {
-        Debug_Error("Bluetooth", "MessageBuffer", "Specified index is too large");
+        // Debug_Error("Bluetooth", "MessageBuffer", "Specified index is too large");
+        // Debug_End();
         return BT_ERROR_MESSAGE;
     }
 
     if(action > 2 || action < 0)
     {
-        Debug_Error("Bluetooth", "MessageBuffer", "Specified action is wrong");
+        // Debug_Error("Bluetooth", "MessageBuffer", "Specified action is wrong");
+        // Debug_End();
         return BT_ERROR_MESSAGE;
     }
 
     // Is there a string at the specified index?
     if(action == 2)
     {
+        // Debug_End();
         return (messageBuffer[bufferIndex].length()>0) ? "F" : "E";
     }
 
     //Read the buffer
     if(action == 0)
     {
+        // Debug_End();
         return messageBuffer[bufferIndex];
     }
 
@@ -72,8 +77,11 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
     if(action == 1)
     {
         messageBuffer[bufferIndex] = newMessage;
+        // Debug_End();
         return newMessage;
     }
+    // Debug_Error("Bluetooth", "MessageBuffer", "Failed to execute specified action");
+    // Debug_End();
     return BT_ERROR_MESSAGE;
 }
 
@@ -95,6 +103,7 @@ String CurrentMessage(String newMessage)
     }
 
     currentMessage = newMessage;
+    return "";
 }
 
 /**
@@ -239,10 +248,12 @@ bool BT_Init()
  */
 bool BT_SendString(String message)
 {
+    Debug_Start("BT_SendString");
     // - PRELIMINARY CHECKS - //
     if (message.length() > BT_MAX_MESSAGE_LENGTH)
     {
         Debug_Error("Bluetooth", "BT_SendString", "Message is too large.");
+        Debug_End();
         return false;
     }
 
@@ -255,8 +266,10 @@ bool BT_SendString(String message)
     if (byteSent < message.length())
     {
         Debug_Error("Bluetooth", "BT_SendString", "Not enough bytes sent");
+        Debug_End();
         return false;
     }
+    Debug_End();
     return true;
 }
 
@@ -334,6 +347,7 @@ bool BT_ClearAllMessages()
  */
 bool BT_WaitForAMessage(int millisecondsTimeOut)
 {
+    Debug_Start("BT_WaitForAMessage");
     // - VARIABLES - //
     unsigned long currentTime = millis();
     unsigned long timeOutTime = currentTime + millisecondsTimeOut;
@@ -343,12 +357,14 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
     if(messagesReceived > 0)
     {
         // Why wait for a message when there is already some waiting for you?
+        Debug_End();
         return true;
     }
 
     if(timeOutTime < currentTime)
     {
         Debug_Error("Bluetooth", "BT_WaitForAMessage", "Time out millis overflow. (How tf did you manage that?)");
+        Debug_End();
         return false;
     }
 
@@ -359,6 +375,7 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
         if(messagesReceived > 0)
         {
             // Less go, we finally got some messages fr
+            Debug_End();
             return true;
         }
 
@@ -366,12 +383,14 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
         {
             // FOUND MESSAGE LESS GO
             Debug_Information("Bluetooth", "BT_WaitForAMessage", "Flag raised");
+            Debug_End();
             return true;
         }
 
         serialEvent1();
     }
     Debug_Warning("Bluetooth", "BT_WaitForAMessage", "Timedout");
+    Debug_End();
     return false;
 }
 
@@ -451,22 +470,26 @@ String BT_GetLatestMessage()
  */
 String BT_MessageExchange(String message, int millisecondsTimeOut)
 {
+    Debug_Start("BT_MessageExchange");
     // Firstly send the message.
     _messageReceived = false;
     if(!BT_SendString(message))
     {
         Debug_Error("Bluetooth", "BT_MessageExchange", "TX failure");
+        Debug_End();
         return BT_ERROR_MESSAGE;
     }
 
     // WARNING: Could already be a message in the buffer. Be careful to check for that.
     if(BT_WaitForAMessage(millisecondsTimeOut))
     {
+        Debug_End();
         return BT_GetLatestMessage();
     }
     else
     {
         Debug_Warning("Bluetooth", "BT_MessageExchange", "Failed to get a reply");
+        Debug_End();
         return BT_ERROR_MESSAGE;
     }
 }

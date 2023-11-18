@@ -13,6 +13,7 @@
 #pragma once
 
 // - INCLUDES - //
+#include "LED/LED.hpp"
 #include "SafeBox/Status.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
@@ -22,7 +23,7 @@
 // - FUNCTIONS - //
 
 /**
- * @brief 
+ * @brief
  * Call this in main.cpp to test communications
  * between XFactor and SafeBox.
  */

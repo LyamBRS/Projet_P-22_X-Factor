@@ -26,6 +26,7 @@ void XFactor_Init()
     BoardInit();
 
     if (Debug_Init()){
+        Debug_Start("XFactor_Init");
         if(BT_Init()){
             /**
              * @brief
@@ -65,6 +66,7 @@ void XFactor_Init()
                         if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
                                 Debug_Information("Init", "XFactor_Init", "Successful initialisation");
+                                Debug_End();
                                 return;
                             } else Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Failed");
                         } else Debug_Error("Init", "XFactor_Init", "XFactor_SetNewStatus Failed");
@@ -84,4 +86,5 @@ void XFactor_Init()
         }
     }
     // Cant continue initialisation.
+    Debug_End();
 }
