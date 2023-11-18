@@ -42,6 +42,11 @@
  */
 bool MoveFromVector(float radians, float distance, bool saveVector)
 {
+
+
+    if (saveVector){
+        SaveNewVector();
+    }
     return false;
 }
 
@@ -87,6 +92,9 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
  * is relative to the current direction that the
  * robot is facing. Meaning 0 will always be nothing
  * and 3.14 will always be a 180 turn.
+ * 
+ * Giving it a negative value will make it turn
+ * the opposite direction.
  * @return true
  * The robot successfully turned by X radians
  * @return false
@@ -202,6 +210,9 @@ bool ResetMovements()
  */
 bool Execute_Turning(float targetRadians)
 {
+    
+
+
     return false;
 }
 
