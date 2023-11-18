@@ -29,10 +29,12 @@ void XFactor_Init()
         if (BT_Init()){
             if(Alarm_Init()){
                 if(Package_Init()){
-                    if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
-                        if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
-                            // Function is successful.
-                            return;
+                    if(Debug_Init()){
+                        if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
+                            if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
+                                // Function is successful.
+                                return;
+                            }
                         }
                     }
                 }

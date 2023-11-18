@@ -15,7 +15,9 @@
 #pragma once
 
 // - INCLUDES - //
-
+#include "Sensors/Doorbell/Doorbell.hpp"
+#include "LED/LED.hpp"
+#include "SafeBox/Communication.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
