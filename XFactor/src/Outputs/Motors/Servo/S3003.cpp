@@ -34,5 +34,5 @@ void S3003_Init(int servoMotorPin)
  */
 void S3003_SetPosition(int servoMotorPin, float wantedPosition)
 {
-    SERVO_SetAngle(servoMotorPin, WantedPosition);
+    SERVO_SetAngle(servoMotorPin, wantedPosition);
 }
