@@ -347,7 +347,30 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
+    Safebox_SetNewStatus(Safebox_Status::Error);
+    
+    int status = 0 ; //everything is off
+    unsigned long timeStart = millis();
+    unsigned long timeNow;
 
+    while (SafeBox_GetStatus() != /*RESET*/)
+    {
+        timeNow = millis();
+        if ((timeNow - timeStart) >= 1000)
+        {
+            if ( status == 1)
+            {
+                LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
+                status = 0;
+            }
+            else if (status == 0)
+            {
+                LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
+                status = 1;
+            }
+            timeStart = timeNow;
+        }
+    }
 }
 
 /**
