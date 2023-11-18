@@ -10,6 +10,20 @@
  */
 #pragma once
 
+#include "LibRobus.h"
+
+#define SERVO_MIN_ANGLE 0
+#define SERVO_MAX_ANGLE 180
+
+#define SERVO_VERTICAL_AXIS 0
+#define SERVO_CLAW 1
+
+#define SERVO_VERTICAL_AXIS_MIN_ANGLE 90
+#define SERVO_VERTICAL_AXIS_MAX_ANGLE (SERVO_VERTICAL_AXIS_MIN_ANGLE+45)
+
+#define SERVO_CLAW_MIN_ANGLE 0
+#define SERVO_CLAW_MAX_ANGLE 180
+
 // - INCLUDES - //
 #include <LibRobus.h>
 
