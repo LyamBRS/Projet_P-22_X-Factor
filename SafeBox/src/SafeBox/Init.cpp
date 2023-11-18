@@ -58,10 +58,10 @@ void SafeBox_Init()
             if (LEDS_Init()){
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
-                if(Alarm_Init() || true){
-                    if(Package_Init() || true){
-                        if(Garage_Init() || true){
-                            if(Lid_Init() || true){
+                if(Alarm_Init()){
+                    if(Package_Init()){
+                        if(Garage_Init()){
+                            if(Lid_Init()){
                                 if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
                                     if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                         // Function is successful.
