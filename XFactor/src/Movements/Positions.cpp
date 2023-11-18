@@ -15,7 +15,7 @@
 #include "Movements/Positions.hpp"
 
 float currentRelativeRotation_rad = 0;
-float totalDistance_cm = 0;
+float currentDistance_cm = 0;
 
 /**
  * @brief Updates the total rotation of the robot
@@ -53,7 +53,7 @@ bool UpdateSavedRotation(float newRelativeRotation_rad)
  */
 bool UpdateSavedDistance(float distanceMade_cm)
 {
-  totalDistance_cm += distanceMade_cm;
+  currentDistance_cm = distanceMade_cm;
   return true;
 }
 
@@ -76,7 +76,7 @@ bool UpdateSavedDistance(float distanceMade_cm)
 bool ResetPositions()
 {
   currentRelativeRotation_rad = 0;
-  totalDistance_cm = 0;
+  currentDistance_cm = 0;
   return true;
 }
 
@@ -103,5 +103,5 @@ float GetSavedRotation()
  */
 float GetSavedDistance()
 {
-  return totalDistance_cm;
+  return currentDistance_cm;
 }
