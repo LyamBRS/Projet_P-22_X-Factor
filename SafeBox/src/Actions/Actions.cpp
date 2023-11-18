@@ -333,7 +333,45 @@ void Execute_Unlocked()
  */
 void Execute_Alarm()
 {
+    Safebox_SetNewStatus(Safebox_Status::Alarm);
 
+    int status = 0;
+    unsigned long timeStart = millis();
+    unsigned long timeNow
+
+    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
+    {
+        timeNow = millis();
+        
+        if (RFID_HandleCard() == true)
+        {
+            AX_BuzzerOFF();
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
+            // Put Safebox_Status at RESET
+        }
+        
+        else if (RFID_HandleCard() == false)
+        {
+            if ((timeNow - timeStart) >= 1000)
+            {
+                //SafeBox_ExchangeStatus(XFactor_Status::Alarm); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
+                if (status == 1)
+                {
+                    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
+                    AX_BuzzerON();
+                    status = 0;
+                }
+                else if (status == 0)
+                {
+                    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
+                    AX_BuzzerOFF();
+                    status = 1;
+                }
+            }
+            timeStart = timeNow;
+        }
+    }
+  return;
 }
 
 /**
@@ -371,6 +409,7 @@ void Execute_Error()
             timeStart = timeNow;
         }
     }
+    return;
 }
 
 /**
