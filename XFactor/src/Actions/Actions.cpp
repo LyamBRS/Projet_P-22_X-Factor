@@ -759,6 +759,8 @@ void Execute_Alarm()
     }
     timeStart = timeNow;
   }
+  AX_BuzzerOFF();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
   return;
 }
 
@@ -809,6 +811,7 @@ void Execute_Error()
         }   
         timeStart = timeNow;
     }
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
     return;
 }
 
