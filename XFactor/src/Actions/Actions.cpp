@@ -411,7 +411,30 @@ void Execute_SearchForPackage()
       return;
     }
 
-    // MOVE IN ZIG ZAG
+    float distanceWidth_cm = 0;
+    float movementDistance_cm = 0;
+
+    MoveFromVector(STRAIGHT, DEMO_AREA_LENGTH_CM - ROBOT_WIDTH_CM, true);
+    MoveFromVector(TURN_90_RIGHT, DEMO_AREA_WIDTH_CM - ROBOT_WIDTH_CM, true);
+    while (distanceWidth_cm < DEMO_AREA_WIDTH_CM) // ADJUST IF NEED BE
+    {
+      distanceWidth_cm += ROBOT_WIDTH_CM;
+      if (distanceWidth_cm >= DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM)
+      {
+        movementDistance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+      }
+      else
+      {
+        DEMO_AREA_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+      }
+      
+      MoveFromVector(TURN_90_RIGHT, ROBOT_WIDTH_CM, true);
+      MoveFromVector(TURN_90_RIGHT, movementDistance_cm, true);
+      MoveFromVector(TURN_90_LEFT, ROBOT_LENGTH_CM, true);
+      MoveFromVector(TURN_90_LEFT, movementDistance_cm, true);
+    }
+
+    // GO BACK TO SWEET HOME ALABAMA
 
     if (Package_Detected())
     {
