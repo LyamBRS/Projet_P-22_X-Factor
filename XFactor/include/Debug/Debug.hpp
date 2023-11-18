@@ -6,7 +6,7 @@
  * debug your code so they can easily be kept
  * in the program and removed for compilation
  * whenever necessary.
- * @version 0.1
+ * @version 0.5
  * @date 2023-11-14
  * @copyright Copyright (c) 2023
  */
@@ -21,10 +21,13 @@
 #define DEBUG_ENABLED
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
+#define DEBUG_STACK_TRACE_ENABLED
 /// @brief Which serial port is used for debugging the program.
 #define DEBUG_SERIAL Serial
 /// @brief Debug port speed.
 #define DEBUG_BAUD_RATE 115200
+
+#define MAX_INDENTATION_LEVEL 10
 
 // - FUNCTIONS - //
 
@@ -38,6 +41,34 @@
  * Failed to initialise the debug functions.
  */
 bool Debug_Init();
+
+/**
+ * @brief Tells the debug program which function
+ * is currently being debug. This will not
+ * execute if Informations are disabled in the
+ * program or @ref DEBUG_STACK_TRACE_ENABLED
+ * is set to DEBUG_STACK_TRACE_DISABLED
+ * @param nameOfTheFunction
+ */
+void Debug_Start(String nameOfTheFunction);
+
+/**
+ * @brief
+ * Removes one indentation when a function returns
+ */
+void Debug_End();
+
+/**
+ * @brief Makes the code shift right the further
+ * it goes into functions. In other words, the
+ * bigger the stack, the more indentation there
+ * will be. YOU NEED TO CALL
+ * Debug_Start and Debug_End in your program for
+ * this to work.
+ * @return String
+ * The indentation level
+ */
+String GetIndentation();
 
 /**
  * @brief Prints an error on the debug port that
