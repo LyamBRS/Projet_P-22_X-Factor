@@ -14,6 +14,8 @@
 // - INCLUDES - //
 #include "Package/Claws.hpp"
 
+bool deploymentStatus = CLAWS_STATUS_STORED;
+
 
 /**
  * @brief
@@ -27,7 +29,9 @@
  */
 bool Claws_Init()
 {
-    return false;
+    S3003_Init(0);
+    S3003_Init(1);
+    return true;
 }
 
 /**
@@ -43,7 +47,9 @@ bool Claws_Init()
  */
 bool Claws_GetSwitchStatus()
 {
-    return false;
+    //NEEDS TO BE CHANGED FOR READ PIN FOR THE CLAW
+    if(ROBUS_IsBumper(2)) return true;
+    else return false;
 }
 
 /**
@@ -66,7 +72,23 @@ bool Claws_GetSwitchStatus()
  */
 bool Claws_SetGrabbers(unsigned char pourcent)
 {
-    return false;
+    uint8_t angle = pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100;
+    angle+=CLAWS_GRABBERS_MIN;
+
+    if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX){
+        if(deploymentStatus) {
+            S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
+            return true;
+        }
+        else {
+            return false;
+            //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : Claw is not deployed.");
+        }
+    }
+    else{
+        return false;
+        //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : angle set is not withing boundaries.");
+    }
 }
 
 /**
@@ -88,6 +110,23 @@ bool Claws_SetGrabbers(unsigned char pourcent)
  */
 bool Claws_SetHeight(unsigned char pourcent)
 {
+    uint8_t angle = pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100;
+    angle+=CLAWS_HEIGHT_MIN;
+
+    if(angle>=CLAWS_HEIGHT_MIN && angle <=CLAWS_HEIGHT_MAX){
+        if(deploymentStatus) {
+            S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
+            return true;
+        }
+        else {
+            return false;
+            //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : Claw is not deployed.");
+        }
+    }
+    else{
+        return false;
+        //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : angle set is not withing boundaries.");
+    }
     return false;
 }
 
@@ -115,7 +154,27 @@ bool Claws_SetHeight(unsigned char pourcent)
  */
 bool Claws_SetDeployment(bool deployment)
 {
-    return false;
+    if(!Claws_GetSwitchStatus()){
+        if(deployment == 1){ //DEPLOY
+            deploymentStatus = 1;
+            Claws_SetHeight(0);
+            S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+        }
+        else if (deployment == 0){ //STORE
+            deploymentStatus = 0;
+            Claws_SetHeight(100);
+            S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+        }
+        else{
+            //Debug_Error("Claws.cpp", "Claws_SetDeployment()", "Error : Improper deployment status.");
+            return false;
+        }
+    }
+    else{
+        //Debug_Error("Claws.cpp", "Claws_SetDeployment()", "Error : There is an object inside the claw.");
+        return false;
+    }
+
 }
 
 /**
@@ -140,9 +199,19 @@ bool Claws_SetDeployment(bool deployment)
  * package was lost during squeezing or because
  * the claw is not deployed or not opened enough.
  */
-bool Claws_SqueezePackage()
+bool Claws_SqueezePackage(int pourcentage)
 {
-    return false;
+    pourcentage -= CLAWS_SQUEEZE_DISTANCE;
+    if(pourcentage < 0 || pourcentage > 100){
+        Serial.println("Error : Squeezing outside the range :(.");
+        //Debug_Error("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Squeezing outside the range :(.");
+        return false;
+    }
+    else {
+        S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+        //Claws_SetGrabbers(pourcentage);
+        return true;
+    }
 }
 
 /**
@@ -158,5 +227,37 @@ bool Claws_SqueezePackage()
  */
 bool Claws_CloseUntilDetection()
 {
-    return false;
+    int percentage = 100;
+    unsigned long previousInterval_ms = 0;
+
+    while(!Claws_GetSwitchStatus() && !(percentage <= 0)){
+        if((millis()-previousInterval_ms)>=CLAWCLOSE_INTERVAL_MS){
+            percentage-=CLAWS_CLOSING_SPEED;
+            Claws_SetGrabbers(percentage);
+            previousInterval_ms = millis();
+        }
+    }
+
+    //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME
+    delay(5); 
+
+    if(Claws_GetSwitchStatus()){
+        int squeezeStatus = Claws_SqueezePackage(percentage);
+        if(squeezeStatus){
+            return true;
+        } 
+        else {
+            Claws_SetGrabbers(100);
+            Serial.println("Error : Squeezed but lost the object.");
+            //Debug_Warning("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Squeezed but lost the object.");
+            return false;
+        }
+    }
+
+    else if(percentage <= 0){
+        Claws_SetGrabbers(100);
+        Serial.println("Error : Did not grab anything even when completely closed.");
+        //Debug_Warning("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Did not grab anything even when completely closed.");
+        return false;
+    }
 }
