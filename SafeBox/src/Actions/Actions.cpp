@@ -127,6 +127,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_DROP_OFF):
+        case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
         case(FUNCTION_ID_WAIT_FOR_RETRIEVAL):
         case(FUNCTION_ID_WAIT_FOR_RETURN):
             // The specified function is indeed a valid function ID.
@@ -179,7 +180,22 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
+    // Debug_Information("","","");
 
+    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
+    {
+        Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
+        return;
+    }
+
+    if(SafeBox_CheckAndExecuteMessage())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
+        // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        BT_ClearAllMessages();
+        return;
+    }
 }
 
 /**
@@ -211,7 +227,14 @@ void Execute_WaitForDelivery()
  */
 void Execute_StartOfDelivery()
 {
-
+    // There's no status for the Safebox when the doorbell is heard
+    if (Doorbell_GetState() == true)
+    {
+      
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
+        //SafeBox_ReplyStatus(); WAIT FOR THE RIGHT COMM FUNCTION
+        return;
+    }
 }
 
 /**
@@ -281,8 +304,18 @@ void Execute_DropOff()
  * @ref Execute_WaitForDelivery
  */
 void Execute_Unlocked()
-{
-
+{   
+    SafeBox_CheckAndExecuteMessage();
+    SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
+    
+    if(RFID_CheckIfCardIsThere())
+    {
+        if(RFID_HandleCard())
+        {
+            SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+        }
+    }
 }
 
 /**

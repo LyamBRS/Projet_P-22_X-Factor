@@ -10,6 +10,7 @@
             "includePath": [
                 "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/include",
                 "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/src",
+                "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                 "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
                 "C:/Users/cous5/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/cous5/.platformio/packages/framework-arduino-avr/variants/mega",
@@ -17,7 +18,6 @@
                 "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                 "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-                "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                 ""
             ],
             "browse": {
@@ -25,6 +25,7 @@
                 "path": [
                     "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/include",
                     "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/src",
+                    "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                     "c:/Users/cous5/Desktop/Important/School/University/S1/Projet/Github/XFactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
                     "C:/Users/cous5/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/cous5/.platformio/packages/framework-arduino-avr/variants/mega",
@@ -32,7 +33,6 @@
                     "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                     "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-                    "C:/Users/cous5/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
                     ""
                 ]
             },
