@@ -392,36 +392,110 @@ void Execute_SearchForPackage()
 
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
-  while (GetAvailableVectors() != 0)
+  float strafeDistance_cm = 0;
+  int currentIndex = 0;
+  int startAvailableVectors = GetAvailableVectors();
+
+  // Initial search pattern vectors
+  int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / ROBOT_WIDTH_CM);
+  int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / ROBOT_WIDTH_CM);
+
+  MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
+  searchPatternVectors[0].rotation_rad = STRAIGHT;
+  searchPatternVectors[0].distance_cm = DEMO_AREA_LENGTH_CM - ROBOT_WIDTH_CM;
+
+  searchPatternVectors[1].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[1].distance_cm = DEMO_AREA_WIDTH_CM - ROBOT_WIDTH_CM;
+  currentIndex++;
+
+  // totalStrafes * 2 because 2 moves per strafe
+  for (currentIndex = 1; currentIndex < totalStrafes * 2; currentIndex += 4)
   {
+    searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
+    searchPatternVectors[currentIndex].distance_cm = ROBOT_WIDTH_CM;
 
-    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+    strafeDistance_cm = currentIndex * 2 < fullStrafes ? DEMO_AREA_WIDTH_CM - (ROBOT_WIDTH_CM * 2) : DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+      
+    searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
+    searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
 
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+    searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
+    searchPatternVectors[currentIndex + 2].distance_cm = ROBOT_WIDTH_CM;
+
+    searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
+    searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
+  }
+
+  if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
+  {
+    searchPatternVectors[currentIndex].rotation_rad = TURN_180;
+    searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+    currentIndex++;
+  }
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_LENGTH_CM - ROBOT_WIDTH_CM;
+  currentIndex++;
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_WIDTH_CM - ROBOT_WIDTH_CM;
+  currentIndex++;
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[currentIndex].distance_cm = 0.0f; // Turn on self
+  currentIndex++;
+
+  if (currentIndex >= VECTOR_BUFFER_SIZE)
+  {
+    Debug_Error("Actions.cpp", "Execute_SearchForPackages", "There is not enough place in the vector buffer to try the search");
+    SetNewExecutionFunction(FUNCTION_ID_ERROR);
+    return;
+  }
+
+  for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
+  {
+    // WILL NEED TO KNOW ABOUT HOW MOVEMENT INTERRUPTIONS ARE HANDLED AND HOW PACKAGE DETECTION WORKS TO IMPLEMENT THIS :
+    // MOVEMENT INTERRUPTIONS
+    //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+
+    // PACKAGE DETECTION
+    //if (Package_Detected())
+    //{
+    //  SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+    //  return;
+    //}
+
+    if (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
     {
-      SetNewExecutionFunction(checkFunctionId);
-      return;
+      if (GetAvailableVectors() - startAvailableVectors == 5)
+      {
+        startAvailableVectors = GetAvailableVectors();
+        checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+        if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+        {
+          SetNewExecutionFunction(checkFunctionId);
+          return;
+        }
+
+        checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+        if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+        {
+          SetNewExecutionFunction(checkFunctionId);
+          return;
+        }
+      }
     }
-
-    checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
-
-    if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+    else
     {
-      SetNewExecutionFunction(checkFunctionId);
-      return;
-    }
-
-    // MOVE IN ZIG ZAG
-
-    if (Package_Detected())
-    {
-      SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+      SetNewExecutionFunction(FUNCTION_ID_ERROR);
       return;
     }
   }
 
-  // NO PACKAGE FOUND BEFORE END OF VECTOR TABLE
-  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  //ROBOT IS NOW BACK IN FRONT OF THE DOOR, HAVING FOUND NOTHING
+  //ACTION WHEN SEARCH IS COMPLETED BUT PACKAGE IS NOT FOUND
 }
 
 /**
@@ -759,6 +833,8 @@ void Execute_Alarm()
     }
     timeStart = timeNow;
   }
+  AX_BuzzerOFF();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
   return;
 }
 
