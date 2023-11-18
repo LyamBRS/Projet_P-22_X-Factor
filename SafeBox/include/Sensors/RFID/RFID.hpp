@@ -13,6 +13,12 @@
 #pragma once
 
 // - INCLUDE - //
+#include <Arduino.h>
+#include "Debug/Debug.hpp"
+
+// - DEFINES - //
+#define RFID_VALID_CARD "4870485055685448534852481310"
+#define RFID_SERIAL Serial2
 
 /**
  * @brief
@@ -65,4 +71,6 @@ bool RFID_CheckIfCardIsThere();
  * @return unsigned long long:
  * The Card ID. If 0, there is no card.
  */
-unsigned long long RFID_GetCardNumber();
+String RFID_GetCardNumber();
+
+

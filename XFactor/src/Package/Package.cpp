@@ -25,6 +25,8 @@
  */
 bool Package_Init()
 {
+    int redPin = 0, greenPin = 0, bluePin = 0;
+    GROVE_Init();
     return false;
 }
 
@@ -84,6 +86,7 @@ bool Package_PickUp()
  */
 bool Package_AlignWithSafeBox()
 {
+    // une longueur deja pres etablie, 90 a gauche, avance,
     return false;
 }
 
@@ -162,6 +165,14 @@ bool Package_Transport()
  */
 bool Package_Detected()
 {
+    unsigned long currentColour = 0;
+
+    currentColour = GROVE_GetColor();
+    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+      
+        return true;
+    }
+
     return false;
 }
 
@@ -190,6 +201,9 @@ bool Package_Detected()
  */
 bool Package_SetStatus(bool newPackageStatus)
 {
+    if (Package_Detected() == true && Package_DeployClaw() == true){
+        return true;
+    }
     return false;
 }
 
@@ -205,5 +219,8 @@ bool Package_SetStatus(bool newPackageStatus)
  */
 bool Package_GetStatus()
 {
+    if (Package_SetStatus(true) == true){
+        return true;
+    }
     return false;
 }
