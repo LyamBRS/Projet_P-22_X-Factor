@@ -38,3 +38,20 @@
  * The timer is still counting.
  */
 bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS);
+
+/**
+ * @brief
+ * This function's sole purpose is to handle the
+ * RFID card reader in each execution function
+ * where SafeBox can be unlocked when its armed.
+ */
+void ExecutionUtils_HandleArmedUnlocking();
+
+/**
+ * @brief
+ * Checks the latest status received from XFactor
+ * and executes different actions based on its
+ * status, such as entering alarm mode or
+ * error mode.
+ */
+void ExecutionUtils_HandleReceivedXFactorStatus();
