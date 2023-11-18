@@ -347,30 +347,31 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-    Safebox_SetNewStatus(Safebox_Status::Error);
-    
-    int status = 0 ; //everything is off
-    unsigned long timeStart = millis();
-    unsigned long timeNow;
+    // - VARIABLES - //
+    static bool status = false; // everything is closed
+    static unsigned long now = millis();
+    static unsigned long previous = millis();
 
-    while (SafeBox_GetStatus() != /*RESET*/)
+    // - PROGRAM - //
+    XFactor_SetNewStatus(XFactor_Status::Error);
+
+    SafeBox_CheckAndExecuteMessage();
+    now = millis();
+    if((now - previous) > 1000)
     {
-        timeNow = millis();
-        if ((timeNow - timeStart) >= 1000)
+        previous = millis();
+
+        status = !status;
+        if (status == true)
         {
-            if ( status == 1)
-            {
-                LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
-                status = 0;
-            }
-            else if (status == 0)
-            {
-                LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-                status = 1;
-            }
-            timeStart = timeNow;
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
+        }
+        if (status == false)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
         }
     }
+    return;
 }
 
 /**
