@@ -13,17 +13,6 @@
 
 #pragma once
 
-#include "math.h"
-
-typedef struct 
-{
-  int positionXLeft_encoderPulses;
-  int positionYLeft_encoderPulses;
-
-  int positionXRight_encoderPulses;
-  int positionYRight_encoderPulses;
-} RobotPosition;
-
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be
@@ -40,7 +29,7 @@ typedef struct
  * @return false
  * The rotation failed to be updated.
  */
-bool UpdateSavedRotation(float newRotation);
+bool UpdateSavedRotation(float newRelativeRotation_rad);
 
 /**
  * @brief Updates the robot's current distance
@@ -54,7 +43,7 @@ bool UpdateSavedRotation(float newRotation);
  * @return false:
  * The distance failed to be updated.
  */
-bool UpdateSavedDistance(float distanceMade);
+bool UpdateSavedDistance(float distanceMade_cm);
 
 /**
  * @brief Function that resets both global

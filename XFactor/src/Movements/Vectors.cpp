@@ -13,6 +13,25 @@
 // - INCLUDES - //
 #include "Movements/Vectors.hpp"
 
+MovementVector vectorBuffer[VECTOR_BUFFER_SIZE];
+MovementVector emptyMovementVector;
+
+/**
+ * @brief Fills up
+ * the vector buffer with
+ * "empty" values
+ * @return bool
+ * true if it has worked, false if
+ * a problem has occurred
+ */
+bool Vectors_Init()
+{
+    emptyMovementVector.distance_cm = 0.0f;
+    emptyMovementVector.rotation_rad = 0.0f;
+    ResetVectors();
+    return true;
+}
+
 /**
  * @brief Returns how many
  * vectors can still be saved.
@@ -27,6 +46,13 @@
  */
 int GetAvailableVectors()
 {
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (!(vectorBuffer[vectorBufferIndex].distance_cm == 0.0f && vectorBuffer[vectorBufferIndex].rotation_rad == 0.0f))
+        {
+            return VECTOR_BUFFER_SIZE - vectorBufferIndex;
+        }
+    }
     return 0;
 }
 
@@ -50,6 +76,16 @@ int GetAvailableVectors()
  */
 bool SaveNewVector()
 {
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (vectorBuffer[vectorBufferIndex].distance_cm == 0.0f && vectorBuffer[vectorBufferIndex].rotation_rad == 0.0f)
+        {
+            vectorBuffer[vectorBufferIndex].rotation_rad = GetSavedRotation();
+            vectorBuffer[vectorBufferIndex].distance_cm = GetSavedDistance();
+            return true;
+        }
+    }
+    Debug_Error("Vectors.cpp", "SaveNewVector", "Cannot save; Vector buffer is already full");
     return false;
 }
 
@@ -65,7 +101,11 @@ bool SaveNewVector()
  */
 bool ResetVectors()
 {
-    return false;
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        vectorBuffer[vectorBufferIndex] = emptyMovementVector;
+    }
+    return true;
 }
 
 /**
@@ -80,5 +120,25 @@ bool ResetVectors()
  */
 bool RemoveLastVector()
 {
-    return false;
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if ((vectorBuffer[vectorBufferIndex].distance_cm == 0.0f && vectorBuffer[vectorBufferIndex].rotation_rad == 0.0f) || vectorBufferIndex == VECTOR_BUFFER_SIZE)
+        {
+            if (vectorBufferIndex > 0)
+            {
+                UpdateSavedRotation(vectorBuffer[vectorBufferIndex - 1].rotation_rad);
+                UpdateSavedDistance(vectorBuffer[vectorBufferIndex - 1].distance_cm);
+
+                vectorBuffer[vectorBufferIndex].rotation_rad = emptyMovementVector.rotation_rad;
+                vectorBuffer[vectorBufferIndex].distance_cm = emptyMovementVector.distance_cm;
+
+                return true;
+            }
+            else
+            {
+                Debug_Error("Vectors.cpp", "RemoveLastVector", "Cannot remove last vector; the buffer is empty.");
+                return false;
+            }
+        }
+    }
 }

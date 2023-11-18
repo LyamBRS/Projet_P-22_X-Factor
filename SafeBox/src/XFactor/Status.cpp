@@ -14,7 +14,7 @@
 #include "XFactor/Status.hpp"
 
 /**
- * @brief 
+ * @brief
  * Local global variable used to store XFactor's
  * current status.
  */
@@ -59,6 +59,7 @@ bool XFactor_SetNewStatus(XFactor_Status newStatus)
         case(XFactor_Status::ReturningHome):
         case(XFactor_Status::SearchingForAPackage):
         case(XFactor_Status::WaitingForDelivery):
+        case(XFactor_Status::WaitingAfterSafeBox):
             CurrentXFactorStatus = newStatus;
             return true;
 

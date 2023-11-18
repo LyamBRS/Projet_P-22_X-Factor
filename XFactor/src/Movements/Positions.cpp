@@ -14,7 +14,8 @@
 // - INCLUDES - //
 #include "Movements/Positions.hpp"
 
-RobotPosition robotPosition;
+float currentRelativeRotation_rad = 0;
+float currentDistance_cm = 0;
 
 /**
  * @brief Updates the total rotation of the robot
@@ -32,9 +33,10 @@ RobotPosition robotPosition;
  * @return false:
  * The rotation failed to be updated.
  */
-bool UpdateSavedRotation(float newRotation)
+bool UpdateSavedRotation(float newRelativeRotation_rad)
 {
-    return false;
+  currentRelativeRotation_rad = newRelativeRotation_rad;
+  return true;
 }
 
 /**
@@ -49,9 +51,10 @@ bool UpdateSavedRotation(float newRotation)
  * @return false:
  * The distance failed to be updated.
  */
-bool UpdateSavedDistance(float distanceMade)
+bool UpdateSavedDistance(float distanceMade_cm)
 {
-    return false;
+  currentDistance_cm = distanceMade_cm;
+  return true;
 }
 
 /**
@@ -72,7 +75,9 @@ bool UpdateSavedDistance(float distanceMade)
  */
 bool ResetPositions()
 {
-    return false;
+  currentRelativeRotation_rad = 0;
+  currentDistance_cm = 0;
+  return true;
 }
 
 /**
@@ -85,11 +90,7 @@ bool ResetPositions()
  */
 float GetSavedRotation()
 {
-  // MAYBE VALIDATE WITH ACCELEROMETER TO REALIGN THAT BIG BOI ???
-  int totalLeftPulses = robotPosition.positionXLeft_encoderPulses + robotPosition.positionYLeft_encoderPulses;
-  int totalRightPulses = robotPosition.positionXRight_encoderPulses + robotPosition.positionYRight_encoderPulses;
-  // use 3200 in #define when PID gotten there
-  return (float)atan((double)(totalLeftPulses % 3200) / (double)(totalRightPulses % 3200)) * (180 / 3.14); // converting in degrees since atan works in radians
+  return currentRelativeRotation_rad;
 }
 
 /**
@@ -102,6 +103,5 @@ float GetSavedRotation()
  */
 float GetSavedDistance()
 {
-  float totalLeftPulses = robotPosition.positionXLeft_encoderPulses + robotPosition.positionYLeft_encoderPulses;
-  return totalLeftPulses;
+  return currentDistance_cm;
 }

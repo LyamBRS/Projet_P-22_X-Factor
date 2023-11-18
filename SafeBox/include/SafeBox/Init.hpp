@@ -21,6 +21,7 @@
 #include "Package/Package.hpp"
 #include "Lid/Lid.hpp"
 #include "Garage/Garage.hpp"
+#include "Debug/Debug.hpp"
 
 /**
  * @brief

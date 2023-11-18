@@ -67,7 +67,7 @@ bool WS2812_Init(int pinNumber)
 bool WS2812_SetStaticColors(int pinNumber, int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
 {
     // Checking if the 300 microseconds of down time has been acheived or not.
-    if(not pixels.canShow())
+    if(!pixels.canShow())
     {
         // Cannot change the color right now.
         return false;
