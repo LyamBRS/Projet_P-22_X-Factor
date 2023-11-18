@@ -25,11 +25,14 @@ Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS3472
  */
 bool GROVE_Init()
 {
+    Debug_Start("GROVE_Init");
     if (tcs.begin()) {
         Debug_Information("GROVE", "GROVE_Init", "Sensor initialised");
+        Debug_End();
         return true;
     } else {
         Debug_Error("GROVE", "GROVE_Init", "Failed to find a GROVE colour sensor.");
+        Debug_End();
         return false;
     }
 }

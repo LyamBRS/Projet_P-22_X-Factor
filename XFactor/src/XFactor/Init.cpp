@@ -70,10 +70,10 @@ void XFactor_Init()
                                 return;
                             } else Debug_Error("Init", "XFactor_Init", "SetNewExecutionFunction Failed");
                         } else Debug_Error("Init", "XFactor_Init", "XFactor_SetNewStatus Failed");
-                    } else Debug_Error("Init", "XFactor_Init", "BT_Init Failed");
-                } else Debug_Error("Init", "XFactor_Init", "Package_Init Failed");
-            } else Debug_Error("Init", "XFactor_Init", "Alarm_Init Failed");
-        } else Debug_Error("Init", "XFactor_Init", "LEDS_Init Failed");
+                    } else Debug_Error("Init", "XFactor_Init", "Package_Init Failed");
+                } else Debug_Error("Init", "XFactor_Init", "Alarm_Init Failed");
+            } else Debug_Error("Init", "XFactor_Init", "LEDS_Init Failed");
+        } else Debug_Error("Init", "XFactor_Init", "BT_Init Failed");
 
         if(!XFactor_SetNewStatus(XFactor_Status::Error))
         {
