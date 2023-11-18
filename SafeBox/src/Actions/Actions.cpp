@@ -333,45 +333,45 @@ void Execute_Unlocked()
  */
 void Execute_Alarm()
 {
-    Safebox_SetNewStatus(Safebox_Status::Alarm);
+    // - VARIABLES - //
+    static bool mustBeOn = false;
 
-    int status = 0;
-    unsigned long timeStart = millis();
-    unsigned long timeNow
+    SafeBox_SetNewStatus(SafeBox_Status::Alarm);
 
-    while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
+    if(!SafeBox_CheckAndExecuteMessage())
     {
-        timeNow = millis();
-        
-        if (RFID_HandleCard() == true)
+        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
+    }
+
+    // - LED & BUZZER BLINK - //
+    if(ExecutionUtils_LedBlinker(500))
+    {
+        mustBeOn = !mustBeOn;
+
+        if(mustBeOn)
         {
-            AX_BuzzerOFF();
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-            // Put Safebox_Status at RESET
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+            // AX_BuzzerON();
         }
-        
-        else if (RFID_HandleCard() == false)
+        else
         {
-            if ((timeNow - timeStart) >= 1000)
-            {
-                //SafeBox_ExchangeStatus(XFactor_Status::Alarm); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
-                if (status == 1)
-                {
-                    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
-                    AX_BuzzerON();
-                    status = 0;
-                }
-                else if (status == 0)
-                {
-                    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-                    AX_BuzzerOFF();
-                    status = 1;
-                }
-            }
-            timeStart = timeNow;
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+            // AX_BuzzerOFF();
         }
     }
-  return;
+
+    // - RFID DISARM ALARM CHECKS - //
+    if (RFID_HandleCard() == true)
+    {
+        // AX_BuzzerOFF();
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+
+        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
+        {
+            Debug_Error("Actions", "Execute_Alarm", "Failed to set new execution function");
+            return;
+        }
+    }
 }
 
 /**
@@ -386,30 +386,26 @@ void Execute_Alarm()
 void Execute_Error()
 {
     // - VARIABLES - //
-    static bool status = false; // everything is closed
-    static unsigned long now = millis();
-    static unsigned long previous = millis();
+    static bool mustBeOn = false; // everything is closed
 
     // - PROGRAM - //
-    XFactor_SetNewStatus(XFactor_Status::Error);
+    SafeBox_SetNewStatus(SafeBox_Status::Error);
 
     SafeBox_CheckAndExecuteMessage();
-    now = millis();
-    if((now - previous) > 1000)
+    // - LED BLINK - //
+    if(ExecutionUtils_LedBlinker(1000))
     {
-        previous = millis();
+        mustBeOn = !mustBeOn;
 
-        status = !status;
-        if (status == true)
+        if(mustBeOn)
         {
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ERROR);
         }
-        if (status == false)
+        else
         {
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
         }
     }
-    return;
 }
 
 /**
