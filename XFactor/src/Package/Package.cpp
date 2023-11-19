@@ -27,7 +27,24 @@ bool pickup = false;
  */
 bool Package_Init()
 {
-   // GROVE_Init();
+    Debug_Start("Package_Init");
+    if(GROVE_Init())
+    {
+        if(Claws_Init())
+        {
+            Debug_End();
+            return true;
+        }
+        else
+        {
+            Debug_Error("Package", "Package_Init", "Failed to initialise Claws");
+        }
+    }
+    else
+    {
+        Debug_Error("Package", "Package_Init", "Failed to initialise GROVE");
+    }
+    Debug_End();
     return false;
 }
 

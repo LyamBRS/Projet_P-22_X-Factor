@@ -168,14 +168,14 @@ void Accelerometer_CalculateIMUError(unsigned correctionCount)
 {
     float AccX = 0.0f, AccY = 0.0f, AccZ = 0.0f;
     float GyroX = 0.0f, GyroY = 0.0f, GyroZ = 0.0f;
-    float accAngleX = 0.0f, accAngleY = 0.0f;
-    float gyroAngleX = 0.0f, gyroAngleY = 0.0f, gyroAngleZ = 0.0f;
-    float roll = 0.0f, pitch = 0.0f, yaw = 0.0f;
+    // float accAngleX = 0.0f, accAngleY = 0.0f;
+    // float gyroAngleX = 0.0f, gyroAngleY = 0.0f, gyroAngleZ = 0.0f;
+    // float roll = 0.0f, pitch = 0.0f, yaw = 0.0f;
     float AccErrorX = 0.0f, AccErrorY = 0.0f;
     float GyroErrorX = 0.0f, GyroErrorY = 0.0f, GyroErrorZ = 0.0f;
 
     /*TODO: put the correct type here time_t */
-    float elapsedTime = 0.0f, currentTime = 0.0f, previousTime = 0.0f;
+    // float elapsedTime = 0.0f, currentTime = 0.0f, previousTime = 0.0f;
     // Read accelerometer values correctionCount times
     for (size_t i = 0; i < correctionCount; i++)
     {

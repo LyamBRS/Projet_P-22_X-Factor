@@ -30,6 +30,25 @@
 
 //#pragma endregion
 
+//#pragma region DISTANCES // WILL BE MIGRATED TO MOVEMENTS
+
+#define PI_FLOAT 3.141593f // REMPLACER PI par ça car problème de type avec PI
+
+#define STRAIGHT 0.0f
+#define TURN_90_RIGHT TURN_90 * TURN_RIGHT
+#define TURN_90_LEFT TURN_90 * TURN_LEFT
+
+#define SAFEBOX_LENGTH_CM 50.0f // PUT REAL DIMENSIONS HERE
+#define SAFEBOX_WIDTH_CM 50.0f // PUT REAL DIMENSIONS HERE
+
+#define DEMO_AREA_WIDTH_CM 200.0f
+#define DEMO_AREA_LENGTH_CM 200.0f
+
+#define ROBOT_WIDTH_CM 25.0f
+#define ROBOT_LENGTH_CM 25.0f
+
+//#pragma endregion
+
 //#pragma region [ACTION_HANDLERS]
 /**
  * @brief Function periodically called in void
