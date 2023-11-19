@@ -16,12 +16,12 @@
 
 // #pragma region [DEFINES]
 
-#define ALARM_GYRO_X_MAX
-#define ALARM_GYRO_X_MIN
-#define ALARM_GYRO_Y_MAX
-#define ALARM_GYRO_Y_MIN
-#define ALARM_GYRO_Z_MAX
-#define ALARM_GYRO_Z_MIN
+#define ALARM_ACCEL_X_MAX
+#define ALARM_ACCEL_X_MIN
+#define ALARM_ACCEL_Y_MAX
+#define ALARM_ACCEL_Y_MIN
+#define ALARM_ACCEL_Z_MAX
+#define ALARM_ACCEL_Z_MIN
 
 // #pragma endregion
 
@@ -50,7 +50,7 @@ bool Alarm_Init();
  * @return false:
  * No alarm needs to be triggered
  */
-bool Alarm_VerifySensors();
+bool Alarm_VerifySensors(); // call les 2 fonctions en bas
 
 /**
  * @brief
@@ -63,7 +63,7 @@ bool Alarm_VerifySensors();
  * @return false:
  * No alarm needs to be activated.
  */
-bool Alarm_VerifyGyro();
+bool Alarm_VerifyGyro(); // accelor
 
 /**
  * @brief
@@ -77,5 +77,5 @@ bool Alarm_VerifyGyro();
  * @return false:
  * No alarm needs to be activated.
  */
-bool Alarm_VerifyPackage();
+bool Alarm_VerifyPackage(); // getStatus, Package_Detected
 // #pragma endregion
