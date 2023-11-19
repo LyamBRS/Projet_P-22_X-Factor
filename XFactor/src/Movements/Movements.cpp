@@ -163,7 +163,13 @@ float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed)
  */
 bool Stop()
 {
-    return false;
+    MOTOR_SetSpeed(RIGHT, 0);
+    MOTOR_SetSpeed(LEFT,  0);
+    if (ResetAllEncoders()) return true;
+    else{
+        Serial.println("Error : could not stop motors.");
+        return false;
+    }
 }
 
 /**
@@ -180,7 +186,15 @@ bool Stop()
  */
 bool ResetMovements()
 {
-    return false;
+    if (ResetAllEncoders()){
+        if (ResetPID()){
+            ResetPositions();
+            return true;
+        }
+        else Serial.println("Error : PID values aren't zero.");
+    }
+    else Serial.println("Error : Encoder buffer value isn't zero.");
+    return false;    
 }
 //#pragma endregion
 
@@ -210,10 +224,45 @@ bool ResetMovements()
  */
 bool Execute_Turning(float targetRadians)
 {
+    float targetTicks = CentimetersToEncoder(targetRadians*ARC_CONSTANT_CM);
+
+    //if(targetTicks) return false;
+
+    if (!ResetAllEncoders()) return false;
+
+    int rightPulse = 0;
+    int leftPulse  = 0;
+    int previousRightPulse = 0;
+    int previousLeftPulse  = 0;
+    float currentSpeed = 0.0f;
+    float speedLeft    = 0.0f;
+
+    unsigned long previousInterval_ms = 0;
+    unsigned long previousInterval_ms = 0;
     
+    while(rightPulse<targetTicks){
+        if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
+            rightPulse = abs((float)ENCODER_Read(RIGHT));
+            leftPulse  = abs((float)ENCODER_Read(LEFT));
 
+            currentSpeed = Accelerate(leftPulse, targetTicks, SPEED_MAX);
 
-    return false;
+            speedLeft = PID(PID_MOVEMENT, (leftPulse-previousLeftPulse), (rightPulse-previousRightPulse), currentSpeed);
+
+            SetMotorSpeed(LEFT, speedLeft);
+            SetMotorSpeed(RIGHT, currentSpeed);
+
+            previousLeftPulse  = leftPulse;
+            previousRightPulse = rightPulse;
+            previousInterval_ms = millis();
+        }
+
+        if (Alarm_VerifySensors()) break;
+        else if(Package_Detected()) break;
+    }
+
+    Stop(); 
+    return true;
 }
 
 /**
