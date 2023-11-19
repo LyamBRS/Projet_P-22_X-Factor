@@ -16,6 +16,7 @@
 #include "Movements/PID.hpp"            //// Used to correct the speed of the robot. May need several defines.
 #include "Movements/Positions.hpp"      //// Keeps tracks of the robot's current position and rotations as it moves around.
 #include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
+#include "Events/Events.hpp"            //// Allows the Execute movement functions to interrupt when a set goal is reached.
 
 
 //First 3 variables for the PID, Kp, Ki and Kd.
@@ -24,8 +25,16 @@
 #define TURN_90  PI/2
 #define TURN_180 PI
 
-#define TURN_RIGHT 1
-#define TURN_LEFT -1
+#define TURN_RIGHT -1
+#define TURN_LEFT   1
+#define MOVEMENT_FORWARD   1
+#define MOVEMENT_BACKWARD -1
+
+#define SPEED_MAX 0.8f
+#define ACCELERATION_CONSTANT 0
+
+
+#define PID_INTERVAL_MS 10
 
 //#pragma region [Base_functions]
 /**
@@ -166,6 +175,18 @@ bool Stop();
  * Failed to reset the movements.
  */
 bool ResetMovements();
+
+/**
+ * @brief Function that must be called
+ * before the robot starts to execute
+ * every Execute. It will reset the
+ * variables used during the movement.
+ * @return true:
+ * Successfully reset parameters.
+ * @return false:
+ * Failed to reset the parameters.
+ */
+bool ResetParameters();
 //#pragma endregion
 
 //#pragma region [Execution_Functions]
