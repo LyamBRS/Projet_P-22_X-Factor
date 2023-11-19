@@ -14,6 +14,12 @@
 // - INCLUDES - //
 #include "Package/Claws.hpp"
 
+/**
+ * @brief
+ * Global local variable allowing us to keep
+ * track of the current deployment of the claw
+ * throughout the multiple functions.
+ */
 bool deploymentStatus = CLAWS_STATUS_STORED;
 
 
@@ -29,8 +35,10 @@ bool deploymentStatus = CLAWS_STATUS_STORED;
  */
 bool Claws_Init()
 {
-    S3003_Init(0);
-    S3003_Init(1);
+    Debug_Start("Claws_Init");
+    S3003_Init(CLAWS_PINS_HEIGHT);
+    S3003_Init(CLAWS_PINS_GRABBER);
+    Debug_End();
     return true;
 }
 
@@ -48,7 +56,7 @@ bool Claws_Init()
 bool Claws_GetSwitchStatus()
 {
     //NEEDS TO BE CHANGED FOR READ PIN FOR THE CLAW
-    if(ROBUS_IsBumper(2)) return true;
+    if(ROBUS_IsBumper(CLAWS_PINS_SWITCH)) return true;
     else return false;
 }
 
@@ -76,18 +84,21 @@ bool Claws_SetGrabbers(unsigned char pourcent)
     angle+=CLAWS_GRABBERS_MIN;
 
     if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX){
-        if(deploymentStatus) {
+        if(deploymentStatus)
+        {
             S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
             return true;
         }
-        else {
+        else
+        {
+            Debug_Error("Claws", "Claws_SetGrabbers", "Claw is not deployed");
             return false;
-            //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : Claw is not deployed.");
         }
     }
-    else{
+    else
+    {
+        Debug_Error("Claws", "Claws_SetGrabbers", "Angle outside boundaries");
         return false;
-        //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : angle set is not withing boundaries.");
     }
 }
 
@@ -113,21 +124,24 @@ bool Claws_SetHeight(unsigned char pourcent)
     uint8_t angle = pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100;
     angle+=CLAWS_HEIGHT_MIN;
 
-    if(angle>=CLAWS_HEIGHT_MIN && angle <=CLAWS_HEIGHT_MAX){
-        if(deploymentStatus) {
+    if(angle>=CLAWS_HEIGHT_MIN && angle<=CLAWS_HEIGHT_MAX)
+    {
+        if(deploymentStatus)
+        {
             S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
             return true;
         }
-        else {
+        else
+        {
+            Debug_Error("Claws", "Claws_SetHeight", "Claw is not deployed.");
             return false;
-            //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : Claw is not deployed.");
         }
     }
-    else{
+    else
+    {
+        Debug_Error("Claws", "Claws_SetHeight", "Angle outside boundaries");
         return false;
-        //Debug_Error("Claws.cpp", "Claws_SetGrabbers()", "Error : angle set is not withing boundaries.");
     }
-    return false;
 }
 
 /**
@@ -154,27 +168,51 @@ bool Claws_SetHeight(unsigned char pourcent)
  */
 bool Claws_SetDeployment(bool deployment)
 {
-    if(!Claws_GetSwitchStatus()){
-        if(deployment == 1){ //DEPLOY
-            deploymentStatus = 1;
-            Claws_SetHeight(0);
-            S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+    if(!Claws_GetSwitchStatus())
+    {
+        if(deployment == CLAWS_STATUS_DEPLOYED)
+        {
+            if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
+                return false;
+            }
+
+            if(!Claws_SetGrabbers(CLAWS_GRABBERS_DEPLOYED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
+                return false;
+            }
+            deploymentStatus = CLAWS_STATUS_DEPLOYED;
+            return true;
         }
-        else if (deployment == 0){ //STORE
-            deploymentStatus = 0;
-            Claws_SetHeight(100);
-            S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+        else if (deployment == CLAWS_STATUS_STORED)
+        {
+            if(!Claws_SetHeight(CLAWS_HEIGHT_STORED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_STORED");
+                return false;
+            }
+
+            if(!Claws_SetGrabbers(CLAWS_GRABBERS_STORED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set grabbers as CLAWS_GRABBERS_STORED");
+                return false;
+            }
+            deploymentStatus = CLAWS_STATUS_STORED;
+            return true;
         }
-        else{
-            //Debug_Error("Claws.cpp", "Claws_SetDeployment()", "Error : Improper deployment status.");
+        else
+        {
+            Debug_Error("Claws", "Claws_SetDeployment", "Improper deployment status.");
             return false;
         }
     }
-    else{
-        //Debug_Error("Claws.cpp", "Claws_SetDeployment()", "Error : There is an object inside the claw.");
+    else
+    {
+        Debug_Error("Claws", "Claws_SetDeployment", "There is an object inside the claw.");
         return false;
     }
-
 }
 
 /**
@@ -202,14 +240,18 @@ bool Claws_SetDeployment(bool deployment)
 bool Claws_SqueezePackage(int pourcentage)
 {
     pourcentage -= CLAWS_SQUEEZE_DISTANCE;
-    if(pourcentage < 0 || pourcentage > 100){
-        Serial.println("Error : Squeezing outside the range :(.");
-        //Debug_Error("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Squeezing outside the range :(.");
+    if(pourcentage < 0 || pourcentage > 100)
+    {
+        Debug_Error("Claws", "Claws_SqueezePackage", "Squeezing outside allowed range");
         return false;
     }
-    else {
-        S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
-        //Claws_SetGrabbers(pourcentage);
+    else
+    {
+        if(!Claws_SetGrabbers(pourcentage))
+        {
+            Debug_Error("Claws", "Claws_SqueezePackage", "Failed to set grabbers at specified pourcent");
+            return false;
+        }
         return true;
     }
 }
@@ -227,37 +269,69 @@ bool Claws_SqueezePackage(int pourcentage)
  */
 bool Claws_CloseUntilDetection()
 {
+    Debug_Start("Claws_CloseUntilDetection");
+
+    // - VARIABLES - //
     int percentage = 100;
     unsigned long previousInterval_ms = 0;
 
-    while(!Claws_GetSwitchStatus() && !(percentage <= 0)){
-        if((millis()-previousInterval_ms)>=CLAWCLOSE_INTERVAL_MS){
+    // - GRADUAL CLOSING - //
+    while(!Claws_GetSwitchStatus() && !(percentage <= 0))
+    {
+        if((millis()-previousInterval_ms) >= CLAW_CLOSE_INTERVAL_MS)
+        {
             percentage-=CLAWS_CLOSING_SPEED;
-            Claws_SetGrabbers(percentage);
+            if(!Claws_SetGrabbers(percentage))
+            {
+                Debug_Error("Claws", "Claws_CloseUntilDetection", "Failed to set grabbers at specified pourcent.");
+                Debug_End();
+                return false;
+            }
             previousInterval_ms = millis();
         }
     }
 
     //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME
-    delay(5); 
+    delay(5);
 
-    if(Claws_GetSwitchStatus()){
-        int squeezeStatus = Claws_SqueezePackage(percentage);
-        if(squeezeStatus){
+    if(Claws_GetSwitchStatus())
+    {
+        bool packageSqueezed = Claws_SqueezePackage(percentage);
+        if(packageSqueezed)
+        {
+            Debug_End();
             return true;
-        } 
-        else {
-            Claws_SetGrabbers(100);
-            Serial.println("Error : Squeezed but lost the object.");
-            //Debug_Warning("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Squeezed but lost the object.");
+        }
+        else
+        {
+            if(!Claws_SetGrabbers(CLAWS_GRABBERS_DEPLOYED))
+            {
+                Debug_Error("Claws", "Claws_CloseUntilDetection", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
+                Debug_End();
+                return false;
+            }
+            Debug_Error("Claws", "Claws_CloseUntilDetection", "Squeezed but lost the object.");
+            Debug_End();
             return false;
         }
     }
-
-    else if(percentage <= 0){
-        Claws_SetGrabbers(100);
-        Serial.println("Error : Did not grab anything even when completely closed.");
-        //Debug_Warning("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Did not grab anything even when completely closed.");
+    else if(percentage <= 0)
+    {
+        if(Claws_SetGrabbers(CLAWS_GRABBERS_DEPLOYED))
+        {
+            Debug_Error("Claws", "Claws_CloseUntilDetection", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
+            Debug_End();
+            return false;
+        }
+        Debug_Warning("Claws", "Claws_CloseUntilDetection", "Did not grab anything even when completely closed.");
+        Debug_End();
         return false;
     }
+    else
+    {
+        Debug_Error("Claws", "Claws_CloseUntilDetection", "Fatal unexpected behaviour");
+        Debug_End();
+        return false;
+    }
+    // Debug_End();
 }
