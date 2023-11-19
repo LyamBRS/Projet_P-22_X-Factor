@@ -159,11 +159,13 @@ bool Claws_SetDeployment(bool deployment)
             deploymentStatus = 1;
             Claws_SetHeight(0);
             S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+            return true;
         }
         else if (deployment == 0){ //STORE
             deploymentStatus = 0;
             Claws_SetHeight(100);
             S3003_SetPosition(CLAWS_PINS_GRABBER, 90);
+            return true;
         }
         else{
             //Debug_Error("Claws.cpp", "Claws_SetDeployment()", "Error : Improper deployment status.");
@@ -258,6 +260,11 @@ bool Claws_CloseUntilDetection()
         Claws_SetGrabbers(100);
         Serial.println("Error : Did not grab anything even when completely closed.");
         //Debug_Warning("Claws.cpp", "Claws_CloseUntilDetection()", "Error : Did not grab anything even when completely closed.");
+        return false;
+    }
+
+    else{
+        Serial.println("Error : Unknown error.");
         return false;
     }
 }
