@@ -14,6 +14,9 @@
 // - INCLUDES - //
 #include "Debug/Debug.hpp"
 
+// - LOCAL GLOBAL - //
+volatile int _indentationLevel = 0;
+
 /**
  * @brief Initialises the debug functions used
  * to debug prints in a serial port.
@@ -32,6 +35,74 @@ bool Debug_Init()
 }
 
 /**
+ * @brief Tells the debug program which function
+ * is currently being debug. This will not
+ * execute if Informations are disabled in the
+ * program or @ref DEBUG_STACK_TRACE_ENABLED
+ * is set to DEBUG_STACK_TRACE_DISABLED
+ * @param nameOfTheFunction
+ */
+void Debug_Start(String nameOfTheFunction)
+{
+    #ifdef DEBUG_INFORMATION_ENABLED
+        #ifdef DEBUG_STACK_TRACE_ENABLED
+            DEBUG_SERIAL.print("[     ]: ");
+            DEBUG_SERIAL.print(GetIndentation());
+            DEBUG_SERIAL.print("[");
+            DEBUG_SERIAL.print(nameOfTheFunction);
+            DEBUG_SERIAL.println("]:");
+            DEBUG_SERIAL.flush();
+            if(_indentationLevel < MAX_INDENTATION_LEVEL) _indentationLevel++;
+        #endif
+    #endif
+}
+
+/**
+ * @brief
+ * Removes one indentation when a function returns
+ */
+void Debug_End()
+{
+    #ifdef DEBUG_INFORMATION_ENABLED
+        #ifdef DEBUG_STACK_TRACE_ENABLED
+            if(_indentationLevel > 0) _indentationLevel--;
+            DEBUG_SERIAL.print("[     ]: ");
+            DEBUG_SERIAL.print(GetIndentation());
+            DEBUG_SERIAL.println("[END]");
+            DEBUG_SERIAL.flush();
+        #endif
+    #endif
+}
+
+/**
+ * @brief Makes the code shift right the further
+ * it goes into functions. In other words, the
+ * bigger the stack, the more indentation there
+ * will be. YOU NEED TO CALL
+ * Debug_Start and Debug_End in your program for
+ * this to work.
+ * @return String
+ * The indentation level
+ */
+String GetIndentation()
+{
+    #ifdef DEBUG_INFORMATION_ENABLED
+        #ifdef DEBUG_STACK_TRACE_ENABLED
+            String indentation = "";
+
+            if(_indentationLevel == 0) return "";
+
+            for(int indentationLevel=0; indentationLevel<_indentationLevel; indentationLevel++)
+            {
+                indentation += "|\t";
+            }
+            return indentation;
+        #endif
+    #endif
+    return "";
+}
+
+/**
  * @brief Prints an error on the debug port that
  * can be used for trace back. Errors are things
  * that only occur if it really fucked up.
@@ -44,10 +115,15 @@ void Debug_Error(String fileName, String functionName, String errorMessage)
 {
     #ifdef DEBUG_ENABLED
         DEBUG_SERIAL.print("[ERROR]: ");
-        DEBUG_SERIAL.print(fileName);
-        DEBUG_SERIAL.print(": ");
-        DEBUG_SERIAL.print(functionName);
-        DEBUG_SERIAL.print(": ");
+        #ifdef DEBUG_STACK_TRACE_ENABLED
+            DEBUG_SERIAL.print(GetIndentation());
+        #elif
+            DEBUG_SERIAL.print(fileName);
+            DEBUG_SERIAL.print(": ");
+            DEBUG_SERIAL.print(functionName);
+            DEBUG_SERIAL.print(": ");
+        #endif
+
         DEBUG_SERIAL.print(errorMessage);
         DEBUG_SERIAL.print("\n\r");
         DEBUG_SERIAL.flush();
@@ -68,10 +144,15 @@ void Debug_Warning(String fileName, String functionName, String warningMessage)
     #ifdef DEBUG_ENABLED
         #ifdef DEBUG_WARNING_ENABLED
             DEBUG_SERIAL.print("[WARNS]: ");
-            DEBUG_SERIAL.print(fileName);
-            DEBUG_SERIAL.print(": ");
-            DEBUG_SERIAL.print(functionName);
-            DEBUG_SERIAL.print(": ");
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                DEBUG_SERIAL.print(GetIndentation());
+            #elif
+                DEBUG_SERIAL.print(fileName);
+                DEBUG_SERIAL.print(": ");
+                DEBUG_SERIAL.print(functionName);
+                DEBUG_SERIAL.print(": ");
+            #endif
+
             DEBUG_SERIAL.print(warningMessage);
             DEBUG_SERIAL.print("\n\r");
             DEBUG_SERIAL.flush();
@@ -94,10 +175,15 @@ void Debug_Information(String fileName, String functionName, String informationM
     #ifdef DEBUG_ENABLED
         #ifdef DEBUG_INFORMATION_ENABLED
             DEBUG_SERIAL.print("[INFOS]: ");
-            DEBUG_SERIAL.print(fileName);
-            DEBUG_SERIAL.print(": ");
-            DEBUG_SERIAL.print(functionName);
-            DEBUG_SERIAL.print(": ");
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                DEBUG_SERIAL.print(GetIndentation());
+            #elif
+                DEBUG_SERIAL.print(fileName);
+                DEBUG_SERIAL.print(": ");
+                DEBUG_SERIAL.print(functionName);
+                DEBUG_SERIAL.print(": ");
+            #endif
+
             DEBUG_SERIAL.print(informationMessage);
             DEBUG_SERIAL.print("\n\r");
             DEBUG_SERIAL.flush();

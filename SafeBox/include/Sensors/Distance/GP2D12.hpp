@@ -9,6 +9,9 @@
 
 #pragma once
 
+// #define trigPin 11;    // Trigger
+// #define echoPin 12;    // Echo
+// long duration, cm, inches;
 /**
  * @brief Sets base values
  *

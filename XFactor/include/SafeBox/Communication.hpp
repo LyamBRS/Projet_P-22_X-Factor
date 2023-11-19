@@ -19,7 +19,7 @@
 #include "Communication/Bluetooth.hpp"  //// Used to communicate information and receive information from SafeBox
 
 // - DEFINES - //
-#define COMMS_TIMEOUT_MS 1000
+#define COMMS_TIMEOUT_MS 2000
 
 #define COMMAND_LID_OPEN  "C_LID_O"
 #define COMMAND_LID_CLOSE "C_LID_C"

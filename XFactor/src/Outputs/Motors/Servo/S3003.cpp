@@ -34,8 +34,5 @@ void S3003_Init(int servoMotorPin)
  */
 void S3003_SetPosition(int servoMotorPin, float wantedPosition)
 {
-    const float WANTED_POSITION_MAX_VALUE = 100;
-    float angle = wantedPosition * MAX_SERVO_ANGLE / WANTED_POSITION_MAX_VALUE;
-    
-    SERVO_SetAngle(servoMotorPin, angle);
+    SERVO_SetAngle(servoMotorPin, wantedPosition);
 }
