@@ -14,14 +14,19 @@
 #pragma once
 
 // - INCLUDES - //
-#include "Package/Claws.hpp" //// Used to pick up and handle the package.
+#include "Package/Claws.cpp" //// Used to pick up and handle the package.
 #include "Sensors/Colour/GROVE.hpp"
 #include "Movements/Movements.hpp"
 #include "Colour/Colour.hpp"
 
 // #pragma region [DEFINES]
-#define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 15/100
+#define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 0
+#define PACKAGE_CLAW_HEIGHT_POSITION_PICKUP 0
+
+#define OBSTACLE_DETECTED -1
+#define ERROR_PACKAGE 0
+#define PACKAGE_DETECTED 1
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -151,7 +156,7 @@ bool Package_Transport();
  * No packages are detected anywhere near or
  * inside the robot.
  */
-bool Package_Detected();
+int Package_Detected();
 
 /**
  * @brief
