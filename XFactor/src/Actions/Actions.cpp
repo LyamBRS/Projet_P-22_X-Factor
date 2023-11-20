@@ -963,7 +963,7 @@ void Execute_EndOfProgram()
     SetNewExecutionFunction(checkFunctionId);
     return;
   }
-  
+
   SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 }
 
@@ -976,7 +976,13 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
+  // set status ??
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
+  Stop();
+  for (;;)
+  {
+
+  }
 }
 
 //#pragma endregion
