@@ -144,3 +144,33 @@ bool RemoveLastVector()
     Debug_Error("Vectors.cpp", "RemoveLastVector", "VECTOR_BUFFER_SIZE is equal to 0.");
     return false;
 }
+
+/**
+ * @brief Calculates and return the 
+ * vector needed to go back to the garage door.
+ * If needed for further uses, we might add
+ * a parameter that contains the reference
+ * point (the 0,0)
+ * @return MovementVector:
+ * The calculated vector, equal to empty if 
+ * a problem has occurred.
+ */
+MovementVector GetReturnVector()
+{
+    float positionX_cm = 0;
+    float positionY_cm = 0;
+
+    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    MovementVector returnVector;
+
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+        positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
+        positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+    }
+    
+    returnVector.rotation_rad = -absoluteRotation;
+    returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
+    return returnVector;
+}

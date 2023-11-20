@@ -13,6 +13,7 @@
 
 #include "Movements/Positions.hpp"
 #include "Debug/Debug.hpp"
+#include "math.h"
 
 typedef struct 
 {
@@ -91,4 +92,16 @@ bool ResetVectors();
  * The vector failed to be removed.
  */
 bool RemoveLastVector();
+
+/**
+ * @brief Calculates and return the 
+ * vector needed to go back to the garage door.
+ * If needed for further uses, we might add
+ * a parameter that contains the reference
+ * point (the 0,0)
+ * @return MovementVector:
+ * The calculated vector, equal to empty if 
+ * a problem has occurred.
+ */
+MovementVector GetReturnVector();
 // #pragma endregion
