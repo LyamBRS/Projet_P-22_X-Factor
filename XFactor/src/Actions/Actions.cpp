@@ -954,7 +954,17 @@ void Execute_ReturnInsideGarage()
  */
 void Execute_EndOfProgram()
 {
+  int checkFunctionId;
 
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+  
+  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 }
 
 /**
