@@ -118,9 +118,9 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
  */
 bool TurnInRadians(float radians)
 {
-    if (!ResetPID)              return false;
-    else if (!ResetAllEncoders) return false;
-    else if (!ResetParameters)  return false;
+    if (!ResetPID())              return false;
+    else if (!ResetAllEncoders()) return false;
+    else if (!ResetParameters())  return false;
 
     targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
 
