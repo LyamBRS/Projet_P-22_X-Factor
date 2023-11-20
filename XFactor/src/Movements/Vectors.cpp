@@ -31,7 +31,13 @@ bool Vectors_Init()
     ResetVectors();
 
     vectorBuffer[0].distance_cm = 100.0f;
-    vectorBuffer[0].rotation_rad = 3.1415f;
+    vectorBuffer[0].rotation_rad = 0.0f;
+
+    vectorBuffer[1].distance_cm = 100.0f;
+    vectorBuffer[1].rotation_rad = (3.1415f / 2.0f);
+
+    vectorBuffer[2].distance_cm = 100.0f;
+    vectorBuffer[2].rotation_rad = - 1 * (3.1415f / 2.0f);
     return true;
 }
 
@@ -182,7 +188,7 @@ MovementVector GetReturnVector()
         }
     }
     
-    returnRotation = absoluteRotation - 3.1415f;
+    returnRotation = (float)atan(positionY_cm/positionX_cm) - 3.1415f;
     returnVector.rotation_rad = returnRotation - ((float)trunc(returnRotation / (2.0f * 3.1415f)) * returnRotation);
     returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
     return returnVector;
