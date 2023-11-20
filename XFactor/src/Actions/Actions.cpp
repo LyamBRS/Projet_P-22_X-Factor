@@ -286,7 +286,7 @@ void Execute_GettingOutOfGarage()
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(0, 50.0f, false)) //Add define for distances to get outta the box
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false))
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -333,7 +333,7 @@ void Execute_SearchPreparations()
   
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
+    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false))
     {
       int checkFunctionId;
       ResetVectors();
