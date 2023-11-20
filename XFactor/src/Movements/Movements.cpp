@@ -145,9 +145,9 @@ bool TurnInRadians(float radians)
  */
 bool MoveStraight(float distance)
 {
-    if (!ResetPID)              return false;
-    else if (!ResetAllEncoders) return false;
-    else if (!ResetParameters)  return false;
+    if (!ResetPID())              return false;
+    else if (!ResetAllEncoders()) return false;
+    else if (!ResetParameters())  return false;
 
     targetTicks = CentimetersToEncoder(distance);
 
