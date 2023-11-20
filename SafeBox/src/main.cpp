@@ -9,17 +9,22 @@
  */
 
 // - INCLUDES -//
-#include "Actions/Actions.hpp"
+//#include "Actions/Actions.hpp"
 #include "SafeBox/Init.hpp"
+#include "Sensors/Distance/GP2D12.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
 {
+
   SafeBox_Init();
+  GP2D12_Init(9,10);
+
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //Execute_CurrentFunction();
+  GP2D12_Read(9,10);
 }
