@@ -45,7 +45,10 @@
  */
 bool MovingEvent(float executionRatio, unsigned char direction)
 {
-    return false;
+    if (Alarm_VerifySensors()) return false;
+    else if(Package_Detected()) return false;
+    else if(executionRatio == 1) return false;
+    else return true;
 }
 
 /**

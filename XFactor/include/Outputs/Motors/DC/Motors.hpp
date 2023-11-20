@@ -25,6 +25,10 @@
 // Diameter between the wheels ; used for turning //18.6f A et 19.2f B
 #define DISTANCE_BT_WHEEL_CM 18.6f 
 
+// Constant for calculating the arc. See documentation (formula) for more information
+//The goal is to avoid dividing every time
+#define ARC_CONSTANT_CM (DISTANCE_BT_WHEEL_CM/2.0f)
+
 
 /**
  * @brief Function that resets
@@ -105,4 +109,4 @@ float EncoderToCentimeters(int ticks);
  * value of the ticks converted to
  * centimeters. 
  */
-float EncoderToCentimeters(int distance_cm);
+float CentimetersToEncoder(float distance_cm);

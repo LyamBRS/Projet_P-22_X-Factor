@@ -27,7 +27,8 @@ bool ResetAllEncoders()
 {
     ENCODER_Reset(LEFT);
     ENCODER_Reset(RIGHT);
-    return true;
+    if(ENCODER_Read(RIGHT) != 0 || ENCODER_Read(LEFT) != 0) return false;
+    else return true;
 }
 
 /**
@@ -128,7 +129,8 @@ float EncoderToCentimeters(int ticks)
  * value of the centimeters converted to
  * ticks. 
  */
-float CentimetersToEncoder(int distance_cm){
+float CentimetersToEncoder(float distance_cm)
+{
     float pulse = ((float)distance_cm / CIRCUMFERENCE_WHEEL_CM) * 3200.0f;
     return pulse;
 }
