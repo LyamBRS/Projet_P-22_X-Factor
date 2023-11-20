@@ -22,6 +22,11 @@
 // #pragma region [DEFINES]
 #define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 15/100
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 0
+
+#define NOTHING_DETECTED 0
+#define PACKAGE_DETECTED 1
+#define OBSTACLE_DETECTED 2
+
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -145,13 +150,17 @@ bool Package_Transport();
  * package is still inside of the claw.
  *
  * Packages are identified using color sensors.
- * @return true:
+ * @return PACKAGE_DETECTED:
  * A package was detected near the robot.
- * @return false:
+ * @return OBSTACLE_DETECTED:
+ * Something that is not a package has been
+ * detected near the robot
+ * @return NOTHING_DETECTED:
  * No packages are detected anywhere near or
  * inside the robot.
+ * 
  */
-bool Package_Detected();
+int Package_Detected();
 
 /**
  * @brief
