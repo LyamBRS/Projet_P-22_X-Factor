@@ -13,6 +13,22 @@
 // - INCLUDES - //
 #include "Movements/Movements.hpp"
 
+
+// - GLOBAL VARIABLES - //
+int rightPulse = 0;
+int leftPulse  = 0;
+int previousRightPulse = 0;
+int previousLeftPulse  = 0;
+double completionRatio = 0.0;
+
+int direction = 0;
+float targetTicks = 0;
+
+float currentSpeed = 0.0f;
+float speedLeft    = 0.0f;
+
+unsigned long previousInterval_ms = 0;
+
 //#pragma region Base_functions
 /**
  * @brief
@@ -102,8 +118,16 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
  */
 bool TurnInRadians(float radians)
 {
-    
-    return false;
+    if (!ResetPID)              return false;
+    else if (!ResetAllEncoders) return false;
+    else if (!ResetParameters)  return false;
+
+    targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
+
+    if (radians >= 0) direction = TURN_RIGHT;
+    else direction = TURN_LEFT;
+
+    return true;
 }
 
 /**
@@ -121,7 +145,16 @@ bool TurnInRadians(float radians)
  */
 bool MoveStraight(float distance)
 {
-    return false;
+    if (!ResetPID)              return false;
+    else if (!ResetAllEncoders) return false;
+    else if (!ResetParameters)  return false;
+
+    targetTicks = CentimetersToEncoder(distance);
+
+    if (distance >= 0) direction = MOVEMENT_FORWARD;
+    else direction = MOVEMENT_BACKWARD;
+
+    return true;
 }
 
 /**
@@ -134,12 +167,10 @@ bool MoveStraight(float distance)
  * This is important to make the robot go faster than an instant
  * acceleration that would otherwise cause slip and potential
  * drifting, meaning loss in accuracy.
- * @param distanceLeft
- * How much rotation or distance is left to make
- * @param totalDistance
- * How much total distance or total rotation is needed
- * to reach the end of the moving sequence. This is
- * used to make a ratio from 0 to 1.
+ * @param completionRatio
+ * ratio going from 0 to 1 representing how much of the chosen
+ * movement the robot has completed. Used to represent the x in
+ * the parabolic function.
  * @param maximumSpeed
  * a ratio from 0 to 1 that indicates the maximum speed of
  * the wheels.
@@ -147,9 +178,10 @@ bool MoveStraight(float distance)
  * Ratio from 0 to 1 that should be multiplied to the
  * current PID value
  */
-float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed)
+float Accelerate(float completionRatio, float maximumSpeed)
 {
-    return 0.0f;
+    //i just need to calculate the a constant for the parabola
+    return (ACCELERATION_CONSTANT*(completionRatio-0.5)*(completionRatio-0.5)+maximumSpeed); 
 }
 
 /**
@@ -163,7 +195,13 @@ float Accelerate(float distanceLeft, float totalDistance, float maximumSpeed)
  */
 bool Stop()
 {
-    return false;
+    MOTOR_SetSpeed(RIGHT, 0);
+    MOTOR_SetSpeed(LEFT,  0);
+    if (ResetAllEncoders()) return true;
+    else{
+        Serial.println("Error : could not stop motors.");
+        return false;
+    }
 }
 
 /**
@@ -180,7 +218,43 @@ bool Stop()
  */
 bool ResetMovements()
 {
-    return false;
+    if (ResetAllEncoders()){
+        if (ResetPID()){
+            ResetPositions();
+            return true;
+        }
+        else Serial.println("Error : PID values aren't zero.");
+    }
+    else Serial.println("Error : Encoder buffer value isn't zero.");
+    return false;    
+}
+
+/**
+ * @brief Function that must be called
+ * before the robot starts to execute
+ * every Execute. It will reset the
+ * variables used during the movement.
+ * @return true:
+ * Successfully reset parameters.
+ * @return false:
+ * Failed to reset the parameters.
+ */
+bool ResetParameters()
+{
+    rightPulse = 0;
+    leftPulse  = 0;
+    previousRightPulse = 0;
+    previousLeftPulse  = 0;
+    completionRatio = 0.0;
+
+    direction = 0;
+    targetTicks = 0;
+
+    currentSpeed = 0.0f;
+    speedLeft    = 0.0f;
+
+    previousInterval_ms = 0;
+    return true;    
 }
 //#pragma endregion
 
@@ -210,10 +284,29 @@ bool ResetMovements()
  */
 bool Execute_Turning(float targetRadians)
 {
+    SetMotorSpeed(LEFT, (float)direction*-1.0f*currentSpeed);
+    SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
+    while(TurningEvent(completionRatio, direction)){
+        if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
+            rightPulse = abs((float)ENCODER_Read(RIGHT));
+            leftPulse  = abs((float)ENCODER_Read(LEFT));
+            completionRatio = rightPulse/targetTicks;
 
+            currentSpeed = Accelerate(completionRatio, SPEED_MAX);
 
-    return false;
+            speedLeft = PID(PID_MOVEMENT, (leftPulse-previousLeftPulse), (rightPulse-previousRightPulse), currentSpeed);
+
+            SetMotorSpeed(LEFT, (float)direction*-1.0f*speedLeft);
+            SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
+            previousLeftPulse  = leftPulse;
+            previousRightPulse = rightPulse;
+            previousInterval_ms = millis();
+        }
+    }
+
+    Stop(); 
+    return true;
 }
 
 /**
@@ -241,8 +334,31 @@ bool Execute_Turning(float targetRadians)
  * Failed to execute the moving sequence
  */
 bool Execute_Moving(float targetDistance)
-{
-    return false;
+{ 
+    SetMotorSpeed(LEFT, (float)direction*currentSpeed);
+    SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
+    
+    while(TurningEvent(completionRatio, direction)){
+        if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
+            rightPulse = abs((float)ENCODER_Read(RIGHT));
+            leftPulse  = abs((float)ENCODER_Read(LEFT));
+            completionRatio = rightPulse/targetTicks;
+
+            currentSpeed = Accelerate(completionRatio, SPEED_MAX);
+
+            speedLeft = PID(PID_MOVEMENT, (leftPulse-previousLeftPulse), (rightPulse-previousRightPulse), currentSpeed);
+
+            SetMotorSpeed(LEFT, (float)direction*speedLeft);
+            SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
+            
+            previousLeftPulse  = leftPulse;
+            previousRightPulse = rightPulse;
+            previousInterval_ms = millis();
+        }
+    }
+
+    Stop(); 
+    return true;
 }
 
 //#pragma endregion

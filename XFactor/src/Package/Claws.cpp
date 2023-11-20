@@ -333,5 +333,4 @@ bool Claws_CloseUntilDetection()
         Debug_End();
         return false;
     }
-    // Debug_End();
 }
