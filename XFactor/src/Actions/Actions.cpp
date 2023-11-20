@@ -915,30 +915,32 @@ void Execute_ReturnInsideGarage()
     return;
   }
 
-  // MOVE TO THE ENTRANCE
-
-  if (hasEnteredGarage)
+  if (SafeBox_GetGarageState())
   {
-    if (!SafeBox_GetGarageState())
-    {
-
-    }
-    else
-    {
-      SafeBox_ChangeGarageState(false);
-    }
+    // DRIVE INTO GARAGE
+    // WILL NEED TO SEE SAFEBOX STATUS
   }
   else
   {
-    if (SafeBox_GetGarageState())
-    {
-      // DRIVE INTO GARAGE
-      // WILL NEED TO SEE SAFEBOX STATUS
-    }
-    else
-    {
-      SafeBox_ChangeGarageState(true);
-    }
+    SafeBox_ChangeGarageState(true);
+  }
+
+  if (!SafeBox_GetGarageState())
+  {
+
+  }
+  else
+  {
+    SafeBox_ChangeGarageState(false);
+  }
+
+  if (hasEnteredGarage)
+  {
+    
+  }
+  else
+  {
+    
   }
 }
 
