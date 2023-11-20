@@ -194,28 +194,22 @@ bool Package_Transport()
  * package is still inside of the claw.
  *
  * Packages are identified using color sensors.
- * @return PACKAGE_DETECTED:
+ * @return true:
  * A package was detected near the robot.
- * @return OBSTACLE_DETECTED:
- * Something that is not a package has been
- * detected near the robot
- * @return NOTHING_DETECTED:
+ * @return false:
  * No packages are detected anywhere near or
  * inside the robot.
  */
-int Package_Detected()
+bool Package_Detected()
 {
     unsigned long currentColour = 0;
 
-    // if obstacle
-    //return OBSTACLE_DETECTED;
-
     currentColour = GROVE_GetColor();
     if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
-        return PACKAGE_DETECTED;
+        return true;
     }
 
-    return NOTHING_DETECTED;
+    return false;
 }
 
 /**
