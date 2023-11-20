@@ -13,6 +13,22 @@
  */
 
 #pragma once
+#include "LibRobus.h"
+#include "Debug/Debug.hpp"
+
+// Diameter of the wheel (cm)
+#define DIAMETER_WHEEL_CM 7.7f 
+
+// Calculate the circumference of the whell depending on its diameter
+#define CIRCUMFERENCE_WHEEL_CM (3.1416*DIAMETER_WHEEL_CM)
+
+// Diameter between the wheels ; used for turning //18.6f A et 19.2f B
+#define DISTANCE_BT_WHEEL_CM 18.6f 
+
+// Constant for calculating the arc. See documentation (formula) for more information
+//The goal is to avoid dividing every time
+#define ARC_CONSTANT_CM (DISTANCE_BT_WHEEL_CM/2.0f)
+
 
 /**
  * @brief Function that resets
@@ -78,3 +94,19 @@ bool SetMotorSpeed(int motorNumber, float wantedSpeed);
  * centimeters. 
  */
 float EncoderToCentimeters(int ticks);
+
+/**
+ * @brief Simple function that transforms
+ * a number expressed in centimeters into
+ * its distance equivalence in ticks.
+ * This should prevent you from manually
+ * having to calculate this converstion
+ * each time its needed.
+ * @param distance_cm
+ * The number of centimeters you want to 
+ * reach
+ * @return float
+ * value of the ticks converted to
+ * centimeters. 
+ */
+float CentimetersToEncoder(float distance_cm);

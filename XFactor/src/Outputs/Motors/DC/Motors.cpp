@@ -25,7 +25,10 @@
  */
 bool ResetAllEncoders()
 {
-    return false;
+    ENCODER_Reset(LEFT);
+    ENCODER_Reset(RIGHT);
+    if(ENCODER_Read(RIGHT) != 0 || ENCODER_Read(LEFT) != 0) return false;
+    else return true;
 }
 
 /**
@@ -44,7 +47,13 @@ bool ResetAllEncoders()
  */
 int GetAnEncoder(int motorNumber)
 {
-    return 0;
+    if (motorNumber == LEFT || motorNumber == RIGHT){
+        return ENCODER_Read(motorNumber);
+    }
+    else {
+        Debug_Error("Motors","GetAnEncoder","Motor called is neither Left (0) or Right (1).");
+        return 0;
+    }
 }
 
 /**
@@ -69,13 +78,27 @@ int GetAnEncoder(int motorNumber)
  */
 bool SetMotorSpeed(int motorNumber, float wantedSpeed)
 {
-    return false;
+    if (motorNumber == LEFT || motorNumber == RIGHT){
+        if(wantedSpeed >= -1 && wantedSpeed <= 1){
+            MOTOR_SetSpeed(motorNumber, wantedSpeed);
+            return true;
+        }
+        else {
+            Debug_Error("Motors","SetMotorSpeed","Speed not within the thresholds [-1,1].");
+            return false;
+        }
+    }
+    else {
+        Debug_Error("Motors","SetMotorSpeed","Motor called is neither Left (0) or Right (1).");
+        return false;
+    }
+    
 }
 
 /**
  * @brief Simple function that transforms
  * a number expressed in ticks into its
- * distance equivalensce in centimeters.
+ * distance equivalence in centimeters.
  * This should prevent you from manually
  * having to calculate this conversion
  * each time its needed.
@@ -88,5 +111,26 @@ bool SetMotorSpeed(int motorNumber, float wantedSpeed)
  */
 float EncoderToCentimeters(int ticks)
 {
-    return 0.0f;
+    float distance_cm = ((float)ticks * CIRCUMFERENCE_WHEEL_CM / 3200);
+    return distance_cm;
+}
+
+/**
+ * @brief Simple function that transforms
+ * a number expressed in centimeters into
+ * its distance equivalence in ticks.
+ * This should prevent you from manually
+ * having to calculate this converstion
+ * each time its needed.
+ * @param distance_cm
+ * The number of centimeters you want to 
+ * reach
+ * @return float
+ * value of the centimeters converted to
+ * ticks. 
+ */
+float CentimetersToEncoder(float distance_cm)
+{
+    float pulse = ((float)distance_cm / CIRCUMFERENCE_WHEEL_CM) * 3200.0f;
+    return pulse;
 }

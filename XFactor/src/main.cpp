@@ -11,7 +11,6 @@
 // - INCLUDES -//
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
-#include "Sensors/Colour/GROVE.hpp"
 
 // TEMPORARY INCLUDES
 #include "Movements/Vectors.hpp"

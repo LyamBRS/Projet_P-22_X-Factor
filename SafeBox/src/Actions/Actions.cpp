@@ -127,6 +127,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_DROP_OFF):
+        case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
         case(FUNCTION_ID_WAIT_FOR_RETRIEVAL):
         case(FUNCTION_ID_WAIT_FOR_RETURN):
             // The specified function is indeed a valid function ID.
@@ -179,6 +180,23 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
+
+    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
+    {
+        Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
+        return;
+    }
+
+    if(SafeBox_CheckAndExecuteMessage())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
+        // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        BT_ClearAllMessages();
+        return;
+    }
+
+    ExecutionUtils_HandleReceivedXFactorStatus();
 }
 
 /**
@@ -195,7 +213,17 @@ void Execute_WaitAfterXFactor()
  */
 void Execute_WaitForDelivery()
 {
-
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
+    SafeBox_CheckAndExecuteMessage();
+    ExecutionUtils_HandleArmedUnlocking();
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    if (Doorbell_GetState())
+    {
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ARMED);
+        SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_RETRIEVAL);
+        return;
+    }
 }
 
 /**
@@ -210,14 +238,12 @@ void Execute_WaitForDelivery()
  */
 void Execute_StartOfDelivery()
 {
-    // There's no status for the Safebox when the doorbell is heard
-    if (Doorbell_GetState() == true)
-    {
-      
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
-        //SafeBox_ReplyStatus(); WAIT FOR THE RIGHT COMM FUNCTION
-        return;
-    }
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ARMED);
+    SafeBox_CheckAndExecuteMessage();
+    ExecutionUtils_HandleArmedUnlocking();
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_RETRIEVAL);
 }
 
 /**
@@ -236,7 +262,11 @@ void Execute_StartOfDelivery()
  */
 void Execute_WaitForRetrieval()
 {
-
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+    SafeBox_CheckAndExecuteMessage();
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    ExecutionUtils_HandleArmedUnlocking();
 }
 
 /**
@@ -254,7 +284,11 @@ void Execute_WaitForRetrieval()
  */
 void Execute_WaitForReturn()
 {
-
+    SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+    SafeBox_CheckAndExecuteMessage();
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    ExecutionUtils_HandleArmedUnlocking();
 }
 
 /**
@@ -269,7 +303,11 @@ void Execute_WaitForReturn()
  */
 void Execute_DropOff()
 {
-
+    SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+    SafeBox_CheckAndExecuteMessage();
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    ExecutionUtils_HandleArmedUnlocking();
 }
 
 /**
@@ -287,16 +325,17 @@ void Execute_DropOff()
  * @ref Execute_WaitForDelivery
  */
 void Execute_Unlocked()
-{   
-    SafeBox_CheckAndExecuteMessage();
+{
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
+    SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-    
-    if(RFID_CheckIfCardIsThere())
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    if(RFID_HandleCard())
     {
-        if(RFID_HandleCard())
+        if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))
         {
-            SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+            Debug_Error("Actions", "Execute_Unlocked", "Failed to set new execution function");
+            SetNewExecutionFunction(FUNCTION_ID_ERROR);
         }
     }
 }
@@ -316,7 +355,46 @@ void Execute_Unlocked()
  */
 void Execute_Alarm()
 {
+    // - VARIABLES - //
+    static bool mustBeOn = false;
 
+    SafeBox_SetNewStatus(SafeBox_Status::Alarm);
+
+    if(!SafeBox_CheckAndExecuteMessage())
+    {
+        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
+    }
+
+
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    // - LED & BUZZER BLINK - //
+    if(ExecutionUtils_LedBlinker(500))
+    {
+        mustBeOn = !mustBeOn;
+
+        if(mustBeOn)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+            // AX_BuzzerON();
+        }
+        else
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+            // AX_BuzzerOFF();
+        }
+    }
+
+    // - RFID DISARM ALARM CHECKS - //
+    if (RFID_HandleCard())
+    {
+        // AX_BuzzerOFF();
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
+        {
+            Debug_Error("Actions", "Execute_Alarm", "Failed to set new execution function");
+            SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        }
+    }
 }
 
 /**
@@ -330,7 +408,28 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
+    // - VARIABLES - //
+    static bool mustBeOn = false; // everything is closed
 
+    // - PROGRAM - //
+    SafeBox_SetNewStatus(SafeBox_Status::Error);
+    ExecutionUtils_HandleReceivedXFactorStatus();
+    SafeBox_CheckAndExecuteMessage();
+
+    // - LED BLINK - //
+    if(ExecutionUtils_LedBlinker(1000))
+    {
+        mustBeOn = !mustBeOn;
+
+        if(mustBeOn)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ERROR);
+        }
+        else
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+        }
+    }
 }
 
 /**
@@ -342,7 +441,8 @@ void Execute_Error()
  */
 void Execute_EndOfProgram()
 {
-
+    // WE SHOULD NOT REACH THIS FUNCTION//
+    ExecutionUtils_HandleReceivedXFactorStatus();
 }
 
 //#pragma endregion

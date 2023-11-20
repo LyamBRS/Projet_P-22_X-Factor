@@ -14,21 +14,39 @@
 #pragma once
 
 // - INCLUDES - //
-#include "Outputs/Motors/Servo/S3003.hpp" //// Used to make the claw move. 3 servo motors should be used.
+#include "Outputs/Motors/Servo/S3003.hpp" //// Used to make the claw move. 2 servo motors should be used.
+#include "Debug/Debug.hpp"
 
 // #pragma region [DEFINES]
-#define CLAWS_SQUEEZE_DISTANCE
-#define CLAWS_CLOSING_SPEED
+#define CLAWS_SQUEEZE_DISTANCE 5
+#define CLAWS_CLOSING_SPEED 1
 
-#define CLAWS_GRABBERS_MAX
-#define CLAWS_GRABBERS_MIN
+#define CLAWS_GRABBERS_MAX 15
+#define CLAWS_GRABBERS_MIN 90
 
-#define CLAWS_HEIGHT_MAX
-#define CLAWS_HEIGHT_MIN
+#define CLAWS_HEIGHT_MIN 90
+#define CLAWS_HEIGHT_MAX (CLAWS_HEIGHT_MIN+45)
 
-#define CLAWS_PINS_SWITCH
-#define CLAWS_PINS_GRABBER
-#define CLAWS_PINS_HEIGHT
+#define CLAWS_PINS_SWITCH 0 //CHANGE WHEN WE KNOW WHAT GOES THERE -- WS
+#define CLAWS_PINS_GRABBER 1
+#define CLAWS_PINS_HEIGHT 0
+
+#define CLAWCLOSE_INTERVAL_MS 30
+
+#define CLAWS_STATUS_DEPLOYED 1
+#define CLAWS_STATUS_STORED 0
+
+// TEMPORATY DEFINES TO MAKE THAT SHIT WORK, remove when they're not used in the code anymore
+
+#define CLAWS_HEIGHT_DEPLOYED 0
+
+#define CLAWS_GRABBERS_DEPLOYED 0
+#define CLAWS_GRABBERS_STORED 0
+
+#define CLAW_CLOSE_INTERVAL_MS 0
+
+#define CLAWS_HEIGHT_STORED 0
+
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]

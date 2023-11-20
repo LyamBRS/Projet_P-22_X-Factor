@@ -10,10 +10,7 @@
  */
 #pragma once
 
-// - INCLUDES - //
-#include <LibRobus.h>
-
-#define MAX_SERVO_ANGLE 180 //MAY CHANGE DEPENDING ON THE SERVO
+#include "LibRobus.h"
 /**
  * @brief Initialisation function of a single
  * servo motor based on a given arduino pin
