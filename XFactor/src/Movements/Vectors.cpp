@@ -160,8 +160,8 @@ bool RemoveLastVector()
  */
 MovementVector GetReturnVector()
 {
-    float positionX_cm = 0;
-    float positionY_cm = 0;
+    float positionX_cm = 0.0f;
+    float positionY_cm = 0.0f;
 
     float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
     float returnRotation;
