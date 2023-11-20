@@ -12,7 +12,6 @@
 // - INCLUDES - //
 #include "Alarm/Alarm.hpp"
 
-
 /**
  * @brief
  * Function that initialises the Alarm and its
@@ -27,7 +26,7 @@
  */
 bool Alarm_Init()
 {
-    return true;
+    return Accelerometer_Init() && Package_Init();
 }
 
 /**
@@ -42,7 +41,7 @@ bool Alarm_Init()
  */
 bool Alarm_VerifySensors()
 {
-    return false;
+    return Alarm_VerifyAccel() || Alarm_VerifyPackage();
 }
 
 /**
@@ -50,14 +49,84 @@ bool Alarm_VerifySensors()
  * Verifies the accelerometer's values to see if
  * the alarm needs to be activated based off the
  * values returned.
- *
  * @return true:
- * An alarm needs to be activated.
+ * Sensor linear acceleration has depased a certain threshold
  * @return false:
- * No alarm needs to be activated.
+ * Sensor is not mouved in that time interval
  */
-bool Alarm_VerifyGyro()
+bool Alarm_VerifyAccel()
 {
+
+    // TODO: find the optimal triplet of {frequency interval - number of readings - threshold} to detect the moving --> HARD AF !
+    // TODO: maybe use different thresholds for each axes ?
+    unsigned interval = 500; // Interval for frequency analysis in milliseconds
+    unsigned nbReadings = 1000;
+    float deltaThreshold = 0.02; // Adjust the delta threshold as needed
+    unsigned long currentMillis = 0;
+    unsigned long previousMillis = 0;
+    // TODO: WARNING TOO MUCH ERROR ACCULUMATION IN THIS FLOAT OPERATING SUM
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+    float avgX = 0.0f, avgY = 0.0f;
+    float prevXAccel = 0.0f;
+    float prevYAccel = 0.0f;
+    float deltaX = 0.0f;
+    float deltaY = 0.0f;
+
+    // Z axes data, uncomment if neccessary
+    // float avgZ = 0.0f;
+    // float prevZAccel = 0.0f;
+    // float deltaZ = 0.0f;
+    for (size_t j = 0; j < ACCELEROMETER_NB_CHECKING; ++j)
+    {
+        currentMillis = millis();
+        if (currentMillis - previousMillis >= interval)
+        {
+            // Perform frequency analysis
+            for (size_t i = 0; i < nbReadings; ++i)
+            {
+                sumX += Accelerometer_GetX();
+                sumY += Accelerometer_GetY();
+                // sumZ += Accelerometer_GetZ();
+            }
+
+            avgX = sumX / nbReadings;
+            avgY = sumY / nbReadings;
+            // avgZ = sumZ / nbReadings;
+
+            deltaX = abs(avgX - prevXAccel);
+            deltaY = abs(avgY - prevYAccel);
+            // deltaZ = abs(avgZ - prevZAccel);
+
+            Serial.print("AvgX: ");
+            Serial.println(avgX);
+            Serial.print("AvgY: ");
+            Serial.println(avgY);
+            // Serial.print("AvgZ: ");
+            // Serial.println(avgZ);
+
+            Serial.print("deltaX: ");
+            Serial.println(deltaX);
+            Serial.print("deltaY: ");
+            Serial.println(deltaY);
+            // Serial.print("AvgZ: ");
+            // Serial.println(avgZ);
+
+            // Motion detected
+            if (deltaX > deltaThreshold || deltaY > deltaThreshold) // || deltaZ > deltaThreshold
+            {
+                Serial.println("Motion detected using delta threshold!");
+                return true;
+            }
+
+            // Update previous values for delta threshold
+            prevXAccel = avgX;
+            prevYAccel = avgY;
+            // prevZAccel = avgZ;
+
+            // Reset the interval timer
+            previousMillis = currentMillis;
+        }
+    }
     return false;
 }
 
@@ -75,5 +144,6 @@ bool Alarm_VerifyGyro()
  */
 bool Alarm_VerifyPackage()
 {
-    return false;
+
+    return !Package_GetStatus();
 }

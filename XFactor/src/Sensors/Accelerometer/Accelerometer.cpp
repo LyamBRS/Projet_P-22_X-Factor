@@ -30,8 +30,10 @@ bool Accelerometer_Init()
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
     Wire.write(PWR_MGMT_1);                          // Talk to the power management
     Wire.write(0x0);                                 // Make a reset
-    Wire.endTransmission(true);                      // end the transmission
-    return true;
+    uint8_t error =  Wire.endTransmission(true);     // end the transmission
+    if (error == 0)
+        return true;
+    return false;
 }
 
 /**
@@ -266,3 +268,5 @@ void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, uns
     calibration->slope = ((nbPoints * xTimesYSum) - (xSum * ySum)) / ((nbPoints * xSquareSum) - pow(xSum, 2));
     calibration->yIntercept = (ySum - (calibration->slope * xSum)) / nbPoints;
 }
+
+
