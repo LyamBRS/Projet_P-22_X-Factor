@@ -21,6 +21,7 @@ typedef struct
 } MovementVector;
 
 #define VECTOR_BUFFER_SIZE 32 // MAY NEED TO CHANGE
+
 // #pragma region -Vector Handling-
 
 /**

@@ -141,4 +141,6 @@ bool RemoveLastVector()
             }
         }
     }
+    Debug_Error("Vectors.cpp", "RemoveLastVector", "VECTOR_BUFFER_SIZE is equal to 0.");
+    return false;
 }
