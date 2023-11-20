@@ -29,6 +29,9 @@ bool Vectors_Init()
     emptyMovementVector.distance_cm = 0.0f;
     emptyMovementVector.rotation_rad = 0.0f;
     ResetVectors();
+
+    vectorBuffer[0].distance_cm = 100.0f;
+    vectorBuffer[0].rotation_rad = 3.1415f;
     return true;
 }
 
@@ -161,16 +164,26 @@ MovementVector GetReturnVector()
     float positionY_cm = 0;
 
     float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    float returnRotation;
     MovementVector returnVector;
 
     for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
     {
-        absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
-        positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
-        positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+        if (!(vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
+        && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad))
+        {
+            absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+            positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
+            positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+        }
+        else
+        {
+            break;
+        }
     }
     
-    returnVector.rotation_rad = -absoluteRotation;
+    returnRotation = absoluteRotation - 3.1415f;
+    returnVector.rotation_rad = returnRotation - ((float)trunc(returnRotation / (2.0f * 3.1415f)) * returnRotation);
     returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
     return returnVector;
 }

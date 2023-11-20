@@ -13,14 +13,25 @@
 #include "XFactor/Init.hpp"
 #include "Sensors/Colour/GROVE.hpp"
 
+// TEMPORARY INCLUDES
+#include "Movements/Vectors.hpp"
+
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  XFactor_Init();
+  //XFactor_Init();
+  Vectors_Init();
+  Serial.begin(9600);
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  MovementVector testReturnVector = GetReturnVector();
+  Serial.print("Distance : ");
+  Serial.println(testReturnVector.distance_cm);
+  Serial.print("Rotation : ");
+  Serial.println(testReturnVector.rotation_rad);
+  delay(1000);
+  //Execute_CurrentFunction();
 }
