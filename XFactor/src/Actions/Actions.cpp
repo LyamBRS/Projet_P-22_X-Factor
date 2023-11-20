@@ -494,8 +494,8 @@ void Execute_SearchForPackage()
     }
   }
 
-  //ROBOT IS NOW BACK IN FRONT OF THE DOOR, HAVING FOUND NOTHING
-  //ACTION WHEN SEARCH IS COMPLETED BUT PACKAGE IS NOT FOUND
+  XFactor_SetNewStatus(XFactor_Status::NoPackageFound);
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
 /**
@@ -640,12 +640,11 @@ void Execute_PickUpPackage()
  * SafeBox is still possible.
  */
 void Execute_ReturnHome()
-{ 
+{
   int checkFunctionId;
 
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 
-  // RETURN HOME, ALARM CHECK WILL NEED TO BE IN BETWEEN MOVEMENTS
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
@@ -904,7 +903,11 @@ void Execute_ReturnInsideGarage()
 {
   int checkFunctionId;
   bool hasEnteredGarage = false;
-
+  
+  if (XFactor_GetStatus() == XFactor_Status::NoPackageFound)
+  {
+    // NO PACKAGE
+  }
   XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
@@ -983,7 +986,7 @@ void Execute_Unlocked()
   Stop();
   for (;;)
   {
-
+    //Keep stuck here until reset
   }
 }
 
