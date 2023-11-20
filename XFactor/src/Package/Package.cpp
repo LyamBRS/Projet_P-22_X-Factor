@@ -65,18 +65,11 @@ bool Package_Init()
  */
 bool Package_Release()
 {
-
     if (package_setUp == false && pickup == false){
-        if (package_setUp == false){
-            Serial.println("erreur le cadeau non initialiser");
-        }
-        if (pickup == false){
-            Serial.println("erreur aucun cadeau prit");
-        }
         return false;
     }
-    if (Claws_SetGrabbers(90) == true){
-        pickup = false;// plus de colis
+    if (Claws_SetGrabbers(75/100) == true){
+        pickup = false;
         return true;
     }
     return false;
@@ -100,12 +93,11 @@ bool Package_Release()
 bool Package_PickUp()
 {
     if(pickup == false){
-    Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_PICKUP);
+    Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
     Claws_CloseUntilDetection();
-    pickup = true; // un colis
+    pickup = true;
     return true;
     }
-    Serial.println("erreur deja un colis pris");
     return false;
 }
 
@@ -125,7 +117,6 @@ bool Package_PickUp()
  */
 bool Package_AlignWithSafeBox()
 {
-    // dans la boite 
     // une longueur deja pres etablie, 90 a gauche, avance,
     MoveFromVector(3.14159/2,0,false);
 
@@ -151,7 +142,7 @@ bool Package_StoreClaw()
     if (package_setUp == true){
         return false;
     }
-    return Claws_SetDeployment(false);
+    return Claws_SetDeployment(true);
 }
 
 /**
@@ -209,19 +200,16 @@ bool Package_Transport()
  * No packages are detected anywhere near or
  * inside the robot.
  */
-
-int Package_Detected()
+bool Package_Detected()
 {
     unsigned long currentColour = 0;
-    int distance;
-    // distance = fonction de distance
-    if (distance <= 14 || distance >= 10){
-        currentColour = GROVE_GetColor();
-        if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
-            return PACKAGE_DETECTED;
-        }
+
+    currentColour = GROVE_GetColor();
+    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+        return true;
     }
-    return ERROR_PACKAGE;
+
+    return false;
 }
 
 /**
@@ -250,21 +238,9 @@ int Package_Detected()
 bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
-    //Un cadeau detecter et pince deployer
-    bool detection_pack = Package_Detected();
-    bool clawDeploy = Package_DeployClaw();
-
-    if (detection_pack == true && clawDeploy == true){
+    if (Package_Detected() == true && Package_DeployClaw() == true){
         return true;
     }
-    // PRINT ERREUR ////////////////
-    if (detection_pack == false){
-        Serial.println("erreur de detection");
-    }
-    if (detection_pack == false){
-        Serial.println("pince non deployer");
-    }
-    ///////////////////////////////////
     package_setUp = false;
     return false;
 }
