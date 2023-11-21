@@ -18,19 +18,11 @@
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  //XFactor_Init();
-  Vectors_Init();
-  Serial.begin(9600);
+  XFactor_Init();
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  MovementVector testReturnVector = GetReturnVector();
-  Serial.print("Distance : ");
-  Serial.println(testReturnVector.distance_cm);
-  Serial.print("Rotation : ");
-  Serial.println(testReturnVector.rotation_rad);
-  delay(1000);
-  //Execute_CurrentFunction();
+  Execute_CurrentFunction();
 }
