@@ -29,6 +29,15 @@ bool Vectors_Init()
     emptyMovementVector.distance_cm = 0.0f;
     emptyMovementVector.rotation_rad = 0.0f;
     ResetVectors();
+
+    vectorBuffer[0].distance_cm = 100.0f;
+    vectorBuffer[0].rotation_rad = 0.0f;
+
+    vectorBuffer[1].distance_cm = 100.0f;
+    vectorBuffer[1].rotation_rad = (3.1415f / 2.0f);
+
+    vectorBuffer[2].distance_cm = 100.0f;
+    vectorBuffer[2].rotation_rad = - 1 * (3.1415f / 2.0f);
     return true;
 }
 
@@ -141,4 +150,46 @@ bool RemoveLastVector()
             }
         }
     }
+    Debug_Error("Vectors.cpp", "RemoveLastVector", "VECTOR_BUFFER_SIZE is equal to 0.");
+    return false;
+}
+
+/**
+ * @brief Calculates and return the 
+ * vector needed to go back to the garage door.
+ * If needed for further uses, we might add
+ * a parameter that contains the reference
+ * point (the 0,0)
+ * @return MovementVector:
+ * The calculated vector, equal to empty if 
+ * a problem has occurred.
+ */
+MovementVector GetReturnVector()
+{
+    float positionX_cm = 0.0f;
+    float positionY_cm = 0.0f;
+
+    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    float returnRotation;
+    MovementVector returnVector;
+
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (!(vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
+        && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad))
+        {
+            absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+            positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
+            positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    returnRotation = (float)atan(positionY_cm/positionX_cm) - 3.1415f;
+    returnVector.rotation_rad = returnRotation - ((float)trunc(returnRotation / (2.0f * 3.1415f)) * returnRotation);
+    returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
+    return returnVector;
 }
