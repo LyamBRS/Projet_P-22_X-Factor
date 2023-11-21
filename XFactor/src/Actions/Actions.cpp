@@ -559,7 +559,8 @@ void Execute_ExamineFoundPackage()
 
   if (Package_Detected())
   {
-    // NOTIFY SAFEBOX
+    //XFactor_SetNewStatus(XFactor_Status::); PUT GOOD STATUS
+    SafeBox_ExchangeStatus();
     SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
   }
 }
@@ -607,7 +608,7 @@ void Execute_PickUpPackage()
 
     checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
     {
       SetNewExecutionFunction(checkFunctionId);
       return;
@@ -647,7 +648,7 @@ void Execute_ReturnHome()
 
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
