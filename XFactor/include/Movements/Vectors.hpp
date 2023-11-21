@@ -104,4 +104,24 @@ bool RemoveLastVector();
  * a problem has occurred.
  */
 MovementVector GetReturnVector();
+
+/**
+ * @brief Calculates and return the 
+ * opposite vector to the last non
+ * empty vector in the vector buffer.
+ * @return MovementVector:
+ * The calculated vector, equal to empty (0.0f, 0.0f) if 
+ * a problem has occurred.
+ */
+MovementVector GetLastOppositeVector();
+
+/**
+ * @brief Calculates and return the 
+ * opposite vector to the 
+ * provided MovementVector
+ * @return MovementVector:
+ * The calculated vector, should
+ * not get errors in this
+ */
+MovementVector GetOppositeVector(MovementVector movementVector);
 // #pragma endregion
