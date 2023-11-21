@@ -65,14 +65,38 @@ bool MoveFromVector(float radians, float distance, bool saveVector)
     rightMovement    = 0;
     rotationMovement = 0;
 
-    if(!ResetMovements())       return false;
-    if(!TurnInRadians(radians)) return false;
-    if(!MoveStraight(distance)) return false;
+    if(!ResetMovements())
+    {
+        Debug_Error("Movements", "MoveFromVector", "Failed to reset movements");
+        return false;
+    }
+    if(!TurnInRadians(radians))
+    {
+        Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
+        return false;
+    }
+    if(!MoveStraight(distance))
+    {
+        Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
+        return false;
+    }
 
     if (saveVector){
-        if(!UpdateSavedDistance(rightMovement))     return false;
-        if(!UpdateSavedRotation(rotationMovement))  return false;
-        if(!SaveNewVector()) return false;
+        if(!UpdateSavedDistance(rightMovement))
+        {
+            Debug_Error("Movements", "MoveFromVector", "Failed to update distance");
+            return false;
+        }
+        if(!UpdateSavedRotation(rotationMovement))
+        {
+            Debug_Error("Movements", "MoveFromVector", "Failed to update rotations");
+            return false;
+        }
+        if(!SaveNewVector()) 
+        {
+            Debug_Error("Movements", "MoveFromVector", "Failed to save new vector");
+            return false;
+        }
     }
     return true;
 }
@@ -134,9 +158,21 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
  */
 bool TurnInRadians(float radians)
 {
-    if (!ResetPID())              return false;
-    else if (!ResetAllEncoders()) return false;
-    else if (!ResetParameters())  return false;
+    if (!ResetPID())
+    {
+        Debug_Error("Movements", "TurnInRadians", "Failed to reset PID");
+        return false;
+    }
+    else if (!ResetAllEncoders())
+    {
+        Debug_Error("Movements", "TurnInRadians", "Failed to reset encoders");
+        return false;
+    }
+    else if (!ResetParameters())
+    {
+        Debug_Error("Movements", "TurnInRadians", "Failed to reset parameters");
+        return false;
+    }
 
     targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
 
@@ -161,9 +197,21 @@ bool TurnInRadians(float radians)
  */
 bool MoveStraight(float distance)
 {
-    if (!ResetPID())              return false;
-    else if (!ResetAllEncoders()) return false;
-    else if (!ResetParameters())  return false;
+    if (!ResetPID())
+    {
+        Debug_Error("Movements", "MoveStraight", "Failed to reset PID");
+        return false;
+    }
+    else if (!ResetAllEncoders())
+    {
+        Debug_Error("Movements", "MoveStraight", "Failed to reset all encoders");
+        return false;
+    }
+    else if (!ResetParameters())
+    {
+        Debug_Error("Movements", "MoveStraight", "Failed to reset parameters");
+        return false;
+    }
 
     targetTicks = CentimetersToEncoder(distance);
 
@@ -196,11 +244,13 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
-    if (completionRatio > 0 && completionRatio < 100){
+    if (completionRatio > 0 && completionRatio < 100)
+    {
         return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed; 
     }
-    else {
-        Serial.println("Error : completion ratio out of bounds.");
+    else 
+    {
+        Debug_Error("Movements", "Accelerate", "Ratio is out of bounds");
         return 0;
     }
 }
@@ -219,8 +269,9 @@ bool Stop()
     MOTOR_SetSpeed(RIGHT, 0);
     MOTOR_SetSpeed(LEFT,  0);
     if (ResetAllEncoders()) return true;
-    else{
-        Serial.println("Error : could not stop motors.");
+    else
+    {
+        Debug_Error("Movements", "Stop", "Failed to reset encoders");
         return false;
     }
 }
@@ -244,9 +295,9 @@ bool ResetMovements()
             ResetPositions();
             return true;
         }
-        else Serial.println("Error : PID values aren't zero.");
+        else Debug_Error("Movements", "ResetMovements", "Failed to reset PID");
     }
-    else Serial.println("Error : Encoder buffer value isn't zero.");
+    else Debug_Error("Movements", "ResetMovements", "Failed to reset encoders");
     return false;    
 }
 
@@ -328,7 +379,11 @@ bool Execute_Turning(float targetRadians)
 
     rotationMovement = (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
 
-    Stop(); 
+    if(!Stop())
+    {
+        Debug_Error("Movements", "Execute_Turning", "Failed to stop");
+        return false;
+    }
     return true;
 }
 
@@ -380,7 +435,11 @@ bool Execute_Moving(float targetDistance)
         }
     }
 
-    Stop(); 
+    if(!Stop())
+    {
+        Debug_Error("Movements", "Execute_Moving", "Failed to stop");
+        return false;
+    }
 
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
     //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
