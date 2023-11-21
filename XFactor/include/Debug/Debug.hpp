@@ -55,8 +55,25 @@ void Debug_Start(String nameOfTheFunction);
 /**
  * @brief
  * Removes one indentation when a function returns
+ * You must call this whenever a function ends
+ * IF and only IF a Debug_Start was called at the
+ * start of the function.
  */
 void Debug_End();
+
+/**
+ * @brief 
+ * Stops debugging functions entirely until
+ * @ref Debug_Resume is called.
+ */
+void Debug_Stop();
+
+/**
+ * @brief 
+ * Resumes debugging functions until
+ * @ref Debug_Stop is called.
+ */
+void Debug_Resume();
 
 /**
  * @brief Makes the code shift right the further

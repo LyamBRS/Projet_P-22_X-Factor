@@ -141,4 +141,95 @@ bool RemoveLastVector()
             }
         }
     }
+    Debug_Error("Vectors.cpp", "RemoveLastVector", "VECTOR_BUFFER_SIZE is equal to 0.");
+    return false;
+}
+
+/**
+ * @brief Calculates and return the 
+ * vector needed to go back to the garage door.
+ * If needed for further uses, we might add
+ * a parameter that contains the reference
+ * point (the 0,0)
+ * @return MovementVector:
+ * The calculated vector, equal to empty if 
+ * a problem has occurred.
+ */
+MovementVector GetReturnVector()
+{
+    float positionX_cm = 0.0f;
+    float positionY_cm = 0.0f;
+
+    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    MovementVector returnVector;
+
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (!(vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
+        && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad))
+        {
+            absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+            positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
+            positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+        }
+        else
+        {
+            if (vectorBufferIndex == 0)
+            {
+                Debug_Error("Vectors.cpp", "GetReturnVector", "Vector buffer is empty; the robot should not move");
+                return emptyMovementVector;
+            }
+            break;
+        }
+    }
+    
+    returnVector.rotation_rad = (float)atan(positionY_cm/positionX_cm);
+    returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
+    return GetOppositeVector(returnVector);
+}
+
+/**
+ * @brief Calculates and return the 
+ * opposite vector to the last non
+ * empty vector in the vector buffer.
+ * @return MovementVector:
+ * The calculated vector, equal to empty (0.0f, 0.0f) if 
+ * a problem has occurred.
+ */
+MovementVector GetLastOppositeVector()
+{
+    for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+    {
+        if (vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
+        && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad)
+        {
+            if (vectorBufferIndex == 0)
+            {
+                Debug_Error("Vectors.cpp", "GetLastOppositeVector", "Vector buffer is empty; the robot should not move");
+                return emptyMovementVector;
+            }
+            
+            return GetOppositeVector(vectorBuffer[vectorBufferIndex - 1]);
+        }
+    }
+
+    return GetOppositeVector(vectorBuffer[VECTOR_BUFFER_SIZE - 1]);
+}
+
+/**
+ * @brief Calculates and return the 
+ * opposite vector to the 
+ * provided MovementVector
+ * @return MovementVector:
+ * The calculated vector, should
+ * not get errors in this
+ */
+MovementVector GetOppositeVector(MovementVector movementVector)
+{
+    MovementVector oppositeVector = movementVector;
+    float rotation = movementVector.rotation_rad - 3.1415f;
+
+    oppositeVector.rotation_rad = rotation - ((float)trunc(rotation / (2.0f * 3.1415f)) * rotation);
+
+    return oppositeVector;
 }
