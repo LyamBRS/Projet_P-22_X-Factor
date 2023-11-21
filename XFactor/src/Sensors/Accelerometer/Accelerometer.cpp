@@ -10,6 +10,10 @@
  */
 #include "Sensors/Accelerometer/Accelerometer.hpp"
 
+float AcceX_zero = 0.0f;
+float AcceY_zero = 0.0f;
+float AcceZ_zero = 0.0f;
+
 /**
  * @brief
  * Initialises an accelerometer to be used on
@@ -30,10 +34,24 @@ bool Accelerometer_Init()
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
     Wire.write(PWR_MGMT_1);                          // Talk to the power management
     Wire.write(0x0);                                 // Make a reset
-    uint8_t error =  Wire.endTransmission(true);     // end the transmission
-    if (error == 0)
-        return true;
-    return false;
+    uint8_t error = Wire.endTransmission(true);      // end the transmission
+    if (error != 0)
+        return false;
+
+    /*Set initial Acceleration for later use*/
+    unsigned nbReadings = 100;
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+    for (size_t i = 0; i < nbReadings; i++)
+    {
+        sumX += Accelerometer_GetX();
+        sumY += Accelerometer_GetY();
+        sumZ += Accelerometer_GetZ();
+    }
+
+    AcceX_zero = (sumX / nbReadings);
+    AcceY_zero = (sumY / nbReadings);
+    AcceZ_zero = (sumZ / nbReadings);
+    return true;
 }
 
 /**
@@ -268,5 +286,3 @@ void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, uns
     calibration->slope = ((nbPoints * xTimesYSum) - (xSum * ySum)) / ((nbPoints * xSquareSum) - pow(xSum, 2));
     calibration->yIntercept = (ySum - (calibration->slope * xSum)) / nbPoints;
 }
-
-

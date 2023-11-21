@@ -11,6 +11,7 @@
 
 // - INCLUDES - //
 #include "Alarm/Alarm.hpp"
+#include "LibRobus.h"
 
 /**
  * @brief
@@ -56,77 +57,60 @@ bool Alarm_VerifySensors()
  */
 bool Alarm_VerifyAccel()
 {
+    unsigned nbReadings = 25;
+    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1));  // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1));  // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
-    // TODO: find the optimal triplet of {frequency interval - number of readings - threshold} to detect the moving --> HARD AF !
-    // TODO: maybe use different thresholds for each axes ?
-    unsigned interval = 500; // Interval for frequency analysis in milliseconds
-    unsigned nbReadings = 1000;
-    float deltaThreshold = 0.02; // Adjust the delta threshold as needed
-    unsigned long currentMillis = 0;
-    unsigned long previousMillis = 0;
-    // TODO: WARNING TOO MUCH ERROR ACCULUMATION IN THIS FLOAT OPERATING SUM
+    Serial.print("using deltaThresholdX = ");
+    Serial.println(deltaThresholdX);
+
+    Serial.print("using deltaThresholdY = ");
+    Serial.println(deltaThresholdY);
+
+    Serial.print("using deltaThresholdZ = ");
+    Serial.println(deltaThresholdZ);
+
     float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
-    float avgX = 0.0f, avgY = 0.0f;
-    float prevXAccel = 0.0f;
-    float prevYAccel = 0.0f;
-    float deltaX = 0.0f;
-    float deltaY = 0.0f;
+    float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
 
-    // Z axes data, uncomment if neccessary
-    // float avgZ = 0.0f;
-    // float prevZAccel = 0.0f;
-    // float deltaZ = 0.0f;
-    for (size_t j = 0; j < ACCELEROMETER_NB_CHECKING; ++j)
+    // Perform ACCELEROMETER_NB_CHECKING analyse
+    for (size_t i = 0; i < ACCELEROMETER_NB_CHECKING; i++)
     {
-        currentMillis = millis();
-        if (currentMillis - previousMillis >= interval)
+        for (size_t j = 0; j < nbReadings; j++)
         {
-            // Perform frequency analysis
-            for (size_t i = 0; i < nbReadings; ++i)
-            {
-                sumX += Accelerometer_GetX();
-                sumY += Accelerometer_GetY();
-                // sumZ += Accelerometer_GetZ();
-            }
+            sumX += Accelerometer_GetX();
+            sumY += Accelerometer_GetY();
+            sumZ += Accelerometer_GetZ();
+        }
 
-            avgX = sumX / nbReadings;
-            avgY = sumY / nbReadings;
-            // avgZ = sumZ / nbReadings;
+        avgX = abs(sumX / nbReadings);
+        avgY = abs(sumY / nbReadings);
+        avgZ = abs(sumZ / nbReadings);
 
-            deltaX = abs(avgX - prevXAccel);
-            deltaY = abs(avgY - prevYAccel);
-            // deltaZ = abs(avgZ - prevZAccel);
+        Serial.print("AvgX: ");
+        Serial.println(avgX);
+        Serial.print("AvgY: ");
+        Serial.println(avgY);
+        Serial.print("AvgZ: ");
+        Serial.println(avgZ);
 
-            Serial.print("AvgX: ");
-            Serial.println(avgX);
-            Serial.print("AvgY: ");
-            Serial.println(avgY);
-            // Serial.print("AvgZ: ");
-            // Serial.println(avgZ);
-
-            Serial.print("deltaX: ");
-            Serial.println(deltaX);
-            Serial.print("deltaY: ");
-            Serial.println(deltaY);
-            // Serial.print("AvgZ: ");
-            // Serial.println(avgZ);
-
-            // Motion detected
-            if (deltaX > deltaThreshold || deltaY > deltaThreshold) // || deltaZ > deltaThreshold
+        // Motion detection
+        if (avgX > deltaThresholdX || avgY > deltaThresholdY)
+        {
+            if (avgZ > deltaThresholdZ)
             {
                 Serial.println("Motion detected using delta threshold!");
+                AX_BuzzerON();
+                AX_BuzzerOFF();
                 return true;
             }
-
-            // Update previous values for delta threshold
-            prevXAccel = avgX;
-            prevYAccel = avgY;
-            // prevZAccel = avgZ;
-
-            // Reset the interval timer
-            previousMillis = currentMillis;
         }
+        sumX = 0;
+        sumY = 0;
+        sumZ = 0;
     }
+
     return false;
 }
 
@@ -146,4 +130,17 @@ bool Alarm_VerifyPackage()
 {
 
     return !Package_GetStatus();
+}
+
+bool MoveStraightAndTest()
+{
+    for (size_t i = 0; i < 100; i++)
+    {
+        MOTOR_SetSpeed(LEFT, 0.3);
+        MOTOR_SetSpeed(RIGHT, 0.3);
+        Alarm_VerifyAccel();
+    }
+
+    MOTOR_SetSpeed(LEFT, 0);
+    MOTOR_SetSpeed(RIGHT, 0);
 }

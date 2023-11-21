@@ -33,6 +33,10 @@
 // uncomment these to calibrate the sensor
 // #define SENSOR_CALIBRATE 1
 
+extern float AcceX_zero;
+extern float AcceY_zero;
+extern float AcceZ_zero;
+
 /**
  * @brief enum containing all the possible scales
  * that the accelerometer can have. Used to send

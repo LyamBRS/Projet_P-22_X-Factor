@@ -11,14 +11,19 @@
 // - INCLUDES -//
 #include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
+#include "Alarm/Alarm.hpp"
+#include "LibRobus.h"
 
 void setup()
 {
+    BoardInit();
+    Alarm_Init();
 }
+
+
 
 void loop()
 {
-    
-
+    MoveStraightAndTest();
 }
 

@@ -17,7 +17,7 @@
 
 // #pragma region [DEFINES]
 
-#define ACCELEROMETER_NB_CHECKING 500 // Number of accelerometer detection trials
+#define ACCELEROMETER_NB_CHECKING 10 // Number of accelerometer detection trials
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -73,5 +73,6 @@ bool Alarm_VerifyAccel();
  * No alarm needs to be activated.
  */
 bool Alarm_VerifyPackage();
-// #pragma endregion
+bool MoveStraightAndTest();
 
+// #pragma endregion
