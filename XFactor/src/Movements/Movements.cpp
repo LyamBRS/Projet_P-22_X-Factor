@@ -105,8 +105,12 @@ bool MoveFromVector(float radians, float distance, bool saveVector)
  */
 bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
 {
-    
-    return false;
+    for(int i = 0; i<AmountOfVectorsToBacktrace; i++){
+        MovementVector backtraceVector = GetLastOppositeVector();
+        MoveFromVector(backtraceVector.rotation_rad, backtraceVector.distance_cm, false);
+        RemoveLastVector();
+    }
+    return true;
 }
 
 /**
