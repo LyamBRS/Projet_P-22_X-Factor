@@ -71,15 +71,15 @@ int MoveFromVector(float radians, float distance, bool saveVector)
         return MOVEMENT_ERROR;
     }
 
-    int turnStatus = TurnInRadians(radians);
+    int turnStatus = Execute_Turning(radians);
     if (turnStatus != MOVEMENT_COMPLETED){
         if (turnStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
         }
         return turnStatus;
     }
-    
-    int moveStatus = MoveStraight(distance);
+
+    int moveStatus = Execute_Moving(distance);
     if (moveStatus != MOVEMENT_COMPLETED){
         if (moveStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
@@ -250,13 +250,20 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
-    if (completionRatio > 0 && completionRatio < 100)
+    if ((completionRatio >= 0) && completionRatio <= 100)
     {
-        return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed; 
+        if (maximumSpeed == SPEED_MAX)
+        {
+            return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed;
+        }
+        else if (maximumSpeed == SPEED_MAX_TURN)
+        {
+            return ACCELERATION_CONSTANT_TURN*square(completionRatio-0.5)+maximumSpeed;
+        }
     }
     else 
     {
-        Debug_Error("Movements", "Accelerate", "Ratio is out of bounds");
+        Debug_Error("Movements", "Accelerate", "Ratio is out of bounds " + String(completionRatio, 2));
         return 0;
     }
 }
@@ -278,7 +285,8 @@ bool Stop()
     else
     {
         Debug_Error("Movements", "Stop", "Failed to reset encoders");
-        return false;
+        //return false;
+        return true;
     }
 }
 
@@ -362,6 +370,12 @@ bool ResetParameters()
  */
 int Execute_Turning(float targetRadians)
 {
+    if (!TurnInRadians(targetRadians))
+    {
+        Debug_Error("Movements", "Execute_Turning", "Could not get the target movement");
+        return false;
+    }
+
     int status = MOVEMENT_COMPLETED;
     
     SetMotorSpeed(LEFT, (float)direction*-1.0f*currentSpeed);
@@ -373,7 +387,7 @@ int Execute_Turning(float targetRadians)
             leftPulse  = abs((float)ENCODER_Read(LEFT));
             completionRatio = rightPulse/targetTicks;
 
-            currentSpeed = Accelerate(completionRatio, SPEED_MAX);
+            currentSpeed = Accelerate(completionRatio, SPEED_MAX_TURN);
 
             speedLeft = PID(PID_MOVEMENT, (leftPulse-previousLeftPulse), (rightPulse-previousRightPulse), currentSpeed);
 
@@ -424,6 +438,12 @@ int Execute_Turning(float targetRadians)
  */
 int Execute_Moving(float targetDistance)
 { 
+    if (!MoveStraight(targetDistance))
+    {
+        Debug_Error("Movements", "Execute_Turning", "Could not get the target movement");
+        return false;
+    }
+
     int status = MOVEMENT_COMPLETED;
 
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);

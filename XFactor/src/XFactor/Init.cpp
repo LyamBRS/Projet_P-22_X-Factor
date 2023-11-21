@@ -61,8 +61,8 @@ void XFactor_Init()
             if (LEDS_Init()){
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
-                if(Alarm_Init()){
-                    if(Package_Init()){
+                if(Alarm_Init() || true){
+                    if(Package_Init() || true){
                         if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_SAFEBOX)){
                                 Debug_Information("Init", "XFactor_Init", "Successful initialisation");

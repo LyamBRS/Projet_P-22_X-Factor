@@ -117,7 +117,7 @@ void Debug_Error(String fileName, String functionName, String errorMessage)
         DEBUG_SERIAL.print("[ERROR]: ");
         #ifdef DEBUG_STACK_TRACE_ENABLED
             DEBUG_SERIAL.print(GetIndentation());
-        #elif
+        #else
             DEBUG_SERIAL.print(fileName);
             DEBUG_SERIAL.print(": ");
             DEBUG_SERIAL.print(functionName);
@@ -146,7 +146,7 @@ void Debug_Warning(String fileName, String functionName, String warningMessage)
             DEBUG_SERIAL.print("[WARNS]: ");
             #ifdef DEBUG_STACK_TRACE_ENABLED
                 DEBUG_SERIAL.print(GetIndentation());
-            #elif
+            #else
                 DEBUG_SERIAL.print(fileName);
                 DEBUG_SERIAL.print(": ");
                 DEBUG_SERIAL.print(functionName);
@@ -177,7 +177,7 @@ void Debug_Information(String fileName, String functionName, String informationM
             DEBUG_SERIAL.print("[INFOS]: ");
             #ifdef DEBUG_STACK_TRACE_ENABLED
                 DEBUG_SERIAL.print(GetIndentation());
-            #elif
+            #else
                 DEBUG_SERIAL.print(fileName);
                 DEBUG_SERIAL.print(": ");
                 DEBUG_SERIAL.print(functionName);
