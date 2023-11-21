@@ -27,8 +27,9 @@ bool ResetAllEncoders()
 {
     ENCODER_Reset(LEFT);
     ENCODER_Reset(RIGHT);
-    if(ENCODER_ReadReset(RIGHT) != 0 || ENCODER_ReadReset(LEFT) != 0) return false;
-    else return true;
+    return true;
+    //if(ENCODER_ReadReset(RIGHT) != 0 || ENCODER_ReadReset(LEFT) != 0) return false;
+    //else return true;
 }
 
 /**

@@ -454,17 +454,6 @@ void Execute_SearchForPackage()
 
   for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
   {
-    // WILL NEED TO KNOW ABOUT HOW MOVEMENT INTERRUPTIONS ARE HANDLED AND HOW PACKAGE DETECTION WORKS TO IMPLEMENT THIS :
-    // MOVEMENT INTERRUPTIONS
-    //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
-
-    // PACKAGE DETECTION
-    //if (Package_Detected())
-    //{
-    //  SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
-    //  return;
-    //}
-
     switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
     {
       case MOVEMENT_COMPLETED:

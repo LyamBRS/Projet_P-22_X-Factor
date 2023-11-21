@@ -76,7 +76,8 @@ int MoveFromVector(float radians, float distance, bool saveVector)
         if (turnStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
         }
-        return turnStatus;
+        Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
+        //return turnStatus;
     }
 
     int moveStatus = Execute_Moving(distance);
@@ -84,7 +85,8 @@ int MoveFromVector(float radians, float distance, bool saveVector)
         if (moveStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
         }
-        return moveStatus;
+        Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
+        //return moveStatus;
     }
 
     if (saveVector){
@@ -137,6 +139,7 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
 {
     for(int i = 0; i<AmountOfVectorsToBacktrace; i++){
         MovementVector backtraceVector = GetLastOppositeVector();
+        Debug_Information("Movements.cpp", "BacktraceSomeVectors", "Rotation : " + String(backtraceVector.rotation_rad,2) + " Distance : " + String(backtraceVector.distance_cm, 2));
         MoveFromVector(backtraceVector.rotation_rad, backtraceVector.distance_cm, false);
         RemoveLastVector();
     }
@@ -402,7 +405,7 @@ int Execute_Turning(float targetRadians)
         else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
-    rotationMovement = (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
+    rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
 
     if(!Stop())
     {
@@ -471,13 +474,14 @@ int Execute_Moving(float targetDistance)
         else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
+    rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
+
     if(!Stop())
     {
         Debug_Error("Movements", "Execute_Moving", "Failed to stop");
         status = MOVEMENT_ERROR;
     }
 
-    rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
     //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
     //if (rightMovement != leftMovement) rotationMovement += (float)atan();
 

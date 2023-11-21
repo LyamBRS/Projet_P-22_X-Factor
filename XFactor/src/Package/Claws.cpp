@@ -36,6 +36,7 @@ bool deploymentStatus = CLAWS_STATUS_STORED;
 bool Claws_Init()
 {
     Debug_Start("Claws_Init");
+    pinMode(CLAWS_PINS_SWITCH, INPUT);
     S3003_Init(CLAWS_PINS_HEIGHT);
     S3003_Init(CLAWS_PINS_GRABBER);
     Debug_End();
@@ -55,8 +56,7 @@ bool Claws_Init()
  */
 bool Claws_GetSwitchStatus()
 {
-    //NEEDS TO BE CHANGED FOR READ PIN FOR THE CLAW
-    if(ROBUS_IsBumper(CLAWS_PINS_SWITCH)) return true;
+    if(digitalRead(CLAWS_PINS_SWITCH)) return true;
     else return false;
 }
 
@@ -80,7 +80,7 @@ bool Claws_GetSwitchStatus()
  */
 bool Claws_SetGrabbers(unsigned char pourcent)
 {
-    uint8_t angle = pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100;
+    float angle = (float)(pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100);
     angle+=CLAWS_GRABBERS_MIN;
 
     if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX){

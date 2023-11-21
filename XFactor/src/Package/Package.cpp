@@ -1,103 +1,196 @@
 /**
+
  * @file Package.cpp
+
  * @author LyamBRS (lyam.brs@gmail.com)
+
  * @brief
+
  * File containing the various functions that are
+
  * used to locate, identify, pick up, handle, and
+
  * deposit a package for XFactor.
+
  * @version 0.1
+
  * @date 2023-11-02
+
  * @copyright Copyright (c) 2023
+
  */
+
+ 
 
 // - INCLUDES - //
+
 #include "Package/Package.hpp"
 
+ 
+
 bool package_setUp = false;
+
 bool pickup = false;
+
 /**
+
  * @brief
+
  * Initialisation function that initialises the
+
  * Claw and other sensors used to detect a
+
  * package.
+
  * @return true:
+
  * Successfully initialised package functions.
+
  * @return false:
+
  * Failed to initialise package functions.
+
  */
+
 bool Package_Init()
+
 {
+
     Debug_Start("Package_Init");
+
     if(GROVE_Init())
+
     {
+
         if(Claws_Init())
+
         {
+
             Debug_End();
+
             return true;
+
         }
+
         else
+
         {
+
             Debug_Error("Package", "Package_Init", "Failed to initialise Claws");
+
         }
+
     }
+
     else
+
     {
+
         Debug_Error("Package", "Package_Init", "Failed to initialise GROVE");
+
     }
+
     Debug_End();
+
     return false;
+
 }
 
+ 
+
 /**
+
  * @brief
+
  * Function that releases the package that is
+
  * currently inside of XFactor's claw system.
+
  *
+
  * @return true:
+
  * A package was successfully released from the
+
  * claw system.
+
  * @return false:
+
  * Failed to release the package. Either because
+
  * there was no package inside the claw to start
+
  * with, or because the package is still detected
+
  * inside the claw after the function is executed
+
  * or because the claw is not deployed.
+
  */
+
 bool Package_Release()
+
 {
-    if (package_setUp == false && pickup == false){
+
+    /*if (package_setUp == false && pickup == false){
+
         return false;
-    }
-    if (Claws_SetGrabbers(75/100) == true){
+
+    }*/
+
+    if (Claws_SetGrabbers(100) == true){
+
         pickup = false;
+
         return true;
+
     }
+
     return false;
+
 }
 
+ 
+
 /**
+
  * @brief
+
  * Function that automatically picks up a package
+
  * that is right where the claw is. This function
+
  * will deploy the claw if not already done.
+
  *
+
  * @attention
+
  * The robot must already be facing the package
+
  * correctly before this function is executed.
+
  *
+
  * @return true:
+
  * Successfully picked up a package
+
  * @return false:
+
  * Failed to pick up a package, try again.
+
  */
+
 bool Package_PickUp()
 {
-    if(pickup == false){
-    Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
-    Claws_CloseUntilDetection();
-    pickup = true;
-    return true;
+    if(pickup == false)
+    {
+        Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+        pickup = Claws_CloseUntilDetection();
+        return pickup;
     }
+
     return false;
 }
 
@@ -115,6 +208,7 @@ bool Package_PickUp()
  * Failed to position the claw into the correct
  * position due to it not being deployed.
  */
+
 bool Package_AlignWithSafeBox()
 {
     // une longueur deja pres etablie, 90 a gauche, avance,
@@ -137,12 +231,14 @@ bool Package_AlignWithSafeBox()
  * Failed to store the claw because a package is
  * still detected inside of it.
  */
+
 bool Package_StoreClaw()
 {
     if (package_setUp == true){
         return false;
     }
-    return Claws_SetDeployment(true);
+
+    return Claws_SetDeployment(false);
 }
 
 /**
@@ -156,10 +252,11 @@ bool Package_StoreClaw()
  * @return false:
  * Failed to deploy the claw.
  */
+
 bool Package_DeployClaw()
 {
     return Claws_SetDeployment(true);
-} 
+}
 
 /**
  * @brief
@@ -179,10 +276,10 @@ bool Package_DeployClaw()
  * inside the claw or because the claw is not
  * deployed.
  */
+
 bool Package_Transport()
 {
-    Claws_SetHeight(PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT);
-    return false;
+    return Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
 }
 
 /**
@@ -200,11 +297,13 @@ bool Package_Transport()
  * No packages are detected anywhere near or
  * inside the robot.
  */
+
 bool Package_Detected()
 {
     unsigned long currentColour = 0;
 
     currentColour = GROVE_GetColor();
+
     if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
         return true;
     }
@@ -235,10 +334,16 @@ bool Package_Detected()
  * @return false:
  * Failed to set a new package status.
  */
+
 bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
-    if (Package_Detected() == true && Package_DeployClaw() == true){
+
+    if (Package_Detected() == true && Package_DeployClaw() == true && package_setUp == true){
+        return true;
+    }
+
+    else if (!Package_Detected() == true && Package_StoreClaw() == true && package_setUp == false){
         return true;
     }
     package_setUp = false;
@@ -255,6 +360,7 @@ bool Package_SetStatus(bool newPackageStatus)
  * @return false:
  * XFactor shouldn't be carrying a package.
  */
+
 bool Package_GetStatus()
 {
     if (package_setUp == true){

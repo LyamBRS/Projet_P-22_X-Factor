@@ -75,6 +75,10 @@ unsigned long GROVE_GetColor()
     //Serial.print("\tG:\t"); Serial.print(vert);
     //Serial.print("\tB:\n"); Serial.println(bleu);
 
+    Debug_Information("GROVE", "GROVE_GetColor", "Red : " + String(rouge));
+    Debug_Information("GROVE", "GROVE_GetColor", "Green : " + String(vert));
+    Debug_Information("GROVE", "GROVE_GetColor", "Blue : " + String(bleu));
+    Debug_Information("GROVE", "GROVE_GetColor", "Clear : " + String(clair));
     return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
 
 }

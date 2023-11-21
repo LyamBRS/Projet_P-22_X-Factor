@@ -24,5 +24,13 @@ void setup()
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //MoveFromVector(STRAIGHT, 50.0f, true);
+  //BacktraceSomeVectors(1);
+  //Execute_Moving(50.0f);
+  Debug_Information("main", "loop", "DeployClaw : " + String(Package_DeployClaw()));
+  Debug_Information("main", "loop", "PickUp : " + String(Package_PickUp()));
+  //Claws_GetSwitchStatus();
+  //Debug_Information("main", "loop", "PickUp : " + String(GROVE_GetColor()));
+  delay(5000);
+  //Execute_CurrentFunction();
 }
