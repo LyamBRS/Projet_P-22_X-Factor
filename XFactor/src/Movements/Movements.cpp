@@ -58,12 +58,14 @@ unsigned long previousInterval_ms = 0;
  */
 bool MoveFromVector(float radians, float distance, bool saveVector)
 {
-
+    if(!ResetMovements())       return false;
+    if(!TurnInRadians(radians)) return false;
+    if(!MoveStraight(distance)) return false;
 
     if (saveVector){
-        SaveNewVector();
+        if(!SaveNewVector())    return false;
     }
-    return false;
+    return true;
 }
 
 /**
@@ -180,8 +182,13 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
-    //i just need to calculate the a constant for the parabola
-    return (ACCELERATION_CONSTANT*(completionRatio-0.5)*(completionRatio-0.5)+maximumSpeed); 
+    if (completionRatio > 0 && completionRatio < 100){
+        return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed; 
+    }
+    else {
+        Serial.println("Error : completion ratio out of bounds.");
+        return 0;
+    }
 }
 
 /**
