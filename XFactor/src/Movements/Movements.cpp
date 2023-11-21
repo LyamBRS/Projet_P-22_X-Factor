@@ -60,7 +60,7 @@ unsigned long previousInterval_ms = 0;
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-bool MoveFromVector(float radians, float distance, bool saveVector)
+int MoveFromVector(float radians, float distance, bool saveVector)
 {
     rightMovement    = 0;
     rotationMovement = 0;
@@ -68,34 +68,40 @@ bool MoveFromVector(float radians, float distance, bool saveVector)
     if(!ResetMovements())
     {
         Debug_Error("Movements", "MoveFromVector", "Failed to reset movements");
-        return false;
+        return MOVEMENT_ERROR;
     }
-    if(!TurnInRadians(radians))
-    {
-        Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
-        return false;
+
+    int turnStatus = TurnInRadians(radians);
+    if (turnStatus != MOVEMENT_COMPLETED){
+        if (turnStatus == MOVEMENT_ERROR){
+            Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
+        }
+        return turnStatus;
     }
-    if(!MoveStraight(distance))
-    {
-        Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
-        return false;
+    
+    int moveStatus = MoveStraight(distance);
+    if (moveStatus != MOVEMENT_COMPLETED){
+        if (moveStatus == MOVEMENT_ERROR){
+            Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
+        }
+        return moveStatus;
     }
 
     if (saveVector){
         if(!UpdateSavedDistance(rightMovement))
         {
             Debug_Error("Movements", "MoveFromVector", "Failed to update distance");
-            return false;
+            return MOVEMENT_ERROR;
         }
         if(!UpdateSavedRotation(rotationMovement))
         {
             Debug_Error("Movements", "MoveFromVector", "Failed to update rotations");
-            return false;
+            return MOVEMENT_ERROR;
         }
         if(!SaveNewVector()) 
         {
             Debug_Error("Movements", "MoveFromVector", "Failed to save new vector");
-            return false;
+            return MOVEMENT_ERROR;
         }
     }
     return true;
@@ -354,12 +360,14 @@ bool ResetParameters()
  * @return false:
  * Failed to execute the turning sequence
  */
-bool Execute_Turning(float targetRadians)
+int Execute_Turning(float targetRadians)
 {
+    int status = MOVEMENT_COMPLETED;
+    
     SetMotorSpeed(LEFT, (float)direction*-1.0f*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
-    while(TurningEvent(completionRatio, direction)){
+    while(completionRatio <= 1){
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
@@ -375,6 +383,9 @@ bool Execute_Turning(float targetRadians)
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
         }
+
+        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
     rotationMovement = (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
@@ -382,9 +393,9 @@ bool Execute_Turning(float targetRadians)
     if(!Stop())
     {
         Debug_Error("Movements", "Execute_Turning", "Failed to stop");
-        return false;
+        status = MOVEMENT_ERROR;
     }
-    return true;
+    return status;
 }
 
 /**
@@ -411,12 +422,14 @@ bool Execute_Turning(float targetRadians)
  * @return false:
  * Failed to execute the moving sequence
  */
-bool Execute_Moving(float targetDistance)
+int Execute_Moving(float targetDistance)
 { 
+    int status = MOVEMENT_COMPLETED;
+
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
-    while(MovingEvent(completionRatio, direction)){
+    while(completionRatio<=1){
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
@@ -433,19 +446,22 @@ bool Execute_Moving(float targetDistance)
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
         }
+
+        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
     if(!Stop())
     {
         Debug_Error("Movements", "Execute_Moving", "Failed to stop");
-        return false;
+        status = MOVEMENT_ERROR;
     }
 
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
     //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
     //if (rightMovement != leftMovement) rotationMovement += (float)atan();
 
-    return true;
+    return status;
 }
 
 //#pragma endregion

@@ -35,6 +35,11 @@
 
 #define PID_INTERVAL_MS 10
 
+#define MOVEMENT_ERROR 0
+#define ALARM_TRIGGERED 1
+#define PACKAGE_FOUND 2
+#define MOVEMENT_COMPLETED 3
+
 //#pragma region [Base_functions]
 /**
  * @brief
@@ -62,7 +67,7 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-bool MoveFromVector(float radians, float distance, bool saveVector);
+int MoveFromVector(float radians, float distance, bool saveVector);
 
 /**
  * @brief
@@ -212,7 +217,7 @@ bool ResetParameters();
  * @return false:
  * Failed to execute the turning sequence
  */
-bool Execute_Turning(float targetRadians);
+int Execute_Turning(float targetRadians);
 
 /**
  * @brief Function that executes the
@@ -238,6 +243,6 @@ bool Execute_Turning(float targetRadians);
  * @return false:
  * Failed to execute the moving sequence
  */
-bool Execute_Moving(float targetDistance);
+int Execute_Moving(float targetDistance);
 
 //#pragma endregion
