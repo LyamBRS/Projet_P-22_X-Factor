@@ -9,10 +9,10 @@
  * @date 2023-11-02
  * @copyright Copyright (c) 2023
  */
-
+ 
 // - INCLUDES - //
 #include "Package/Package.hpp"
-
+ 
 bool package_setUp = false;
 bool pickup = false;
 /**
@@ -47,7 +47,7 @@ bool Package_Init()
     Debug_End();
     return false;
 }
-
+ 
 /**
  * @brief
  * Function that releases the package that is
@@ -65,16 +65,16 @@ bool Package_Init()
  */
 bool Package_Release()
 {
-    if (package_setUp == false && pickup == false){
+    /*if (package_setUp == false && pickup == false){
         return false;
-    }
-    if (Claws_SetGrabbers(75/100) == true){
+    }*/
+    if (Claws_SetGrabbers(100) == true){
         pickup = false;
         return true;
     }
     return false;
 }
-
+ 
 /**
  * @brief
  * Function that automatically picks up a package
@@ -94,13 +94,12 @@ bool Package_PickUp()
 {
     if(pickup == false){
     Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
-    Claws_CloseUntilDetection();
-    pickup = true;
-    return true;
+    pickup = Claws_CloseUntilDetection();
+    return pickup;
     }
     return false;
 }
-
+ 
 /**
  * @brief Function that aligns XFactor's claw
  * with the position required to drop packages
@@ -119,10 +118,10 @@ bool Package_AlignWithSafeBox()
 {
     // une longueur deja pres etablie, 90 a gauche, avance,
     MoveFromVector(3.14159/2,0,false);
-
+ 
     return false;
 }
-
+ 
 /**
  * @brief
  * Function that stores the claw in a way that is
@@ -142,9 +141,9 @@ bool Package_StoreClaw()
     if (package_setUp == true){
         return false;
     }
-    return Claws_SetDeployment(true);
+    return Claws_SetDeployment(false);
 }
-
+ 
 /**
  * @brief
  * Deploys XFactor's package recovery claw system
@@ -159,8 +158,8 @@ bool Package_StoreClaw()
 bool Package_DeployClaw()
 {
     return Claws_SetDeployment(true);
-} 
-
+}
+ 
 /**
  * @brief
  * Arranges XFactor's claw into the best solution
@@ -181,10 +180,9 @@ bool Package_DeployClaw()
  */
 bool Package_Transport()
 {
-    Claws_SetHeight(PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT);
-    return false;
+    return Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
 }
-
+ 
 /**
  * @brief
  * Complex function that analyses XFactor's
@@ -203,15 +201,15 @@ bool Package_Transport()
 bool Package_Detected()
 {
     unsigned long currentColour = 0;
-
+ 
     currentColour = GROVE_GetColor();
     if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
         return true;
     }
-
+ 
     return false;
 }
-
+ 
 /**
  * @brief
  * Function that defines if XFactor should be
@@ -238,13 +236,16 @@ bool Package_Detected()
 bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
-    if (Package_Detected() == true && Package_DeployClaw() == true){
+    if (Package_Detected() == true && Package_DeployClaw() == true && package_setUp == true){
+        return true;
+    }
+    else if (!Package_Detected() == true && Package_StoreClaw() == true && package_setUp == false){
         return true;
     }
     package_setUp = false;
     return false;
 }
-
+ 
 /**
  * @brief
  * Function that simply returns the expected
