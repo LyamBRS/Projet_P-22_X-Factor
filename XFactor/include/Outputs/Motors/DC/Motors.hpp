@@ -26,8 +26,9 @@
 #define DISTANCE_BT_WHEEL_CM 18.6f 
 
 // Constant for calculating the arc. See documentation (formula) for more information
-//The goal is to avoid dividing every time
+// The goal is to avoid dividing every time
 #define ARC_CONSTANT_CM (DISTANCE_BT_WHEEL_CM/2.0f)
+#define ARC_TICK_TO_CM (2.0f/DISTANCE_BT_WHEEL_CM)
 
 
 /**

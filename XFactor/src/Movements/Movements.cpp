@@ -21,6 +21,10 @@ int previousRightPulse = 0;
 int previousLeftPulse  = 0;
 double completionRatio = 0.0;
 
+float rightMovement = 0.0f;
+//float leftMovement = 0.0f;
+float rotationMovement = 0.0f;
+
 int direction = 0;
 float targetTicks = 0;
 
@@ -58,12 +62,17 @@ unsigned long previousInterval_ms = 0;
  */
 bool MoveFromVector(float radians, float distance, bool saveVector)
 {
+    rightMovement    = 0;
+    rotationMovement = 0;
+
     if(!ResetMovements())       return false;
     if(!TurnInRadians(radians)) return false;
     if(!MoveStraight(distance)) return false;
 
     if (saveVector){
-        if(!SaveNewVector())    return false;
+        if(!UpdateSavedDistance(rightMovement))     return false;
+        if(!UpdateSavedRotation(rotationMovement))  return false;
+        if(!SaveNewVector()) return false;
     }
     return true;
 }
@@ -96,6 +105,7 @@ bool MoveFromVector(float radians, float distance, bool saveVector)
  */
 bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
 {
+    
     return false;
 }
 
@@ -312,6 +322,8 @@ bool Execute_Turning(float targetRadians)
         }
     }
 
+    rotationMovement = (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
+
     Stop(); 
     return true;
 }
@@ -345,7 +357,7 @@ bool Execute_Moving(float targetDistance)
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
-    while(TurningEvent(completionRatio, direction)){
+    while(MovingEvent(completionRatio, direction)){
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
@@ -365,6 +377,11 @@ bool Execute_Moving(float targetDistance)
     }
 
     Stop(); 
+
+    rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
+    //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
+    //if (rightMovement != leftMovement) rotationMovement += (float)atan();
+
     return true;
 }
 
