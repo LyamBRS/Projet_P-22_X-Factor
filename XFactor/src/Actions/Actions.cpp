@@ -465,32 +465,35 @@ void Execute_SearchForPackage()
     //  return;
     //}
 
-    if (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
+    switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
     {
-      if (GetAvailableVectors() - startAvailableVectors == 5)
-      {
-        startAvailableVectors = GetAvailableVectors();
-        checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-
-        if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+      case MOVEMENT_COMPLETED:
+        if (GetAvailableVectors() - startAvailableVectors == 5)
         {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
-        }
+          startAvailableVectors = GetAvailableVectors();
+          checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
-        checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+          if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+          {
+            SetNewExecutionFunction(checkFunctionId);
+            return;
+          }
 
-        if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
-        {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
+          checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+          if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+          {
+            SetNewExecutionFunction(checkFunctionId);
+            return;
+          }
         }
-      }
-    }
-    else
-    {
-      SetNewExecutionFunction(FUNCTION_ID_ERROR);
-      return;
+        break;
+      case PACKAGE_FOUND:
+        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        return;
+      case MOVEMENT_ERROR:
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
     }
   }
 
