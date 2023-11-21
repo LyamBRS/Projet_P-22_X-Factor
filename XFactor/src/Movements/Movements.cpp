@@ -182,7 +182,13 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
-    return (ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed); 
+    if (completionRatio > 0 && completionRatio < 100){
+        return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed; 
+    }
+    else {
+        Serial.println("Error : completion ratio out of bounds.");
+        return 0;
+    }
 }
 
 /**
