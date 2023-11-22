@@ -64,11 +64,26 @@ unsigned long GROVE_GetColor()
     tcs.getRawData(&red, &green, &blue, &clear);
 
     tcs.setInterrupt(true);  // turn off LED
-
-    rouge = (int) (((float)red/1024)*255);
+    if (red>=255)
+    {
+        red = 255;
+    }
+    if (green>=255)
+    {
+        green = 255;
+    }
+    if (blue>=255)
+    {
+        blue = 255;
+    }
+    if (clear>=255)
+    {
+        clear = 255;
+    }
+   /* rouge = (int) (((float)red/1024)*255);
     vert =  (int) (((float)green/1024)*255);
     bleu =  (int) (((float)blue/1024)*255);
-    clair = (int) (((float)clear/1024)*255);
+    clair = (int) (((float)clear/1024)*255);*/
 
     //Serial.print("C:\t"); Serial.print(clair);
     //Serial.print("\tR:\t"); Serial.print(rouge);
