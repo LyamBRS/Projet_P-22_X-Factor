@@ -76,6 +76,11 @@ int MoveFromVector(float radians, float distance, bool saveVector)
         if (turnStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
         }
+        if (turnStatus == ALARM_TRIGGERED)
+        {
+            Debug_Information("Movements", "MoveFromVector", "Turn status moving : ALARM_TRIGGERED");
+            return ALARM_TRIGGERED;
+        }
         Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
         //return turnStatus;
     }
@@ -84,6 +89,10 @@ int MoveFromVector(float radians, float distance, bool saveVector)
     if (moveStatus != MOVEMENT_COMPLETED){
         if (moveStatus == MOVEMENT_ERROR){
             Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
+        }
+        if (moveStatus == ALARM_TRIGGERED)
+        {
+            return ALARM_TRIGGERED;
         }
         Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
         //return moveStatus;
@@ -401,8 +410,8 @@ int Execute_Turning(float targetRadians)
             previousInterval_ms = millis();
         }
 
-        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
-        else if(Package_Detected()) status = PACKAGE_FOUND;
+        //if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
     rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
@@ -470,8 +479,8 @@ int Execute_Moving(float targetDistance)
             previousInterval_ms = millis();
         }
 
-        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
-        else if(Package_Detected()) status = PACKAGE_FOUND;
+        //if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
