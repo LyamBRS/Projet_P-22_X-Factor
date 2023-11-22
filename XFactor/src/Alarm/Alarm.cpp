@@ -42,7 +42,7 @@ bool Alarm_Init()
  */
 bool Alarm_VerifySensors()
 {
-    return Alarm_VerifyAccel() || Alarm_VerifyPackage();
+    return Alarm_VerifyAccelerometer() || Alarm_VerifyPackage();
 }
 
 /**
@@ -55,21 +55,21 @@ bool Alarm_VerifySensors()
  * @return false:
  * Sensor is not mouved in that time interval
  */
-bool Alarm_VerifyAccel()
+bool Alarm_VerifyAccelerometer()
 {
     unsigned nbReadings = 25;
     float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
     float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
     float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
-    Serial.print("using deltaThresholdX = ");
-    Serial.println(deltaThresholdX);
+    // Serial.print("using deltaThresholdX = ");
+    // Serial.println(deltaThresholdX);
 
-    Serial.print("using deltaThresholdY = ");
-    Serial.println(deltaThresholdY);
+    // Serial.print("using deltaThresholdY = ");
+    // Serial.println(deltaThresholdY);
 
-    Serial.print("using deltaThresholdZ = ");
-    Serial.println(deltaThresholdZ);
+    // Serial.print("using deltaThresholdZ = ");
+    // Serial.println(deltaThresholdZ);
 
     float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
     float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
@@ -88,22 +88,22 @@ bool Alarm_VerifyAccel()
         avgY = abs(sumY / nbReadings);
         avgZ = abs(sumZ / nbReadings);
 
-        Serial.print("AvgX: ");
-        Serial.println(avgX);
-        Serial.print("AvgY: ");
-        Serial.println(avgY);
-        Serial.print("AvgZ: ");
-        Serial.println(avgZ);
+        // Serial.print("AvgX: ");
+        // Serial.println(avgX);
+        // Serial.print("AvgY: ");
+        // Serial.println(avgY);
+        // Serial.print("AvgZ: ");
+        // Serial.println(avgZ);
 
         // Motion detection
         if (avgX > deltaThresholdX || avgY > deltaThresholdY)
         {
             if (avgZ > deltaThresholdZ)
             {
-                Serial.println("Motion detected using delta threshold!");
-                AX_BuzzerON();
-                delay(200);
-                AX_BuzzerOFF();
+                // Serial.println("Motion detected using delta threshold!");
+                // AX_BuzzerON();
+                // delay(200);
+                // AX_BuzzerOFF();
                 return true;
             }
         }
@@ -129,7 +129,6 @@ bool Alarm_VerifyAccel()
  */
 bool Alarm_VerifyPackage()
 {
-
     return !Package_GetStatus();
 }
 
@@ -139,7 +138,7 @@ bool MoveStraightAndTest()
     {
         MOTOR_SetSpeed(LEFT, 0.3);
         MOTOR_SetSpeed(RIGHT, 0.3);
-        Alarm_VerifyAccel();
+        Alarm_VerifyAccelerometer();
     }
 
     MOTOR_SetSpeed(LEFT, 0);

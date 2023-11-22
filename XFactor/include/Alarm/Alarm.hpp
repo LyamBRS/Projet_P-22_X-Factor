@@ -58,7 +58,7 @@ bool Alarm_VerifySensors();
  * @return false:
  * No alarm needs to be activated.
  */
-bool Alarm_VerifyAccel();
+bool Alarm_VerifyAccelerometer();
 
 /**
  * @brief
