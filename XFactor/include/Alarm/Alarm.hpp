@@ -1,28 +1,23 @@
 /**
  * @file Alarm.hpp
- * @author LyamBRS (lyam.brs@gmail.com)
+ * @author Mohamed
  * @brief
  * File containing the header definitions of
  * the functions used to handle and detect alarms
  * in the XFactor program.
- * @version 0.1
- * @date 2023-10-26
+ * @version 1.0
+ * @date 2023-11-20
  * @copyright Copyright (c) 2023
  */
 
 #pragma once
 // - INCLUDES - //
 #include "Sensors/Accelerometer/Accelerometer.hpp" //// Needs to be initialised in alarms initialise function, and used in accelerometer getters.
+#include "Package/Package.hpp"
 
 // #pragma region [DEFINES]
 
-#define ALARM_GYRO_X_MAX
-#define ALARM_GYRO_X_MIN
-#define ALARM_GYRO_Y_MAX
-#define ALARM_GYRO_Y_MIN
-#define ALARM_GYRO_Z_MAX
-#define ALARM_GYRO_Z_MIN
-
+#define ACCELEROMETER_NB_CHECKING 10 // Number of accelerometer detection trials
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -63,7 +58,7 @@ bool Alarm_VerifySensors();
  * @return false:
  * No alarm needs to be activated.
  */
-bool Alarm_VerifyGyro();
+bool Alarm_VerifyAccelerometer();
 
 /**
  * @brief
@@ -78,4 +73,6 @@ bool Alarm_VerifyGyro();
  * No alarm needs to be activated.
  */
 bool Alarm_VerifyPackage();
+bool MoveStraightAndTest();
+
 // #pragma endregion

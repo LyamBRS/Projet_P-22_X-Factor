@@ -852,6 +852,9 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
+  Debug_Error("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
+  Debug_Stop();
+
   // - VARIABLES - //
   static bool status = false; // everything is closed
 

@@ -11,7 +11,7 @@
 
 // - INCLUDES - //
 #include "Alarm/Alarm.hpp"
-
+#include "LibRobus.h"
 
 /**
  * @brief
@@ -27,7 +27,7 @@
  */
 bool Alarm_Init()
 {
-    return true;
+    return Accelerometer_Init() && Package_Init();
 }
 
 /**
@@ -42,7 +42,7 @@ bool Alarm_Init()
  */
 bool Alarm_VerifySensors()
 {
-    return false;
+    return Alarm_VerifyAccelerometer() || Alarm_VerifyPackage();
 }
 
 /**
@@ -50,14 +50,68 @@ bool Alarm_VerifySensors()
  * Verifies the accelerometer's values to see if
  * the alarm needs to be activated based off the
  * values returned.
- *
  * @return true:
- * An alarm needs to be activated.
+ * Sensor linear acceleration has depased a certain threshold
  * @return false:
- * No alarm needs to be activated.
+ * Sensor is not mouved in that time interval
  */
-bool Alarm_VerifyGyro()
+bool Alarm_VerifyAccelerometer()
 {
+    unsigned nbReadings = 25;
+    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+
+    // Serial.print("using deltaThresholdX = ");
+    // Serial.println(deltaThresholdX);
+
+    // Serial.print("using deltaThresholdY = ");
+    // Serial.println(deltaThresholdY);
+
+    // Serial.print("using deltaThresholdZ = ");
+    // Serial.println(deltaThresholdZ);
+
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+    float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
+
+    // Perform ACCELEROMETER_NB_CHECKING analyse
+    for (size_t i = 0; i < ACCELEROMETER_NB_CHECKING; i++)
+    {
+        for (size_t j = 0; j < nbReadings; j++)
+        {
+            sumX += Accelerometer_GetX();
+            sumY += Accelerometer_GetY();
+            sumZ += Accelerometer_GetZ();
+        }
+
+        avgX = abs(sumX / nbReadings);
+        avgY = abs(sumY / nbReadings);
+        avgZ = abs(sumZ / nbReadings);
+
+        // Serial.print("AvgX: ");
+        // Serial.println(avgX);
+        // Serial.print("AvgY: ");
+        // Serial.println(avgY);
+        // Serial.print("AvgZ: ");
+        // Serial.println(avgZ);
+
+        // Motion detection
+        if (avgX > deltaThresholdX || avgY > deltaThresholdY)
+        {
+            if (avgZ > deltaThresholdZ)
+            {
+                // Serial.println("Motion detected using delta threshold!");
+                // AX_BuzzerON();
+                // delay(200);
+                // AX_BuzzerOFF();
+                return true;
+            }
+        }
+        sumX = 0;
+        sumY = 0;
+        sumZ = 0;
+    }
+
     return false;
 }
 
@@ -75,5 +129,18 @@ bool Alarm_VerifyGyro()
  */
 bool Alarm_VerifyPackage()
 {
-    return false;
+    return !Package_GetStatus();
+}
+
+bool MoveStraightAndTest()
+{
+    for (size_t i = 0; i < 100; i++)
+    {
+        MOTOR_SetSpeed(LEFT, 0.3);
+        MOTOR_SetSpeed(RIGHT, 0.3);
+        Alarm_VerifyAccelerometer();
+    }
+
+    MOTOR_SetSpeed(LEFT, 0);
+    MOTOR_SetSpeed(RIGHT, 0);
 }
