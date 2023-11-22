@@ -33,20 +33,21 @@ void loop()
 {
   //Serial.print("MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
   //Debug_Information("main", "loop", "MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  //delay(2000);
+  delay(2000);
+  Execute_Alarm();
   //BacktraceSomeVectors(1);
   //Execute_Moving(50.0f);
-  Debug_Information("main", "loop", "DeployClaw : " + String(Package_DeployClaw()));
+  /*Debug_Information("main", "loop", "DeployClaw : " + String(Package_DeployClaw()));
   delay(2000);
   Debug_Information("main", "loop", "DeployClaw : " + String(Package_StoreClaw()));
-  delay(2000);
+  delay(2000);*/
   //Debug_Information("main", "loop", "PickUp : " + String(Package_PickUp()));
   
   //Debug_Information("main", "loop", "Alarm : " + String(Alarm_VerifyAccelerometer()));
   //delay(100);
   //delay(2000);
   //Claws_GetSwitchStatus();
-  //Debug_Information("main", "loop", "PickUp : " + String(GROVE_GetColor()));
+  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
   //delay(100);
   //S3003_SetPosition(CLAWS_PINS_GRABBER, 90.0f);
   //delay(2000);

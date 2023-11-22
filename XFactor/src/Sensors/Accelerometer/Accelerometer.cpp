@@ -28,7 +28,7 @@ float AcceZ_zero = 0.0f;
 bool Accelerometer_Init()
 {
     // TODO: check error codes here
-    Serial.begin(MPU6050_BAUD_RATE);
+    //Serial.begin(MPU6050_BAUD_RATE);
     Wire.begin(); // Initialize communication
     Wire.setClock(MPU6050_CLOCK_SPEED);
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
@@ -195,7 +195,7 @@ void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, uns
     unsigned nbPoints = 0, xSum = 0, ySum = 0, xSquareSum = 0, xTimesYSum = 0, offset = 0;
     unsigned now = 0, endCalibration = 0;
 
-    Serial.println("Orient the sensor upwards against gravity - Click Enter When Ready");
+    //Serial.println("Orient the sensor upwards against gravity - Click Enter When Ready");
     while (Serial.available() && Serial.read())
         ; // empty buffer
     while (!Serial.available())
@@ -203,9 +203,9 @@ void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, uns
     while (Serial.available() && Serial.read())
         ; // empty buffer again
 
-    Serial.print("Beginning to Calibrate Part 1 (Acceleration = 1g) for ");
-    Serial.print(calibrationTime * 0.001);
-    Serial.println(" seconds");
+    //Serial.print("Beginning to Calibrate Part 1 (Acceleration = 1g) for ");
+    //Serial.print(calibrationTime * 0.001);
+    //Serial.println(" seconds");
     now = millis();
     endCalibration = now + calibrationTime;
 
