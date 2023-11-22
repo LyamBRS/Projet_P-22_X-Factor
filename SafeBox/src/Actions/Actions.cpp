@@ -21,7 +21,6 @@
  * so that @ref Execute_CurrentFunction can be
  * executed properly without needing an input
  * parameter.
- *
  * @attention
  * DO NOT USE THIS INSIDE EXECUTION FUNCTIONS.
  * THIS SHOULD ONLY BE USED IN ACTION HANDLERS.

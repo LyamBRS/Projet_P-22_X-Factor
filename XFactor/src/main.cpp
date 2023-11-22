@@ -9,28 +9,17 @@
  */
 
 // - INCLUDES -//
-#include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
-#include "Alarm/Alarm.hpp"
-#include "LibRobus.h"
-
-
-// TEMPORARY INCLUDES
-#include "Movements/Vectors.hpp"
 
 /// @brief Arduino's initialisation function.
-
 void setup()
 {
-    BoardInit();
-    Alarm_Init();
+  XFactor_Init();
 }
 
-
-
+/// @brief Arduino's while(1) function.
 void loop()
 {
-    MoveStraightAndTest();
-    delay(2000);
+  Execute_CurrentFunction();
 }
 
