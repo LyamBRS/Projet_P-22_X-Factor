@@ -57,49 +57,24 @@ bool Alarm_VerifySensors()
  */
 bool Alarm_VerifyAccel()
 {
+    unsigned nbReadings = 25;
+    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
-    unsigned nbReadings = 50;
+    Serial.print("using deltaThresholdX = ");
+    Serial.println(deltaThresholdX);
+
+    Serial.print("using deltaThresholdY = ");
+    Serial.println(deltaThresholdY);
+
+    Serial.print("using deltaThresholdZ = ");
+    Serial.println(deltaThresholdZ);
+
     float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
     float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
 
-    // Do a first scan for initial values
-    // This was moved form the Accelerometer_init() fucntion because robos mouvement influnces the offsets
-    for (size_t i = 0; i < nbReadings; i++)
-    {
-        sumX += Accelerometer_GetX();
-        sumY += Accelerometer_GetY();
-        sumZ += Accelerometer_GetZ();
-    }
-
-    AcceX_zero = (sumX / nbReadings);
-    AcceY_zero = (sumY / nbReadings);
-    AcceZ_zero = (sumZ / nbReadings);
-
-    Serial.print("Using AcceX_zero:\t");
-    Serial.println(AcceX_zero);
-
-    Serial.print("Using AcceY_zero:\t");
-    Serial.println(AcceY_zero);
-
-    Serial.print("Using AcceZ_zero:\t");
-    Serial.println(AcceZ_zero);
-
-    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
-    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
-    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
-
-    Serial.print("using deltaThresholdX:\t ");
-    Serial.println(deltaThresholdX);
-
-    Serial.print("using deltaThresholdY:\t");
-    Serial.println(deltaThresholdY);
-
-    Serial.print("using deltaThresholdZ:\t");
-    Serial.println(deltaThresholdZ);
-
-
-    // Do ACCELEROMETER_NB_CHECKING scans
-    sumX = 0, sumY = 0, sumZ = 0;
+    // Perform ACCELEROMETER_NB_CHECKING analyse
     for (size_t i = 0; i < ACCELEROMETER_NB_CHECKING; i++)
     {
         for (size_t j = 0; j < nbReadings; j++)
@@ -113,29 +88,28 @@ bool Alarm_VerifyAccel()
         avgY = abs(sumY / nbReadings);
         avgZ = abs(sumZ / nbReadings);
 
-        Serial.print("AvgX:\t");
+        Serial.print("AvgX: ");
         Serial.println(avgX);
-        Serial.print("AvgY:\t");
+        Serial.print("AvgY: ");
         Serial.println(avgY);
-        Serial.print("AvgZ:\t");
+        Serial.print("AvgZ: ");
         Serial.println(avgZ);
 
-        // Motion detection thresholds
+        // Motion detection
         if (avgX > deltaThresholdX || avgY > deltaThresholdY)
         {
             if (avgZ > deltaThresholdZ)
             {
                 Serial.println("Motion detected using delta threshold!");
-                for (size_t i = 0; i < 3; i++)
-                {
-                    AX_BuzzerON();
-                    delay(200);
-                    AX_BuzzerOFF();
-                }
+                AX_BuzzerON();
+                delay(200);
+                AX_BuzzerOFF();
                 return true;
             }
         }
-        sumX = 0, sumY = 0, sumZ = 0;
+        sumX = 0;
+        sumY = 0;
+        sumZ = 0;
     }
 
     return false;
@@ -161,10 +135,10 @@ bool Alarm_VerifyPackage()
 
 bool MoveStraightAndTest()
 {
-    for (size_t i = 0; i < 40; i++)
+    for (size_t i = 0; i < 100; i++)
     {
-        MOTOR_SetSpeed(LEFT, 0.2);
-        MOTOR_SetSpeed(RIGHT, 0.2);
+        MOTOR_SetSpeed(LEFT, 0.3);
+        MOTOR_SetSpeed(RIGHT, 0.3);
         Alarm_VerifyAccel();
     }
 
