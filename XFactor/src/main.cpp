@@ -14,12 +14,6 @@
 #include "Alarm/Alarm.hpp"
 #include "LibRobus.h"
 
-
-// TEMPORARY INCLUDES
-#include "Movements/Vectors.hpp"
-
-/// @brief Arduino's initialisation function.
-
 void setup()
 {
     BoardInit();

@@ -286,7 +286,7 @@ void Execute_GettingOutOfGarage()
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false))
+    if (MoveFromVector(0, 50.0f, false)) //Add define for distances to get outta the box
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -333,7 +333,7 @@ void Execute_SearchPreparations()
   
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false))
+    if (MoveFromVector(0.0f, 50.0f, false)) //DEPENDING ON ACTUAL START POSITION
     {
       int checkFunctionId;
       ResetVectors();
@@ -494,8 +494,8 @@ void Execute_SearchForPackage()
     }
   }
 
-  XFactor_SetNewStatus(XFactor_Status::NoPackageFound);
-  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  //ROBOT IS NOW BACK IN FRONT OF THE DOOR, HAVING FOUND NOTHING
+  //ACTION WHEN SEARCH IS COMPLETED BUT PACKAGE IS NOT FOUND
 }
 
 /**
@@ -559,8 +559,7 @@ void Execute_ExamineFoundPackage()
 
   if (Package_Detected())
   {
-    //XFactor_SetNewStatus(XFactor_Status::); PUT GOOD STATUS
-    SafeBox_ExchangeStatus();
+    // NOTIFY SAFEBOX
     SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
   }
 }
@@ -608,7 +607,7 @@ void Execute_PickUpPackage()
 
     checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
     {
       SetNewExecutionFunction(checkFunctionId);
       return;
@@ -641,14 +640,15 @@ void Execute_PickUpPackage()
  * SafeBox is still possible.
  */
 void Execute_ReturnHome()
-{
+{ 
   int checkFunctionId;
 
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 
+  // RETURN HOME, ALARM CHECK WILL NEED TO BE IN BETWEEN MOVEMENTS
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
+  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
@@ -860,9 +860,6 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-  Debug_Error("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
-  Debug_Stop();
-
   // - VARIABLES - //
   static bool status = false; // everything is closed
 
@@ -907,11 +904,7 @@ void Execute_ReturnInsideGarage()
 {
   int checkFunctionId;
   bool hasEnteredGarage = false;
-  
-  if (XFactor_GetStatus() == XFactor_Status::NoPackageFound)
-  {
-    // NO PACKAGE
-  }
+
   XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
@@ -922,32 +915,30 @@ void Execute_ReturnInsideGarage()
     return;
   }
 
-  if (SafeBox_GetGarageState())
-  {
-    // DRIVE INTO GARAGE
-    // WILL NEED TO SEE SAFEBOX STATUS
-  }
-  else
-  {
-    SafeBox_ChangeGarageState(true);
-  }
-
-  if (!SafeBox_GetGarageState())
-  {
-
-  }
-  else
-  {
-    SafeBox_ChangeGarageState(false);
-  }
+  // MOVE TO THE ENTRANCE
 
   if (hasEnteredGarage)
   {
-    
+    if (!SafeBox_GetGarageState())
+    {
+
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(false);
+    }
   }
   else
   {
-    
+    if (SafeBox_GetGarageState())
+    {
+      // DRIVE INTO GARAGE
+      // WILL NEED TO SEE SAFEBOX STATUS
+    }
+    else
+    {
+      SafeBox_ChangeGarageState(true);
+    }
   }
 }
 
@@ -963,17 +954,7 @@ void Execute_ReturnInsideGarage()
  */
 void Execute_EndOfProgram()
 {
-  int checkFunctionId;
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
-
-  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
-  {
-    SetNewExecutionFunction(checkFunctionId);
-    return;
-  }
-
-  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 }
 
 /**
@@ -985,13 +966,7 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
-  // set status ??
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-  Stop();
-  for (;;)
-  {
-    //Keep stuck here until reset
-  }
 }
 
 //#pragma endregion

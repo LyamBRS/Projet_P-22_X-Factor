@@ -13,7 +13,6 @@
 
 #include "Movements/Positions.hpp"
 #include "Debug/Debug.hpp"
-#include "math.h"
 
 typedef struct 
 {
@@ -22,7 +21,6 @@ typedef struct
 } MovementVector;
 
 #define VECTOR_BUFFER_SIZE 32 // MAY NEED TO CHANGE
-
 // #pragma region -Vector Handling-
 
 /**
@@ -92,36 +90,4 @@ bool ResetVectors();
  * The vector failed to be removed.
  */
 bool RemoveLastVector();
-
-/**
- * @brief Calculates and return the 
- * vector needed to go back to the garage door.
- * If needed for further uses, we might add
- * a parameter that contains the reference
- * point (the 0,0)
- * @return MovementVector:
- * The calculated vector, equal to empty if 
- * a problem has occurred.
- */
-MovementVector GetReturnVector();
-
-/**
- * @brief Calculates and return the 
- * opposite vector to the last non
- * empty vector in the vector buffer.
- * @return MovementVector:
- * The calculated vector, equal to empty (0.0f, 0.0f) if 
- * a problem has occurred.
- */
-MovementVector GetLastOppositeVector();
-
-/**
- * @brief Calculates and return the 
- * opposite vector to the 
- * provided MovementVector
- * @return MovementVector:
- * The calculated vector, should
- * not get errors in this
- */
-MovementVector GetOppositeVector(MovementVector movementVector);
 // #pragma endregion

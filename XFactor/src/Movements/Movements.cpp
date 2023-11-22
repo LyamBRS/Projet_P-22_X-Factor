@@ -21,10 +21,6 @@ int previousRightPulse = 0;
 int previousLeftPulse  = 0;
 double completionRatio = 0.0;
 
-float rightMovement = 0.0f;
-//float leftMovement = 0.0f;
-float rotationMovement = 0.0f;
-
 int direction = 0;
 float targetTicks = 0;
 
@@ -62,43 +58,12 @@ unsigned long previousInterval_ms = 0;
  */
 bool MoveFromVector(float radians, float distance, bool saveVector)
 {
-    rightMovement    = 0;
-    rotationMovement = 0;
 
-    if(!ResetMovements())
-    {
-        Debug_Error("Movements", "MoveFromVector", "Failed to reset movements");
-        return false;
-    }
-    if(!TurnInRadians(radians))
-    {
-        Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
-        return false;
-    }
-    if(!MoveStraight(distance))
-    {
-        Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
-        return false;
-    }
 
     if (saveVector){
-        if(!UpdateSavedDistance(rightMovement))
-        {
-            Debug_Error("Movements", "MoveFromVector", "Failed to update distance");
-            return false;
-        }
-        if(!UpdateSavedRotation(rotationMovement))
-        {
-            Debug_Error("Movements", "MoveFromVector", "Failed to update rotations");
-            return false;
-        }
-        if(!SaveNewVector()) 
-        {
-            Debug_Error("Movements", "MoveFromVector", "Failed to save new vector");
-            return false;
-        }
+        SaveNewVector();
     }
-    return true;
+    return false;
 }
 
 /**
@@ -129,7 +94,6 @@ bool MoveFromVector(float radians, float distance, bool saveVector)
  */
 bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
 {
-    
     return false;
 }
 
@@ -154,21 +118,9 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
  */
 bool TurnInRadians(float radians)
 {
-    if (!ResetPID())
-    {
-        Debug_Error("Movements", "TurnInRadians", "Failed to reset PID");
-        return false;
-    }
-    else if (!ResetAllEncoders())
-    {
-        Debug_Error("Movements", "TurnInRadians", "Failed to reset encoders");
-        return false;
-    }
-    else if (!ResetParameters())
-    {
-        Debug_Error("Movements", "TurnInRadians", "Failed to reset parameters");
-        return false;
-    }
+    if (!ResetPID)              return false;
+    else if (!ResetAllEncoders) return false;
+    else if (!ResetParameters)  return false;
 
     targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
 
@@ -193,21 +145,9 @@ bool TurnInRadians(float radians)
  */
 bool MoveStraight(float distance)
 {
-    if (!ResetPID())
-    {
-        Debug_Error("Movements", "MoveStraight", "Failed to reset PID");
-        return false;
-    }
-    else if (!ResetAllEncoders())
-    {
-        Debug_Error("Movements", "MoveStraight", "Failed to reset all encoders");
-        return false;
-    }
-    else if (!ResetParameters())
-    {
-        Debug_Error("Movements", "MoveStraight", "Failed to reset parameters");
-        return false;
-    }
+    if (!ResetPID)              return false;
+    else if (!ResetAllEncoders) return false;
+    else if (!ResetParameters)  return false;
 
     targetTicks = CentimetersToEncoder(distance);
 
@@ -240,15 +180,8 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
-    if (completionRatio > 0 && completionRatio < 100)
-    {
-        return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed; 
-    }
-    else 
-    {
-        Debug_Error("Movements", "Accelerate", "Ratio is out of bounds");
-        return 0;
-    }
+    //i just need to calculate the a constant for the parabola
+    return (ACCELERATION_CONSTANT*(completionRatio-0.5)*(completionRatio-0.5)+maximumSpeed); 
 }
 
 /**
@@ -265,9 +198,8 @@ bool Stop()
     MOTOR_SetSpeed(RIGHT, 0);
     MOTOR_SetSpeed(LEFT,  0);
     if (ResetAllEncoders()) return true;
-    else
-    {
-        Debug_Error("Movements", "Stop", "Failed to reset encoders");
+    else{
+        Serial.println("Error : could not stop motors.");
         return false;
     }
 }
@@ -291,9 +223,9 @@ bool ResetMovements()
             ResetPositions();
             return true;
         }
-        else Debug_Error("Movements", "ResetMovements", "Failed to reset PID");
+        else Serial.println("Error : PID values aren't zero.");
     }
-    else Debug_Error("Movements", "ResetMovements", "Failed to reset encoders");
+    else Serial.println("Error : Encoder buffer value isn't zero.");
     return false;    
 }
 
@@ -373,13 +305,7 @@ bool Execute_Turning(float targetRadians)
         }
     }
 
-    rotationMovement = (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
-
-    if(!Stop())
-    {
-        Debug_Error("Movements", "Execute_Turning", "Failed to stop");
-        return false;
-    }
+    Stop(); 
     return true;
 }
 
@@ -412,7 +338,7 @@ bool Execute_Moving(float targetDistance)
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
-    while(MovingEvent(completionRatio, direction)){
+    while(TurningEvent(completionRatio, direction)){
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
@@ -431,16 +357,7 @@ bool Execute_Moving(float targetDistance)
         }
     }
 
-    if(!Stop())
-    {
-        Debug_Error("Movements", "Execute_Moving", "Failed to stop");
-        return false;
-    }
-
-    rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
-    //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
-    //if (rightMovement != leftMovement) rotationMovement += (float)atan();
-
+    Stop(); 
     return true;
 }
 

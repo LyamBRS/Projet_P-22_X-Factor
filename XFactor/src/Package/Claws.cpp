@@ -172,7 +172,6 @@ bool Claws_SetDeployment(bool deployment)
     {
         if(deployment == CLAWS_STATUS_DEPLOYED)
         {
-            deploymentStatus = CLAWS_STATUS_DEPLOYED;
             if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
             {
                 Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
@@ -184,6 +183,7 @@ bool Claws_SetDeployment(bool deployment)
                 Debug_Error("Claws", "Claws_SetDeployment", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
                 return false;
             }
+            deploymentStatus = CLAWS_STATUS_DEPLOYED;
             return true;
         }
         else if (deployment == CLAWS_STATUS_STORED)
@@ -289,7 +289,6 @@ bool Claws_CloseUntilDetection()
             }
             previousInterval_ms = millis();
         }
-        return true;
     }
 
     //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME
