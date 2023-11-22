@@ -121,8 +121,9 @@ bool Claws_SetGrabbers(unsigned char pourcent)
  */
 bool Claws_SetHeight(unsigned char pourcent)
 {
-    uint8_t angle = pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100;
+    float angle = (float)(pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100);
     angle+=CLAWS_HEIGHT_MIN;
+    Debug_Information("","", String(pourcent));
 
     if(angle>=CLAWS_HEIGHT_MIN && angle<=CLAWS_HEIGHT_MAX)
     {
@@ -289,7 +290,7 @@ bool Claws_CloseUntilDetection()
             }
             previousInterval_ms = millis();
         }
-        return true;
+        //return true;
     }
 
     //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME

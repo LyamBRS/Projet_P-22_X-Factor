@@ -80,6 +80,5 @@ unsigned long GROVE_GetColor()
     Debug_Information("GROVE", "GROVE_GetColor", "Blue : " + String(bleu));
     Debug_Information("GROVE", "GROVE_GetColor", "Clear : " + String(clair));
     return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
-
 }
 

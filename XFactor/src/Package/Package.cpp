@@ -184,10 +184,14 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
+    
     if(pickup == false)
     {
-        Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
         pickup = Claws_CloseUntilDetection();
+        if (pickup)
+        {
+            Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+        } 
         return pickup;
     }
 
