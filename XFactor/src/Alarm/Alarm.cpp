@@ -58,8 +58,8 @@ bool Alarm_VerifySensors()
 bool Alarm_VerifyAccel()
 {
     unsigned nbReadings = 25;
-    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
-    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.05));  // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1));  // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1));  // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
     float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
     Serial.print("using deltaThresholdX = ");
@@ -102,7 +102,6 @@ bool Alarm_VerifyAccel()
             {
                 Serial.println("Motion detected using delta threshold!");
                 AX_BuzzerON();
-                delay(200);
                 AX_BuzzerOFF();
                 return true;
             }

@@ -31,6 +31,5 @@ void setup()
 void loop()
 {
     MoveStraightAndTest();
-    delay(2000);
 }
 
