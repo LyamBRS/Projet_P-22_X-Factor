@@ -27,7 +27,7 @@
  */
 bool Alarm_Init()
 {
-    return Accelerometer_Init() && Package_Init();
+    return Accelerometer_Init();// && Package_Init();
 }
 
 /**

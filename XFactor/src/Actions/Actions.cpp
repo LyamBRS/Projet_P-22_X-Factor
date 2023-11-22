@@ -799,35 +799,35 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
-  XFactor_SetNewStatus(XFactor_Status::Alarm);
+  // - VARIABLES - //
+    static bool mustBeOn = false;
 
-  unsigned long timeStart = millis();
-  unsigned long timeNow;
-  int status = 0; // everything is closed
-  while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
-  {
-    timeNow = millis();
-    if ((timeNow - timeStart) >= 1000)
+    SafeBox_SetNewStatus(SafeBox_Status::Alarm);
+
+    /*if(!SafeBox_CheckAndExecuteMessage())
     {
-      //SafeBox_ExchangeStatus(XFactor_Status::Alarm); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
-      if (status == 1)
-      {
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
-        AX_BuzzerON();
-        status = 0;
-      }
-      else if (status == 0)
-      {
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-        AX_BuzzerOFF();
-        status = 1;
-      }
+        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
+    }*/
+
+
+    //ExecutionUtils_HandleReceivedXFactorStatus();
+    // - LED & BUZZER BLINK - //
+    if(ExecutionUtils_LedBlinker(500))
+    {
+        mustBeOn = !mustBeOn;
+
+        if(mustBeOn)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+            // AX_BuzzerON();
+        }
+        else
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+            // AX_BuzzerOFF();
+        }
     }
-    timeStart = timeNow;
-  }
-  AX_BuzzerOFF();
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-  return;
+
 }
 
 /**
