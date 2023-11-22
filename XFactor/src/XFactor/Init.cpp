@@ -23,6 +23,8 @@
  */
 void XFactor_Init()
 {
+    Alarm_Init();
+
     BoardInit();
 
     if (Debug_Init()){
