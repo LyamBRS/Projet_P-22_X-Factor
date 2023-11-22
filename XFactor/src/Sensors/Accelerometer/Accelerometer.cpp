@@ -38,19 +38,6 @@ bool Accelerometer_Init()
     if (error != 0)
         return false;
 
-    /*Set initial Acceleration for later use*/
-    unsigned nbReadings = 100;
-    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
-    for (size_t i = 0; i < nbReadings; i++)
-    {
-        sumX += Accelerometer_GetX();
-        sumY += Accelerometer_GetY();
-        sumZ += Accelerometer_GetZ();
-    }
-
-    AcceX_zero = (sumX / nbReadings);
-    AcceY_zero = (sumY / nbReadings);
-    AcceZ_zero = (sumZ / nbReadings);
     return true;
 }
 
