@@ -9,17 +9,32 @@
  */
 
 // - INCLUDES -//
+#include "Actions/Actions.hpp"
 #include "XFactor/Init.hpp"
+#include "Alarm/Alarm.hpp"
+#include "LibRobus.h"
+
+
+// TEMPORARY INCLUDES
+#include "Movements/Vectors.hpp"
+#include "Sensors/Colour/GROVE.hpp"
 
 /// @brief Arduino's initialisation function.
+
 void setup()
 {
-  XFactor_Init();
+    /*BoardInit();
+    Alarm_Init();*/
+    Debug_Init();
+    GROVE_Init();
 }
 
-/// @brief Arduino's while(1) function.
+
+
 void loop()
 {
-  Execute_CurrentFunction();
+    /*MoveStraightAndTest();
+    delay(2000);*/
+    GROVE_GetColor();
 }
 
