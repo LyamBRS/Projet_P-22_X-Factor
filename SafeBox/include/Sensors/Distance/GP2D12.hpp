@@ -8,23 +8,20 @@
  */
 
 #pragma once
-
-// #define trigPin 11;    // Trigger
-// #define echoPin 12;    // Echo
-// long duration, cm, inches;
+#include <Arduino.h>
 /**
  * @brief Sets base values
  *
- * @param pinNumber
- * pin to set (between 0 and 3) (J9-J12)
+ * @param trigPin, echoPin
+ * pin to set trigger pin & echo pin numbers
  */
-void GP2D12_Init(int pinNumber);
+void GP2D12_Init(int trigPin, int echoPin);
 
 /**
  * @brief Reads the IR sensor at specified pin
- * @param pinNumber
+ * @param trigPin, echoPin
  * pin to read (between 0 and 3)
  * @return unsigned short
  * raw data (16 bits)
  */
-unsigned short GP2D12_Read(int pinNumber);
+unsigned short GP2D12_Read(int trigPin, int echoPin);
