@@ -20,11 +20,5 @@ void setup()
 
 void loop()
 {
-  Package_StoreClaw();
-  delay(2000);
-  Package_DeployClaw();
-  delay(2000);
-  
-  //Execute_CurrentFunction();
-  //Execute_Unlocked();
+  Execute_CurrentFunction();
 }
