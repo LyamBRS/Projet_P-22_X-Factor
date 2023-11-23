@@ -47,12 +47,7 @@ void loop()
       {
         Execute_Alarm();
       }
-  }*/
-
-  // END PACKAGE PICKUP //
-
-  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
-
+  }
   
   //Execute_Alarm();
   //BacktraceSomeVectors(1);
