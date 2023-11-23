@@ -22,9 +22,14 @@ void setup()
 
 void loop()
 {
+  Debug_Information("","","BEFORE RESET");
+  ENCODER_Reset(LEFT);
+  Debug_Information("","","LEFT RESET");
+  ENCODER_Reset(RIGHT);
+  Debug_Information("","","RIGHT RESET");
   //Serial.print("MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  //Debug_Information("main", "loop", "MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  //delay(2000);
+  Debug_Information("main", "loop", "MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
+  delay(2000);
   //Execute_Alarm();
   //BacktraceSomeVectors(1);
   //Execute_Moving(50.0f);
@@ -41,8 +46,8 @@ void loop()
   //delay(100);
   //delay(2000);
   //Claws_GetSwitchStatus();
-  Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
-  delay(100);
+  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
+  //delay(100);
   //S3003_SetPosition(CLAWS_PINS_GRABBER, 90.0f);
   //delay(2000);
   /*S3003_SetPosition(CLAWS_PINS_HEIGHT, 50.0f);

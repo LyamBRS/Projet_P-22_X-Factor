@@ -420,7 +420,11 @@ int Execute_Turning(float targetRadians)
             Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
             status = ALARM_TRIGGERED;
         } 
-        //else if(Package_Detected()) status = PACKAGE_FOUND;
+        /*else if(Package_Detected())
+        {
+            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
+            status = PACKAGE_FOUND;
+        }*/
     }
 
     rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
@@ -494,8 +498,11 @@ int Execute_Moving(float targetDistance)
             Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
             status = ALARM_TRIGGERED;
         } 
-        
-        //else if(Package_Detected()) status = PACKAGE_FOUND;
+        /*else if(Package_Detected())
+        {
+            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
+            status = PACKAGE_FOUND;
+        }*/
     }
 
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
