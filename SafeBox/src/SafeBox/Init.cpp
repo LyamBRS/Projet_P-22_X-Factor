@@ -62,13 +62,15 @@ void SafeBox_Init()
                     if(Package_Init() || true){
                         if(Garage_Init() || true){
                             if(Lid_Init() || true){
-                                if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
-                                    if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
-                                        // Function is successful.
-                                        Debug_Information("Init", "SafeBox_Init", "Successful initialisation");
-                                        return;
-                                    } else Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction Failed");
-                                } else Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus Failed");
+                                if(RFID_Init()){
+                                    if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
+                                        if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
+                                            // Function is successful.
+                                            Debug_Information("Init", "SafeBox_Init", "Successful initialisation");
+                                            return;
+                                        } else Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction Failed");
+                                    } else Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus Failed");
+                                } else Debug_Error("Init", "SafeBox_Init", "RFID_Init Failed");
                             } else Debug_Error("Init", "SafeBox_Init", "Lid_Init Failed");
                         } else Debug_Error("Init", "SafeBox_Init", "Garage_Init Failed");
                     } else Debug_Error("Init", "SafeBox_Init", "Package_Init Failed");
