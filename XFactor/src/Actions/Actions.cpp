@@ -985,9 +985,20 @@ void Execute_Unlocked()
   // set status ??
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
   Stop();
-  for (;;)
+
+  int checkFunctionId;
+
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
+
+  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
   {
-    //Keep stuck here until reset
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+  
+  if (SafeBox_GetStatus() == SafeBox_Status::WaitingForDelivery)
+  {
+    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   }
 }
 
