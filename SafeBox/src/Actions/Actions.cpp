@@ -372,11 +372,7 @@ void Execute_Alarm()
 
     SafeBox_SetNewStatus(SafeBox_Status::Alarm);
 
-    if(!SafeBox_CheckAndExecuteMessage())
-    {
-        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
-    }
-
+    SafeBox_CheckAndExecuteMessage();
 
     ExecutionUtils_HandleReceivedXFactorStatus();
     // - LED & BUZZER BLINK - //

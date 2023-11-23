@@ -57,7 +57,6 @@ bool SafeBox_CheckAndExecuteMessage()
 
     if(latestMessage == BT_NO_MESSAGE)
     {
-        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "BT_MessagesAvailable failure");
         return false;
     }
 
