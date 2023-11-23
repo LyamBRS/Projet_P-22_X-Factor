@@ -348,16 +348,17 @@ void Execute_SearchPreparations()
     {
       int checkFunctionId;
       ResetVectors();
-    }
-    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
+    
+      checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
 
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
-    {
-      SetNewExecutionFunction(checkFunctionId);
-    }
-    else
-    {
-      SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+      {
+        SetNewExecutionFunction(checkFunctionId);
+      }
+      else
+      {
+        SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+      }
     }
   }
   else
