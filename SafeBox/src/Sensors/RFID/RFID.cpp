@@ -53,11 +53,19 @@ bool RFID_Init(int RFIDPin)
 bool RFID_HandleCard()
 {
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
+  String receivedCard = "NO_CARDS_FOUND";
+
+  //receivedCard = RFID_GetCardNumber();
 
     if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
         Debug_Information("RFID","RFID_HandleCard","Valid card");
         return true;
     } else {
+
+        //if(receivedCard == "NO_CARDS_FOUND")
+        //{
+        //  return false;
+       // }
         Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
         return false;
     }
@@ -94,6 +102,7 @@ bool RFID_CheckIfCardIsThere()
  * The Card ID. If 0, there is no card.
  */
 String RFID_GetCardNumber() {
+  Debug_Start("RFID_GetCardNumber");
   byte crecu, incoming = 0;
   String id_tag;
 
@@ -101,28 +110,40 @@ String RFID_GetCardNumber() {
 
   while (1) {
     if (RFID_SERIAL.available()) {
+
       crecu = RFID_SERIAL.read();
+      Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
+
       switch (crecu) {
         case 0x02:
+          Debug_Information("RFID","RFID_GetCardNumber","Start of reading");
           // START OF TRANSMIT
           incoming = 1;
           break;
 
         case 0x03:
+          Debug_Information("RFID","RFID_GetCardNumber","END OF READING");
           // END OF TRANSMIT
           incoming = 0;
 
           for (int i = 0; i < 10; i++) isReadingRFID = false;
+          Debug_End();
           return id_tag;
 
         default:
           if (incoming)
           {
+            Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
             id_tag.concat(crecu);
+          }
+          else
+          {
+            Debug_Error("RFID","RFID_GetCardNumber",String(crecu));
           }
           break;
       }
     }
   }
-  return "";
+  Debug_End();
+  return "NO_CARDS_FOUND";
 }
