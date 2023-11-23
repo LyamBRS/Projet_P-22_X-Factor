@@ -82,6 +82,7 @@ bool SaveNewVector()
         {
             vectorBuffer[vectorBufferIndex].rotation_rad = GetSavedRotation();
             vectorBuffer[vectorBufferIndex].distance_cm = GetSavedDistance();
+            Debug_Information("Vectors.cpp","SaveNewVector", "Distance : " + String(GetSavedDistance()) + " Rotation : " + String(GetSavedRotation()));
             return true;
         }
     }

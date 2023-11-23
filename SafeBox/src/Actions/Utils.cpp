@@ -50,28 +50,32 @@ bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS)
  * This function's sole purpose is to handle the
  * RFID card reader in each execution function
  * where SafeBox can be unlocked when its armed.
+ * 
+ * true: Keep going
+ * False: stop. New function set.
  */
-void ExecutionUtils_HandleArmedUnlocking()
+bool ExecutionUtils_HandleArmedUnlocking()
 {
-    if(RFID_CheckIfCardIsThere())
+    int result = RFID_HandleCard();
+
+    if(result == 1)
     {
-        if(RFID_HandleCard())
+        Debug_Information("Utils", "ExecutionUtils_HandleArmedUnlocking", "Valid card detected");
+        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
         {
-            if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
-            {
-                Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Failed to set UNLOCKED execution function");
-                SetNewExecutionFunction(FUNCTION_ID_ALARM);
-            }
-            return;
-        }
-        else
-        {
-            Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Incorrect card.");
+            Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Failed to set UNLOCKED execution function");
             SetNewExecutionFunction(FUNCTION_ID_ALARM);
-            return;
+            return false;
         }
+        return false;
     }
-    return;
+    if(result == -1)
+    {
+        Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Incorrect card.");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -415,7 +419,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "702", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
+                    //Debug_Error("Utils", "702", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
                     break;
 
                 default:
@@ -497,7 +501,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "703", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
+                    //Debug_Error("Utils", "703", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
                     break;
 
                 default:
@@ -595,7 +599,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "704", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "704", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -687,7 +691,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "705", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "705", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -781,7 +785,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "706", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "706", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -799,4 +803,5 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
             SetNewExecutionFunction(FUNCTION_ID_ERROR);
             return;
     }
+    //delay(1000);
 }

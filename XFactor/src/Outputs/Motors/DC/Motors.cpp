@@ -27,8 +27,9 @@ bool ResetAllEncoders()
 {
     ENCODER_Reset(LEFT);
     ENCODER_Reset(RIGHT);
-    if(ENCODER_Read(RIGHT) != 0 || ENCODER_Read(LEFT) != 0) return false;
-    else return true;
+    return true;
+    //if(ENCODER_ReadReset(RIGHT) != 0 || ENCODER_ReadReset(LEFT) != 0) return false;
+    //else return true;
 }
 
 /**
@@ -84,7 +85,7 @@ bool SetMotorSpeed(int motorNumber, float wantedSpeed)
             return true;
         }
         else {
-            Debug_Error("Motors","SetMotorSpeed","Speed not within the thresholds [-1,1].");
+            Debug_Error("Motors","SetMotorSpeed","Speed not within the thresholds [-1,1] : " + String(wantedSpeed));
             return false;
         }
     }

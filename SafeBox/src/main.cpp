@@ -9,11 +9,9 @@
  */
 
 // - INCLUDES -//
-//#include "Actions/Actions.hpp"
-//#include "SafeBox/Init.hpp"
-
-#include "Sensors/RFID/RFID.hpp"
-#include "LED/LED.hpp"
+#include "Actions/Actions.hpp"
+#include "SafeBox/Init.hpp"
+//#include "Outputs/LEDs/WS2812/WS2812.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()

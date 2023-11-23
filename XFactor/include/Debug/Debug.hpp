@@ -21,13 +21,14 @@
 #define DEBUG_ENABLED
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
-#define DEBUG_STACK_TRACE_ENABLED
+#define DEBUG_STACK_TRACE_DISABLED
 /// @brief Which serial port is used for debugging the program.
 #define DEBUG_SERIAL Serial
 /// @brief Debug port speed.
 #define DEBUG_BAUD_RATE 115200
 
 #define MAX_INDENTATION_LEVEL 10
+
 
 // - FUNCTIONS - //
 
