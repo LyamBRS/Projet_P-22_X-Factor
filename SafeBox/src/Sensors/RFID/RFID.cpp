@@ -102,44 +102,48 @@ bool RFID_CheckIfCardIsThere()
  * The Card ID. If 0, there is no card.
  */
 String RFID_GetCardNumber() {
+  Debug_Start("RFID_GetCardNumber");
   byte crecu, incoming = 0;
   String id_tag;
-
-  int fuckUpCounter = 0;
 
   isReadingRFID = true;
 
   while (1) {
     if (RFID_SERIAL.available()) {
-      Debug_Information(" "," "," ");
+
       crecu = RFID_SERIAL.read();
+      Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
+
       switch (crecu) {
         case 0x02:
+          Debug_Information("RFID","RFID_GetCardNumber","Start of reading");
           // START OF TRANSMIT
           incoming = 1;
           break;
 
         case 0x03:
+          Debug_Information("RFID","RFID_GetCardNumber","END OF READING");
           // END OF TRANSMIT
           incoming = 0;
 
           for (int i = 0; i < 10; i++) isReadingRFID = false;
+          Debug_End();
           return id_tag;
 
         default:
           if (incoming)
           {
+            Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
             id_tag.concat(crecu);
+          }
+          else
+          {
+            Debug_Error("RFID","RFID_GetCardNumber",String(crecu));
           }
           break;
       }
     }
-
-    //fuckUpCounter++;
-    if(fuckUpCounter > 100)
-    {
-      return "NO_CARDS_FOUND";
-    }
   }
+  Debug_End();
   return "NO_CARDS_FOUND";
 }
