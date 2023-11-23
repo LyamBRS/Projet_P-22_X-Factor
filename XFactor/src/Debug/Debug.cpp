@@ -90,6 +90,9 @@ void Debug_End()
 void Debug_Stop()
 {
     #ifdef DEBUG_ENABLED
+        debuggingStatus = false;
+        if(debuggingStatus)
+        {
         DEBUG_SERIAL.print("[STOPS]: ");
         #ifdef DEBUG_STACK_TRACE_ENABLED
             DEBUG_SERIAL.print(GetIndentation());
@@ -98,6 +101,7 @@ void Debug_Stop()
         DEBUG_SERIAL.print("[DEBUG STOPPED]");
         DEBUG_SERIAL.print("\n\r");
         DEBUG_SERIAL.flush();
+        }
     #endif
 }
 
@@ -109,6 +113,7 @@ void Debug_Stop()
 void Debug_Resume()
 {
     #ifdef DEBUG_ENABLED
+        debuggingStatus = true;
         DEBUG_SERIAL.print("[RESUM]: ");
         #ifdef DEBUG_STACK_TRACE_ENABLED
             DEBUG_SERIAL.print(GetIndentation());

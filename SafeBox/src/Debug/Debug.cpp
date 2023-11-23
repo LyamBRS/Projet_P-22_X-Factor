@@ -113,6 +113,7 @@ void Debug_Stop()
 void Debug_Resume()
 {
     #ifdef DEBUG_ENABLED
+        debuggingStatus = true;
         DEBUG_SERIAL.print("[RESUM]: ");
         #ifdef DEBUG_STACK_TRACE_ENABLED
             DEBUG_SERIAL.print(GetIndentation());
