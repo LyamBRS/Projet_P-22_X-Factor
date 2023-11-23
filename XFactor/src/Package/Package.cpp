@@ -1,55 +1,31 @@
 /**
-
  * @file Package.cpp
-
  * @author LyamBRS (lyam.brs@gmail.com)
-
  * @brief
-
  * File containing the various functions that are
-
  * used to locate, identify, pick up, handle, and
-
  * deposit a package for XFactor.
-
  * @version 0.1
-
  * @date 2023-11-02
-
  * @copyright Copyright (c) 2023
-
  */
 
- 
-
 // - INCLUDES - //
-
 #include "Package/Package.hpp"
 
- 
 
 bool package_setUp = false;
-
 bool pickup = false;
 
 /**
-
  * @brief
-
  * Initialisation function that initialises the
-
  * Claw and other sensors used to detect a
-
  * package.
-
  * @return true:
-
  * Successfully initialised package functions.
-
  * @return false:
-
  * Failed to initialise package functions.
-
  */
 
 bool Package_Init()
@@ -73,90 +49,50 @@ bool Package_Init()
     return false;
 }
 
- 
-
 /**
-
  * @brief
-
  * Function that releases the package that is
-
  * currently inside of XFactor's claw system.
-
  *
-
  * @return true:
-
  * A package was successfully released from the
-
  * claw system.
-
  * @return false:
-
  * Failed to release the package. Either because
-
  * there was no package inside the claw to start
-
  * with, or because the package is still detected
-
  * inside the claw after the function is executed
-
  * or because the claw is not deployed.
-
  */
 
 bool Package_Release()
-
 {
-
     /*if (package_setUp == false && pickup == false){
-
         return false;
-
     }*/
 
     if (Claws_SetGrabbers(100) == true){
-
         pickup = false;
-
         return true;
-
     }
 
     return false;
-
 }
 
- 
-
 /**
-
  * @brief
-
  * Function that automatically picks up a package
-
  * that is right where the claw is. This function
-
  * will deploy the claw if not already done.
-
  *
-
  * @attention
-
  * The robot must already be facing the package
-
  * correctly before this function is executed.
-
  *
-
  * @return true:
-
  * Successfully picked up a package
-
  * @return false:
-
  * Failed to pick up a package, try again.
-
  */
 
 bool Package_PickUp()

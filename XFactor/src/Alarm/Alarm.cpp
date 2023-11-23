@@ -42,6 +42,7 @@ bool Alarm_Init()
     }
 
     counter = 0;
+    
     avgX = 0.0f;
     avgY = 0.0f;
     avgZ = 0.0f;
