@@ -4,6 +4,7 @@
     "RFID",
     "SAFEBOX"
   ],
+<<<<<<< HEAD
   "files.associations": {
     "__bit_reference": "cpp",
     "__hash_table": "cpp",
@@ -17,6 +18,8 @@
     "vector": "cpp",
     "hashtable": "cpp"
   },
+=======
+>>>>>>> 766c331f54915cb7b6634c18d37473700e31f2de
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
   "C_Cpp_Runner.debuggerPath": "gdb",

@@ -33,6 +33,8 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
         return FUNCTION_ID_UNLOCKED;
       case SafeBox_Status::WaitingForDelivery:
         return FUNCTION_ID_WAIT_FOR_DELIVERY;
+      case SafeBox_Status::Alarm:
+        return FUNCTION_ID_ALARM;
       default:
         return currentExecutionFunctionId;
     }

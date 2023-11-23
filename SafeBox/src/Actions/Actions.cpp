@@ -190,7 +190,7 @@ void Execute_WaitAfterXFactor()
     if(SafeBox_CheckAndExecuteMessage())
     {
         Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
-        // SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
         BT_ClearAllMessages();
         return;
     }
@@ -228,7 +228,7 @@ void Execute_WaitForDelivery()
         Debug_Error("Actions", "Execute_WaitForDelivery", "New execution function set");
         return;
     }
-    
+
     ExecutionUtils_HandleReceivedXFactorStatus();
     if (Doorbell_GetState())
     {
