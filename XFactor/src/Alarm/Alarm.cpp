@@ -84,9 +84,9 @@ bool Alarm_VerifyAccel()
     Serial.print("Using AcceZ_zero:\t");
     Serial.println(AcceZ_zero);
 
-    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1));  // 10% error rate is tolerated
-    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1));  // 10% error rate is tolerated
-    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // 5% error rate is tolerated
+    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
+    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
     Serial.print("using deltaThresholdX:\t ");
     Serial.println(deltaThresholdX);
