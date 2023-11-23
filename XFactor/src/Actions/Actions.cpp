@@ -339,7 +339,6 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
-  int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
   
   if (!SafeBox_GetGarageState())
