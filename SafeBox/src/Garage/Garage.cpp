@@ -24,9 +24,7 @@
  */
 bool Garage_Init()
 {
-    servo2.attach(8); 
-    servo3.attach(9); 
-    
+    S3003_Init();
     return false;
 }
 
@@ -41,6 +39,9 @@ bool Garage_Init()
  */
 bool Garage_Open()
 {
+    
+    servo2.write(ANGLE_OPEN);
+    servo3.write(ANGLE_OPEN);
     return false;
 }
 
@@ -55,6 +56,8 @@ bool Garage_Open()
  */
 bool Garage_Close()
 {
+     servo2.write(ANGLE_CLOSED);
+    servo3.write(ANGLE_CLOSED);
     return false;
 }
 
@@ -71,6 +74,7 @@ bool Garage_Close()
  */
 bool Garage_XFactorInside()
 {
+    
     return false;
 }
 
@@ -87,5 +91,6 @@ bool Garage_XFactorInside()
  */
 bool Garage_IsClosed()
 {
+    
     return false;
 }

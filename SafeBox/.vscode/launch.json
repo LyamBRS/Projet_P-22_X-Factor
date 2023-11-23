@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox",
-      "program": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/build/Debug/outDebug",
+      "cwd": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Outputs/Motors/Servo",
+      "program": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Outputs/Motors/Servo/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
