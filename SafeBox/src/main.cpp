@@ -9,29 +9,17 @@
  */
 
 // - INCLUDES -//
-//#include "Actions/Actions.hpp"
+#include "Actions/Actions.hpp"
 #include "SafeBox/Init.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  //SafeBox_Init();
-  LEDS_Init();
-  Debug_Init();
-  RFID_Init(0);
+  SafeBox_Init();
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  //Debug_Information("-","-","-");
-  if(RFID_HandleCard())
-  {
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-  }
-  else
-  {
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);   
-  }
-  //Execute_CurrentFunction();
+  Execute_CurrentFunction();
 }
