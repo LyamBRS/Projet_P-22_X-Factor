@@ -34,6 +34,8 @@
 /// @brief Returned whenever an error occur in a function that returns and handles communications.
 #define BT_ERROR_MESSAGE "%_ERROR_%"
 
+#define BT_NEVER_RECEIVED_MESSAGE "%_ARDUINO_SUCKS_W_MEMORY%"
+
 /**
  * @brief Function that initialises Bluetooth on
  * an Arduino ATMEGA using an external UART
@@ -157,6 +159,20 @@ String BT_MessageExchange(String message, int millisecondsTimeOut);
 
 /**
  * @brief
+ * This function used to be the function that
+ * allowed interrupts to read from the serial
+ * port. But as we know it, Arduino's string
+ * classes as well as stack managaement sucks
+ * ass. This function is called whenever we
+ * perform a message exchange to make sure that
+ * message was gathered correctly.
+ * @return String:
+ * "SWEET_FUCK_ALL": No message were found.
+ */
+String GetMessage();
+
+/**
+ * @brief
  * This stupid function is the result of Arduino
  * wonderful String memory leaks! This function
  * handles a table of strings that contains the
@@ -175,12 +191,3 @@ String BT_MessageExchange(String message, int millisecondsTimeOut);
  */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action);
 
-/**
- * @brief
- * Wonderful function attempting to fix the bug
- * located in Init.cpp
- * @param newMessage
- * If "$$$" the message wont be overwrote.
- * @return String
- */
-String CurrentMessage(String newMessage);
