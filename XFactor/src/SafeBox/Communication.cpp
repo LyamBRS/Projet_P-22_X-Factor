@@ -145,7 +145,7 @@ bool SafeBox_CheckIfPackageDeposited()
     if(answer == ANSWER_PACKAGE_CHECK_SUCCESS) {Debug_End(); return true;}
     if(answer == ANSWER_PACKAGE_CHECK_FAILED)
     {
-        Debug_Warning("Communication", "SafeBox_CheckIfPackageDeposited", "SafeBox returned a failure");
+        Debug_Warning("Communication", "SafeBox_CheckIfPackageDeposited", "SafeBox returned ANSWER_PACKAGE_CHECK_FAILED");
         Debug_End();
         return false;
     }
@@ -276,7 +276,7 @@ bool SafeBox_GetLidState()
     }
     if(answer == ANSWER_LID_CLOSED)
     {
-        Debug_Warning("Communication", "SafeBox_GetLidState", "SafeBox returned a failure");
+        Debug_Warning("Communication", "SafeBox_GetLidState", "ANSWER_LID_CLOSED");
         Debug_End();
         return false;
     }
@@ -307,7 +307,7 @@ bool SafeBox_GetGarageState()
     }
     if(answer == ANSWER_GARAGE_CLOSED)
     {
-        Debug_Warning("Communication", "SafeBox_GetGarageState", "SafeBox returned a failure");
+        Debug_Warning("Communication", "SafeBox_GetGarageState", "ANSWER_GARAGE_CLOSED");
         Debug_End();
         return false;
     }
@@ -354,7 +354,7 @@ bool SafeBox_GetDoorBellStatus()
     }
     if(answer == ANSWER_DOORBELL_NOT_RANG)
     {
-        Debug_Warning("Communication", "SafeBox_GetDoorBellStatus", "SafeBox returned a failure");
+        Debug_Warning("Communication", "SafeBox_GetDoorBellStatus", "ANSWER_DOORBELL_NOT_RANG");
         Debug_End();
         return false;
     }
