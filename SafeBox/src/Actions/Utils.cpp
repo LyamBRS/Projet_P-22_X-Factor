@@ -125,7 +125,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                 break;
             }
 
-            Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor status doesnt match expected status");
+            //Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor status doesnt match expected status");
             break;
 
         case(FUNCTION_ID_ERROR):

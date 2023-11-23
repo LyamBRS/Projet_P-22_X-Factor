@@ -288,6 +288,7 @@ bool SafeBox_SaveReceivedXFactorStatus(String command)
     if(command.endsWith("WASB"))    {XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);         return true;}
 
     Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Unknown XFactor status");
+    Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", command);
     return false;
 }
 

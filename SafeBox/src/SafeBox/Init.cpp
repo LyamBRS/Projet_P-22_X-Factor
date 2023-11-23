@@ -51,7 +51,7 @@ void SafeBox_Init()
      * So this fix allows the code to continue
      * executing normally... go figure bruh.
      */
-    MessageBuffer("", 0, 0);
+    //MessageBuffer("", 0, 0);
 
     if(Debug_Init()){
         if (BT_Init()){
