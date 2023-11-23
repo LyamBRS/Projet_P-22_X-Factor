@@ -20,6 +20,6 @@ void setup()
 
 void loop()
 {
-  Execute_CurrentFunction();s
+  Execute_CurrentFunction();
 }
 
