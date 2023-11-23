@@ -19,9 +19,14 @@
  * @param servoMotorPin
  * Arduino pin number
  */
-void S3003_Init(int servoMotorPin)
+void S3003_Init()
 {
-
+    servo1.attach(SERVO_PORTE_LOCK_PIN); 
+    servo1.write(95);
+    servo2.attach(SERVO_PORTE_LOCK_PIN); 
+    servo2.write(85);
+    servo3.attach(9); 
+    servo3.write(85);
 }
 
 /**
@@ -32,7 +37,12 @@ void S3003_Init(int servoMotorPin)
  * position.
  * @param WantedPosition
  */
-void S3003_SetPosition(int servoMotorPin, float WantedPosition)
+void S3003_SetPosition(int angle)
 {
-
+    servo1.attach(7); 
+    servo1.write(angle);
+    servo2.attach(8); 
+    servo2.write(angle);
+    servo3.attach(9); 
+    servo3.write(angle);
 }

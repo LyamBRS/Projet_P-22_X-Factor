@@ -24,6 +24,9 @@
  */
 bool Garage_Init()
 {
+    servo2.attach(8); 
+    servo3.attach(9); 
+    
     return false;
 }
 

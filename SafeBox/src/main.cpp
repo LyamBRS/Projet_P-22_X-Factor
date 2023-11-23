@@ -9,17 +9,30 @@
  */
 
 // - INCLUDES -//
-#include "Actions/Actions.hpp"
-#include "SafeBox/Init.hpp"
+//#include "Actions/Actions.hpp"
+//#include "SafeBox/Init.hpp"
+
+#include "Sensors/RFID/RFID.hpp"
+#include "Outputs/LEDs/WS2812/WS2812.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  SafeBox_Init();
+  //SafeBox_Init();
+  RFID_Init(0);
+  LEDS_Init();
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //Execute_CurrentFunction();
+  if(RFID_HandleCard())
+  {
+    LEDS_SetColor(0,0,255,0);
+  }
+  else
+  {
+    LEDS_SetColor(0,255,0,0);   
+  }
 }
