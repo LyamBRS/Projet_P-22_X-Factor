@@ -31,9 +31,15 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
     {
       case SafeBox_Status::Unlocked:
         return FUNCTION_ID_UNLOCKED;
+      case SafeBox_Status::WaitingForDelivery:
+        return FUNCTION_ID_WAIT_FOR_DELIVERY;
       default:
         return currentExecutionFunctionId;
     }
+  }
+  else
+  {
+    Debug_Error("Utils","ExecutionUtils_StatusCheck", "Status exchange failed");
   }
 
   return FUNCTION_ID_ERROR;

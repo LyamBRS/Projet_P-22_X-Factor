@@ -33,7 +33,9 @@ bool Package_Init()
     if(GROVE_Init())
     {
         if(Claws_Init())
-        {
+        {   
+            Package_StoreClaw();
+            //delay(1500);
             return true;
         }
         else

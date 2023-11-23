@@ -974,6 +974,7 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
+  Debug_Warning("Action.cpp","Execute_Unlocked","is this here");
   // set status ??
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
   Stop();
@@ -991,6 +992,10 @@ void Execute_Unlocked()
   if (SafeBox_GetStatus() == SafeBox_Status::WaitingForDelivery)
   {
     SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  }
+  else
+  {
+    Debug_Warning("Action.cpp","Execute_Unlocked","AAAAAAAAAAAAAA");
   }
 }
 
