@@ -94,6 +94,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
     // - BASIC GLOBAL STATUS - //
     if(currentXFactorStatus == XFactor_Status::Alarm)
     {
+        Debug_Warning("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing alarm.");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
     }
@@ -102,6 +103,12 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
     {
         Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing error.");
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    if(currentXFactorStatus == XFactor_Status::Unlocked)
+    {
+        //SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
         return;
     }
 

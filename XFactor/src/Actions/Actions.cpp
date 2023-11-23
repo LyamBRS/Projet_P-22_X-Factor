@@ -253,21 +253,19 @@ void Execute_WaitForDelivery()
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
-  int checkFunctionId;
+  SafeBox_ExchangeStatus();
+  if (SafeBox_GetDoorBellStatus())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+  }
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
-
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
   if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
   {
     Debug_Warning("Actions", "Execute_WaitForDelivery", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
     Debug_End();
     return;
-  }
-
-  if (SafeBox_GetDoorBellStatus())
-  {
-    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
   }
   Debug_End();
 }
@@ -989,21 +987,21 @@ void Execute_Unlocked()
 
   int checkFunctionId;
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
-  if (checkFunctionId != FUNCTION_ID_UNLOCKED)
-  {
-    Debug_Error("Actions", "Execute_Unlocked", "Changing execution function");
-    SetNewExecutionFunction(checkFunctionId);
-    return;
-  }
-  
   if (SafeBox_GetStatus() == SafeBox_Status::WaitingForDelivery)
   {
     SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
   }
   else
   {
-    Debug_Warning("Action.cpp","Execute_Unlocked","AAAAAAAAAAAAAA");
+    //Debug_Warning("Action.cpp","Execute_Unlocked","AAAAAAAAAAAAAA");
+  }
+
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
+  if (checkFunctionId != FUNCTION_ID_UNLOCKED)
+  {
+    Debug_Error("Actions", "Execute_Unlocked", "Changing execution function");
+    SetNewExecutionFunction(checkFunctionId);
+    return;
   }
 }
 
