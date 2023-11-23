@@ -19,6 +19,12 @@
 bool _messageReceived = false;
 
 /**
+ * @deprecated
+ * Arduino sucks with stack and memory management.
+ * It fails to tell us whenever it runs out of
+ * memory. Coordially, screw you Arduino. I wish
+ * you were an STM. 
+ *
  * @brief
  * This stupid function is the result of Arduino
  * wonderful String memory leaks! This function
@@ -38,6 +44,7 @@ bool _messageReceived = false;
  */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 {
+    /*
     // Debug_Start("MessageBuffer");
     static String messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER] = {};
     for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
@@ -82,43 +89,39 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
     }
     // Debug_Error("Bluetooth", "MessageBuffer", "Failed to execute specified action");
     // Debug_End();
+    */
     return BT_ERROR_MESSAGE;
 }
 
-/**
- * @brief
- * Wonderful function attempting to fix the bug
- * located in Init.cpp
- * @param newMessage
- * If "$$$" the message wont be overwrote.
- * @return String
- */
-String CurrentMessage(String newMessage)
-{
-    String currentMessage = "";
-
-    if(newMessage == "$$$")
-    {
-        return currentMessage;
-    }
-
-    currentMessage = newMessage;
-    return "";
-}
 
 /**
  * @brief
- * ARDUINO function executed automatically
- * whenever Serial1 receives characters.
- * @attention
- * DO NOT CALL YOURSELF.
+ * This function used to be the function that
+ * allowed interrupts to read from the serial
+ * port. But as we know it, Arduino's string
+ * classes as well as stack managaement sucks
+ * ass. This function is called whenever we
+ * perform a message exchange to make sure that
+ * message was gathered correctly.
+ * @return String:
+ * "SWEET_FUCK_ALL": No message were found.
  */
-BT_SERIAL_EVENT
+String GetMessage()
 {
     // - VARIABLES - //
     char receivedCharacter = 0;
-    int messageBufferIndex = 0;
-    static String _currentMessage = "";
+    //int messageBufferIndex = 0;
+    String _currentMessage = "";
+
+    /**
+     * @bug
+     * Fuck you arduino.
+     * Your String class clashes with your own stack.
+     * Anyways, this is here to give the code a better
+     * chance at receiving some amount of characters
+     * before the available is checked.
+     */
+    delay(50);
 
     // Empty the internal buffer
     while(BT_SERIAL.available())
@@ -126,37 +129,32 @@ BT_SERIAL_EVENT
         receivedCharacter = (char)BT_SERIAL.read();
         if(receivedCharacter >= 32 && receivedCharacter <= 126)
         {
-            // Serial.print("RX: '");
-            // Serial.print(receivedCharacter);
-            // Serial.print("' before: \"");
-            // Serial.print(_currentMessage);
-            // Serial.print("\" after:\"");
             _currentMessage += receivedCharacter;
-            // Serial.print(_currentMessage);
-            // Serial.println("\"");
         }
         else
         {
             // END OF STRING
             if(receivedCharacter == '\n')
             {
-                messageBufferIndex = BT_MessagesAvailable();
+                //messageBufferIndex = BT_MessagesAvailable();
 
-                if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
-                {
+                //if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
+                //{
                     // Oh shit... Whos spamming? lmfao
-                    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
-                    _currentMessage = "";
-                    _messageReceived = false;
-                }
-                else
-                {
+                //    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
+                //    _currentMessage = "";
+                //    _messageReceived = false;
+                //}
+                //else
+                //{
                     //receivedBTMessages[messageBufferIndex] = _currentMessage;
-                    MessageBuffer(_currentMessage, messageBufferIndex, 1);
-                    Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
-                    _currentMessage = "";
-                    _messageReceived = true;
-                }
+                    //MessageBuffer(_currentMessage, messageBufferIndex, 1);
+                    //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
+                    //_currentMessage = "";
+                    //_messageReceived = true;
+                    Debug_Information("-", "-", "returning message");
+                    return _currentMessage;
+                //}
             }
             else
             {
@@ -184,6 +182,7 @@ BT_SERIAL_EVENT
          */
         delay(10);
     }
+    return _currentMessage;
 }
 
 /**
@@ -207,30 +206,6 @@ bool BT_Init()
 {
     BT_SERIAL.begin(BT_HC05_BAUDRATE);
     return true;
-
-    // Reserves X amount of memory for the string to use and fill as data comes in
-    // if(_currentMessage.reserve(BT_MAX_MESSAGE_LENGTH))
-    // {
-        // for(int index=0; index<BT_SIZE_OF_MESSAGE_BUFFER; index++)
-        // {
-            // if(receivedBTMessages[index].reserve(BT_MAX_MESSAGE_LENGTH))
-            // {
-                // SUCCESS
-            // }
-            // else
-            // {
-                // Debug_Error("Bluetooth", "BT_Init", "String buffer reserve failure");
-                // return false;
-            // }
-        // }
-        // return true;
-    // }
-    // else
-    // {
-        // Maybe the value of @ref BT_MAX_MESSAGE_LENGTH is too big.
-        // Debug_Error("Bluetooth", "BT_Init", "String reserve failure");
-        // return false;
-    // }
 }
 
 /**
@@ -274,6 +249,12 @@ bool BT_SendString(String message)
 }
 
 /**
+ * @deprecated
+ * Arduino sucks with stack and memory management.
+ * It fails to tell us whenever it runs out of
+ * memory. Coordially, screw you Arduino. I wish
+ * you were an STM. 
+ * 
  * @brief Simple function that checks how many
  * messages are currently available for reading
  * and parsing inside of the UART buffer where
@@ -284,6 +265,9 @@ bool BT_SendString(String message)
 int BT_MessagesAvailable()
 {
     unsigned char messageCount = 0;
+
+    // ARDUINO CANT HANDLE ITS MEMORY FOR SHIT
+    return 1;
 
     for (unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
@@ -297,7 +281,7 @@ int BT_MessagesAvailable()
             return messageCount;
         }
     }
-    return messageCount;
+    return 1;
 }
 
 /**
@@ -313,14 +297,22 @@ int BT_MessagesAvailable()
  */
 bool BT_ClearAllMessages()
 {
+    /*
     for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
     {
         MessageBuffer("", messageIndex, 1);
     }
+    */
     return true;
 }
 
 /**
+ * @deprecated
+ * Arduino sucks with stack and memory management.
+ * It fails to tell us whenever it runs out of
+ * memory. Coordially, screw you Arduino. I wish
+ * you were an STM.
+ * 
  * @brief Will block the program for a specified
  * amount of milliseconds unless a Bluetooth
  * message is received during the specified time
@@ -387,7 +379,7 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
             return true;
         }
 
-        serialEvent1();
+        //serialEvent1();
     }
     Debug_Warning("Bluetooth", "BT_WaitForAMessage", "Timedout");
     Debug_End();
@@ -423,19 +415,20 @@ String BT_GetLatestMessage()
     if(availableMessages == 0) return BT_NO_MESSAGE;
 
     // - FUNCTION EXECUTION - //
-    oldestMessage = MessageBuffer("", 0, 0);
+    //oldestMessage = MessageBuffer("", 0, 0);
+    oldestMessage = GetMessage();
 
     // brings buffer forwards by one.
-    if(BT_SIZE_OF_MESSAGE_BUFFER>1)
-    {
-        for(unsigned char messageIndex = 0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER-1; messageIndex++)
-        {
-            String message = MessageBuffer("", messageIndex+1, 0);
-            MessageBuffer(message, messageIndex, 1);
-        }
-    }
+    //if(BT_SIZE_OF_MESSAGE_BUFFER>1)
+    //{
+    //    for(unsigned char messageIndex = 0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER-1; messageIndex++)
+    //    {
+    //        String message = MessageBuffer("", messageIndex+1, 0);
+    //        MessageBuffer(message, messageIndex, 1);
+    //    }
+    //}
     // Clear last message to avoid duplicates
-    MessageBuffer("", BT_SIZE_OF_MESSAGE_BUFFER-1, 1);
+    //MessageBuffer("", BT_SIZE_OF_MESSAGE_BUFFER-1, 1);
     return oldestMessage;
 }
 
@@ -480,16 +473,18 @@ String BT_MessageExchange(String message, int millisecondsTimeOut)
         return BT_ERROR_MESSAGE;
     }
 
+    String receivedBTMessage = GetMessage();
+
     // WARNING: Could already be a message in the buffer. Be careful to check for that.
-    if(BT_WaitForAMessage(millisecondsTimeOut))
-    {
-        Debug_End();
-        return BT_GetLatestMessage();
-    }
-    else
+    if(receivedBTMessage == BT_NEVER_RECEIVED_MESSAGE)
     {
         Debug_Warning("Bluetooth", "BT_MessageExchange", "Failed to get a reply");
         Debug_End();
         return BT_ERROR_MESSAGE;
+    }
+    else
+    {
+        Debug_End();
+        return receivedBTMessage;
     }
 }
