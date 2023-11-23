@@ -21,6 +21,7 @@ void setup()
   //SafeBox_Init();
   RFID_Init(0);
   LEDS_Init();
+  S3003_Init();
 }
 
 /// @brief Arduino's while(1) function.
