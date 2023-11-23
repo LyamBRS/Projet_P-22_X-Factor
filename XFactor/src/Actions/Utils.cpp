@@ -41,8 +41,7 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
   {
     Debug_Error("Utils","ExecutionUtils_StatusCheck", "Status exchange failed");
   }
-
-  return FUNCTION_ID_ERROR;
+  return currentExecutionFunctionId;
 }
 
 /**
