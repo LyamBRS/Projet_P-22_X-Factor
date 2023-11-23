@@ -34,7 +34,11 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
       case SafeBox_Status::WaitingForDelivery:
         return FUNCTION_ID_WAIT_FOR_DELIVERY;
       case SafeBox_Status::Alarm:
+        Debug_Error("Utils", "ExecutionUtils_StatusCheck", "SAFEBOX IS IN ALARM");
         return FUNCTION_ID_ALARM;
+      case SafeBox_Status::Error:
+        Debug_Error("Utils", "ExecutionUtils_StatusCheck", "SAFEBOX IS IN ERROR");
+        return FUNCTION_ID_ERROR;
       default:
         return currentExecutionFunctionId;
     }
