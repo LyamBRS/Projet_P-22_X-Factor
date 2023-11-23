@@ -212,10 +212,23 @@ void Execute_WaitAfterXFactor()
  */
 void Execute_WaitForDelivery()
 {
-    SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
+    if(!SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery))
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to set status");
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
     SafeBox_CheckAndExecuteMessage();
-    ExecutionUtils_HandleArmedUnlocking();
+
+    if(!ExecutionUtils_HandleArmedUnlocking())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "New execution function set");
+        return;
+    }
+    
     ExecutionUtils_HandleReceivedXFactorStatus();
     if (Doorbell_GetState())
     {
@@ -328,8 +341,8 @@ void Execute_Unlocked()
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-    ExecutionUtils_HandleReceivedXFactorStatus();
-    if(RFID_HandleCard())
+    //ExecutionUtils_HandleReceivedXFactorStatus();
+    if(RFID_HandleCard() == 1)
     {
         if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))
         {
@@ -384,7 +397,7 @@ void Execute_Alarm()
     }
 
     // - RFID DISARM ALARM CHECKS - //
-    if (RFID_HandleCard())
+    if (RFID_HandleCard() == 1)
     {
         // AX_BuzzerOFF();
         LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);

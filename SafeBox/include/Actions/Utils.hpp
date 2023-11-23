@@ -45,7 +45,7 @@ bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS);
  * RFID card reader in each execution function
  * where SafeBox can be unlocked when its armed.
  */
-void ExecutionUtils_HandleArmedUnlocking();
+bool ExecutionUtils_HandleArmedUnlocking();
 
 /**
  * @brief
