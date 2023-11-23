@@ -33,8 +33,8 @@ void loop()
 {
   //Serial.print("MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
   //Debug_Information("main", "loop", "MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  delay(2000);
-  Execute_Alarm();
+  //delay(2000);
+  //Execute_Alarm();
   //BacktraceSomeVectors(1);
   //Execute_Moving(50.0f);
   /*Debug_Information("main", "loop", "DeployClaw : " + String(Package_DeployClaw()));
@@ -42,7 +42,10 @@ void loop()
   Debug_Information("main", "loop", "DeployClaw : " + String(Package_StoreClaw()));
   delay(2000);*/
   //Debug_Information("main", "loop", "PickUp : " + String(Package_PickUp()));
-  
+  if (Alarm_VerifyAccelerometer())
+  {
+    Debug_Information("main", "loop", "ALARM TRIGGERED");
+  }
   //Debug_Information("main", "loop", "Alarm : " + String(Alarm_VerifyAccelerometer()));
   //delay(100);
   //delay(2000);

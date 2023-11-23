@@ -410,7 +410,7 @@ int Execute_Turning(float targetRadians)
             previousInterval_ms = millis();
         }
 
-        //if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
         //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
@@ -479,7 +479,7 @@ int Execute_Moving(float targetDistance)
             previousInterval_ms = millis();
         }
 
-        //if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
         //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 

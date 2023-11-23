@@ -13,6 +13,14 @@
 #include "Alarm/Alarm.hpp"
 #include "LibRobus.h"
 
+float deltaThresholdX;
+float deltaThresholdY;
+float deltaThresholdZ;
+
+float valueZ;
+float avgZ;
+int counter;
+
 /**
  * @brief
  * Function that initialises the Alarm and its
@@ -27,6 +35,29 @@
  */
 bool Alarm_Init()
 {
+    counter = 0;
+    avgZ = 0.0f;
+    valueZ = 0.0f;
+
+    unsigned nbReadings = 50;
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+
+    // Do a first scan for initial values
+    // This was moved form the Accelerometer_init() fucntion because robos mouvement influnces the offsets
+    for (size_t i = 0; i < nbReadings; i++)
+    {
+        sumX += Accelerometer_GetX();
+        sumY += Accelerometer_GetY();
+        sumZ += Accelerometer_GetZ();
+    }
+
+    AcceX_zero = (sumX / nbReadings);
+    AcceY_zero = (sumY / nbReadings);
+    AcceZ_zero = (sumZ / nbReadings);
+
+    deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
+    deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.25)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
     return Accelerometer_Init();// && Package_Init();
 }
 
@@ -42,7 +73,7 @@ bool Alarm_Init()
  */
 bool Alarm_VerifySensors()
 {
-    return Alarm_VerifyAccelerometer() || Alarm_VerifyPackage();
+    return Alarm_VerifyAccelerometer();// || Alarm_VerifyPackage();
 }
 
 /**
@@ -57,23 +88,22 @@ bool Alarm_VerifySensors()
  */
 bool Alarm_VerifyAccelerometer()
 {
+    //unsigned nbReadings = 5;
+    //float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+    //float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
 
-    unsigned nbReadings = 50;
-    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
-    float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
+    //// Do a first scan for initial values
+    //// This was moved form the Accelerometer_init() fucntion because robos mouvement influnces the offsets
+    //for (size_t i = 0; i < nbReadings; i++)
+    //{
+    //    sumX += Accelerometer_GetX();
+    //    sumY += Accelerometer_GetY();
+    //    sumZ += Accelerometer_GetZ();
+    //}
 
-    // Do a first scan for initial values
-    // This was moved form the Accelerometer_init() fucntion because robos mouvement influnces the offsets
-    for (size_t i = 0; i < nbReadings; i++)
-    {
-        sumX += Accelerometer_GetX();
-        sumY += Accelerometer_GetY();
-        sumZ += Accelerometer_GetZ();
-    }
-
-    AcceX_zero = (sumX / nbReadings);
-    AcceY_zero = (sumY / nbReadings);
-    AcceZ_zero = (sumZ / nbReadings);
+    //AcceX_zero = (sumX / nbReadings);
+    //AcceY_zero = (sumY / nbReadings);
+    //AcceZ_zero = (sumZ / nbReadings);
 
     //Serial.print("Using AcceX_zero:\t");
     //Serial.println(AcceX_zero);
@@ -84,9 +114,9 @@ bool Alarm_VerifyAccelerometer()
     //Serial.print("Using AcceZ_zero:\t");
     //Serial.println(AcceZ_zero);
 
-    float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
-    float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
-    float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    //float deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
+    //float deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.1)); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
+    //float deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.05)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 
     // Serial.print("using deltaThresholdX = ");
     // Serial.println(deltaThresholdX);
@@ -99,7 +129,32 @@ bool Alarm_VerifyAccelerometer()
 
 
     // Do ACCELEROMETER_NB_CHECKING scans
-    sumX = 0, sumY = 0, sumZ = 0;
+
+    //Accelerometer_GetX();
+    //Accelerometer_GetY();
+    //Accelerometer_GetZ();
+
+    //avgX = abs(sumX / nbReadings);
+    //avgY = abs(sumY / nbReadings);
+    valueZ += Accelerometer_GetZ();
+    //Debug_Information("Alarm.cpp", "Alarm_VerifyAccel...", "Counter : " + String(counter) + " Value total : " + String(valueZ));
+
+    if (counter >= THRESHOLD_VERIFY_ALARM_COUNTER)
+    {
+        avgZ = abs(valueZ / counter);
+        //Debug_Information("","", "Average : " + String(avgZ));
+
+        valueZ = 0;
+        counter = 0;
+        if (avgZ > deltaThresholdZ)
+        {
+            return true;
+        }
+    }
+
+    counter++;
+    return false;
+    /*sumX = 0, sumY = 0, sumZ = 0;
     for (size_t i = 0; i < ACCELEROMETER_NB_CHECKING; i++)
     {
         for (size_t j = 0; j < nbReadings; j++)
@@ -113,29 +168,28 @@ bool Alarm_VerifyAccelerometer()
         avgY = abs(sumY / nbReadings);
         avgZ = abs(sumZ / nbReadings);
 
-        // Serial.print("AvgX: ");
-        // Serial.println(avgX);
-        // Serial.print("AvgY: ");
-        // Serial.println(avgY);
-        // Serial.print("AvgZ: ");
-        // Serial.println(avgZ);
+        //Serial.print("AvgX: ");
+        //Serial.println(avgX);
+        //Serial.print("AvgY: ");
+        //Serial.println(avgY);
+        //Serial.print("AvgZ: ");
+        //Serial.println(avgZ);
 
         // Motion detection thresholds
+        if (avgZ > deltaThresholdZ)
+        {
+            //Serial.println("Motion detected using delta threshold!");
+            // AX_BuzzerON();
+            // delay(200);
+            // AX_BuzzerOFF();
+            return true;
+        }
         if (avgX > deltaThresholdX || avgY > deltaThresholdY)
         {
-            if (avgZ > deltaThresholdZ)
-            {
-                // Serial.println("Motion detected using delta threshold!");
-                // AX_BuzzerON();
-                // delay(200);
-                // AX_BuzzerOFF();
-                return true;
-            }
+            
         }
         sumX = 0, sumY = 0, sumZ = 0;
-    }
-
-    return false;
+    }*/
 }
 
 /**

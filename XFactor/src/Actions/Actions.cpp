@@ -819,12 +819,12 @@ void Execute_Alarm()
         if(mustBeOn)
         {
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
-            // AX_BuzzerON();
+            AX_BuzzerON();
         }
         else
         {
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
-            // AX_BuzzerOFF();
+            AX_BuzzerOFF();
         }
     }
 

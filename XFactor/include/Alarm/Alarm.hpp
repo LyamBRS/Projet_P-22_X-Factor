@@ -17,7 +17,8 @@
 
 // #pragma region [DEFINES]
 
-#define ACCELEROMETER_NB_CHECKING 10 // Number of accelerometer detection trials
+#define ACCELEROMETER_NB_CHECKING 1 // Number of accelerometer detection trials
+#define THRESHOLD_VERIFY_ALARM_COUNTER 100
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
