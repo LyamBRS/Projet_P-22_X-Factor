@@ -973,7 +973,7 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
-  Debug_Warning("Action.cpp","Execute_Unlocked","is this here");
+  //Debug_Warning("Action.cpp","Execute_Unlocked","is this here");
   // set status ??
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
   Stop();
