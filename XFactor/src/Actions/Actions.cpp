@@ -249,6 +249,7 @@ void Execute_WaitAfterSafeBox()
  */
 void Execute_WaitForDelivery()
 {
+  Debug_Start("Execute_WaitForDelivery");
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
@@ -256,9 +257,11 @@ void Execute_WaitForDelivery()
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
-  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
   {
+    Debug_Warning("Actions", "Execute_WaitForDelivery", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
+    Debug_End();
     return;
   }
 
@@ -266,6 +269,7 @@ void Execute_WaitForDelivery()
   {
     SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
   }
+  Debug_End();
 }
 
 /**
@@ -350,7 +354,7 @@ void Execute_SearchPreparations()
     
       checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
 
-      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_UNLOCKED)
       {
         SetNewExecutionFunction(checkFunctionId);
       }
@@ -805,25 +809,29 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
+  Debug_Information("Actions", "Execute_Alarm","Start");
   // - VARIABLES - //
     static bool mustBeOn = false;
+    XFactor_SetNewStatus(XFactor_Status::Alarm);
 
-    SafeBox_SetNewStatus(SafeBox_Status::Alarm);
-
-    /*if(!SafeBox_CheckAndExecuteMessage())
+    int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_ALARM);
+    if (checkFunctionId != FUNCTION_ID_ALARM)
     {
-        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
-    }*/
+      AX_BuzzerOFF();
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
 
 
     //ExecutionUtils_HandleReceivedXFactorStatus();
     // - LED & BUZZER BLINK - //
-    if(ExecutionUtils_LedBlinker(500))
+    if(ExecutionUtils_LedBlinker(100))
     {
         mustBeOn = !mustBeOn;
 
         if(mustBeOn)
         {
+            SafeBox_ExchangeStatus();
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
             AX_BuzzerON();
         }
@@ -833,7 +841,6 @@ void Execute_Alarm()
             AX_BuzzerOFF();
         }
     }
-
 }
 
 /**
@@ -862,22 +869,24 @@ void Execute_Error()
   Debug_Stop();
 
   // - VARIABLES - //
-  static bool status = false; // everything is closed
+  static bool mustBeOn = false; // everything is closed
 
   // - PROGRAM - //
   XFactor_SetNewStatus(XFactor_Status::Error);
 
-  SafeBox_ExchangeStatus();
+  if(ExecutionUtils_LedBlinker(1000))
+  {
+      mustBeOn = !mustBeOn;
 
-  status = !status;
-  if (status == true)
-  {
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ERROR);
-  }
-  if (status == false)
-  {
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-  }
+      if(mustBeOn)
+      {
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+      }
+      else
+      {
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+      }
+    }
   return;
 }
 
@@ -973,17 +982,17 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
-  Debug_Warning("Action.cpp","Execute_Unlocked","is this here");
-  // set status ??
+  XFactor_SetNewStatus(XFactor_Status::Unlocked);
+
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
   Stop();
 
   int checkFunctionId;
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
-
-  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_UNLOCKED)
   {
+    Debug_Error("Actions", "Execute_Unlocked", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
     return;
   }
