@@ -251,7 +251,7 @@ void Execute_WaitForDelivery()
 {
   Debug_Start("Execute_WaitForDelivery");
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
 
   SafeBox_ExchangeStatus();
   if (SafeBox_GetDoorBellStatus())

@@ -27,7 +27,7 @@
  * Failed to initialised the doorbell used on
  * SafeBox.
  */
-bool Doorbell_Init(int doorbellPin)
+bool Doorbell_Init()
 {
     Debug_Start("Doorbell_Init");
     pinMode(DOORBELL_AMBIENT_NOISE_PIN, INPUT);

@@ -226,7 +226,7 @@ void Execute_WaitForDelivery()
         return;
     }
 
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
 
     SafeBox_CheckAndExecuteMessage();
 

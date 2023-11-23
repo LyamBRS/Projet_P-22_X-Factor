@@ -25,9 +25,6 @@
  * Function that initialises the whistle detector
  * or doorbell reader used by SafeBox.
  *
- * @param doorbellPin
- * The pin that is used to read the whistle status
- * from.
  * @return true:
  * Successfully initialised the doorbell used by
  * SafeBox. (Whistle detector)
@@ -35,7 +32,7 @@
  * Failed to initialised the doorbell used on
  * SafeBox.
  */
-bool Doorbell_Init(int doorbellPin);
+bool Doorbell_Init();
 
 /**
  * @brief
