@@ -21,7 +21,9 @@
 
 #define THRESHOLD_OFFSET_X 0.15f
 #define THRESHOLD_OFFSET_Y 0.15f
-#define THRESHOLD_VERIFY_ALARM_COUNTER 10
+#define THRESHOLD_OFFSET_Z 0.20f
+
+#define THRESHOLD_VERIFY_ALARM_COUNTER 5
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]

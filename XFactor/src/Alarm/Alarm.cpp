@@ -17,8 +17,8 @@ float deltaThresholdX;
 float deltaThresholdY;
 float deltaThresholdZ;
 
-float valueX, valueY;
-float avgX, avgY;
+float valueX, valueY, valueZ;
+float avgX, avgY, avgZ;
 int counter;
 
 /**
@@ -44,11 +44,11 @@ bool Alarm_Init()
     counter = 0;
     avgX = 0.0f;
     avgY = 0.0f;
-    //avgZ = 0.0f;
+    avgZ = 0.0f;
 
     valueX = 0.0f;
     valueY = 0.0f;
-    //valueZ = 0.0f;
+    valueZ = 0.0f;
 
     Alarm_ResetThresholds();
     
@@ -80,7 +80,7 @@ bool Alarm_VerifySensors()
 void Alarm_ResetThresholds()
 {
     unsigned nbReadings = 10;
-    float sumX = 0.0f, sumY = 0.0f;//, sumZ = 0.0f;
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
 
     // Do a first scan for initial values
     // This was moved form the Accelerometer_init() fucntion because robos mouvement influnces the offsets
@@ -88,16 +88,16 @@ void Alarm_ResetThresholds()
     {
         sumX += Accelerometer_GetX();
         sumY += Accelerometer_GetY();
-        //sumZ += Accelerometer_GetZ();
+        sumZ += Accelerometer_GetZ();
     }
 
     AcceX_zero = (sumX / nbReadings);
     AcceY_zero = (sumY / nbReadings);
-    //AcceZ_zero = (sumZ / nbReadings);
+    AcceZ_zero = (sumZ / nbReadings);
 
     deltaThresholdX = abs(AcceX_zero + (AcceX_zero * 0.20) + THRESHOLD_OFFSET_X); // Warning: make sur that Accelerometer_init() is called before this, 1% error rate is tolerated
     deltaThresholdY = abs(AcceY_zero + (AcceY_zero * 0.20) + THRESHOLD_OFFSET_Y); // Warning: make sur that Accelerometer_init() is called before this, 10% error rate is tolerated
-    //deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.25)); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
+    deltaThresholdZ = abs(AcceZ_zero + (AcceZ_zero * 0.25) + THRESHOLD_OFFSET_Z); // Warning: make sur that Accelerometer_init() is called before this, 5% error rate is tolerated
 }
 
 /**
@@ -162,14 +162,14 @@ bool Alarm_VerifyAccelerometer()
     //avgY = abs(sumY / nbReadings);
     valueX += Accelerometer_GetX();
     valueY += Accelerometer_GetY();
-    //valueZ += Accelerometer_GetZ();
+    valueZ += Accelerometer_GetZ();
     //Debug_Information("Alarm.cpp", "Alarm_VerifyAccel...", "Counter : " + String(counter) + " Value total : " + String(valueZ));
 
     if (counter >= THRESHOLD_VERIFY_ALARM_COUNTER)
     {
         avgX = abs(valueX / counter);
         avgY = abs(valueY / counter);
-        //avgZ = abs(valueZ / counter);
+        avgZ = abs(valueZ / counter);
         
         Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Average X : " + String(avgX));
         Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Threshold X : " + String(deltaThresholdX));
@@ -179,10 +179,10 @@ bool Alarm_VerifyAccelerometer()
 
         valueX = 0.0f;
         valueY = 0.0f;
-        //valueZ = 0.0f;
+        valueZ = 0.0f;
 
         counter = 0;
-        if (avgX > deltaThresholdX || avgY > deltaThresholdY)
+        if (avgX > deltaThresholdX || avgY > deltaThresholdY)// || avgZ > deltaThresholdZ)
         {
             return true;
         }
