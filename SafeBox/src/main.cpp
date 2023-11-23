@@ -16,16 +16,17 @@
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  //SafeBox_Init();
-  Debug_Init();
-  LEDS_Init();
-  RFID_Init(0);
+  SafeBox_Init();
+  //Debug_Init();
+  //LEDS_Init();
+  //RFID_Init(0);
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  //Execute_CurrentFunction();
-  RFID_HandleCard();
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+  Execute_CurrentFunction();
+  //Execute_WaitForDelivery();
+  //RFID_HandleCard();
+  //LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
 }
