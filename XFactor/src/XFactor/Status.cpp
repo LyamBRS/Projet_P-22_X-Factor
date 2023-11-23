@@ -60,6 +60,7 @@ bool XFactor_SetNewStatus(XFactor_Status newStatus)
         case(XFactor_Status::SearchingForAPackage):
         case(XFactor_Status::WaitingForDelivery):
         case(XFactor_Status::WaitingAfterSafeBox):
+        case(XFactor_Status::Unlocked):
             CurrentXFactorStatus = newStatus;
             return true;
 
