@@ -292,7 +292,6 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
-  int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
 
   if (SafeBox_GetGarageState())
@@ -340,6 +339,7 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
+  int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
   
   if (!SafeBox_GetGarageState())
@@ -348,7 +348,7 @@ void Execute_SearchPreparations()
     {
       int checkFunctionId;
       ResetVectors();
-
+    }
     checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
 
     if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
