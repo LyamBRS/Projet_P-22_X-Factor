@@ -252,6 +252,16 @@ void Execute_WaitForDelivery()
   XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
+  int checkFunctionId;
+
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
+
+  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+  
   if (SafeBox_GetDoorBellStatus())
   {
     SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
