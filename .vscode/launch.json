@@ -8,8 +8,13 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
+<<<<<<< HEAD
       "cwd": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Actions",
       "program": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Actions/build/Debug/outDebug",
+=======
+      "cwd": "c:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src/Debug",
+      "program": "c:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src/Debug/build/Debug/outDebug",
+>>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -101,12 +101,12 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
         return;
     }
 
-    if(currentXFactorStatus == XFactor_Status::Off)
-    {
-        Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor should never be seen as Off. Ongoing error.");
-        SetNewExecutionFunction(FUNCTION_ID_ERROR);
-        return;
-    }
+    //if(currentXFactorStatus == XFactor_Status::Off)
+    //{
+    //    Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor should never be seen as Off. Ongoing error.");
+    //    SetNewExecutionFunction(FUNCTION_ID_ERROR);
+    //    return;
+    //}
 
     // - PROGRAM - //
     switch(currentFunction){
@@ -131,6 +131,9 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
         case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
             switch(currentXFactorStatus)
             {
+                case(XFactor_Status::Off):
+                    break;
+
                 case(XFactor_Status::CalculatingRouteHome):
                     Debug_Error("Utils", "800", "XFactor should'nt be calculating route home when SafeBox is waiting after it. Correcting.");
                     SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_RETURN);
