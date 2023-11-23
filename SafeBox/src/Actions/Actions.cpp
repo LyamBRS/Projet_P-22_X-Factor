@@ -21,7 +21,6 @@
  * so that @ref Execute_CurrentFunction can be
  * executed properly without needing an input
  * parameter.
- *
  * @attention
  * DO NOT USE THIS INSIDE EXECUTION FUNCTIONS.
  * THIS SHOULD ONLY BE USED IN ACTION HANDLERS.
@@ -329,7 +328,7 @@ void Execute_Unlocked()
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-    ExecutionUtils_HandleReceivedXFactorStatus();
+    //ExecutionUtils_HandleReceivedXFactorStatus();
     if(RFID_HandleCard())
     {
         if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))
@@ -408,6 +407,9 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
+    Debug_Error("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
+    Debug_Stop();
+
     // - VARIABLES - //
     static bool mustBeOn = false; // everything is closed
 

@@ -52,10 +52,6 @@ unsigned long GROVE_GetColor()
     // - VARIABLES - //
     uint16_t clear, red, green, blue;
     //unsigned int colorHex;
-    int clair=0;
-    int rouge=0;
-    int vert=0;
-    int bleu=0;
 
     tcs.setInterrupt(false);      // turn on LED
 
@@ -64,18 +60,33 @@ unsigned long GROVE_GetColor()
     tcs.getRawData(&red, &green, &blue, &clear);
 
     tcs.setInterrupt(true);  // turn off LED
-
-    rouge = (int) (((float)red/1024)*255);
+    if (red>=255)
+    {
+        red = 255;
+    }
+    if (green>=255)
+    {
+        green = 255;
+    }
+    if (blue>=255)
+    {
+        blue = 255;
+    }
+    if (clear>=255)
+    {
+        clear = 255;
+    }
+   /* rouge = (int) (((float)red/1024)*255);
     vert =  (int) (((float)green/1024)*255);
     bleu =  (int) (((float)blue/1024)*255);
-    clair = (int) (((float)clear/1024)*255);
+    clair = (int) (((float)clear/1024)*255);*/
 
-    //Serial.print("C:\t"); Serial.print(clair);
-    //Serial.print("\tR:\t"); Serial.print(rouge);
-    //Serial.print("\tG:\t"); Serial.print(vert);
-    //Serial.print("\tB:\n"); Serial.println(bleu);
+    Serial.print("C:\t"); Serial.print(clear);
+    Serial.print("\tR:\t"); Serial.print(red);
+    Serial.print("\tG:\t"); Serial.print(green);
+    Serial.print("\tB:\n"); Serial.println(blue);
 
-    return Colour_GetHexFromRGBC(rouge, vert, bleu, clair);
+    return Colour_GetHexFromRGBC(red, green, blue, clear);
 
 }
 

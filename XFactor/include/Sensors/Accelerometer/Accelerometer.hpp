@@ -16,22 +16,26 @@
 #include <Arduino.h>
 
 // - DEFINES - //
-//#define BAUD_RATE 9600
-#define MPU6050_CLOCK_SPEED 400000           // 400kHz I2C clock
+#define MPU6050_BAUD_RATE 9600
+#define MPU6050_CLOCK_SPEED 400000   // 400kHz I2C clock
 #define MPU6050_ADDRESS_AD0_LOW 0x68 // MPU6050 low I2c address
-#define ACCELEROMETER_XOUT_H 0x3B            // Accelerometer first high register
+#define ACCELEROMETER_XOUT_H 0x3B    // Accelerometer first high register
 #define GYRO_XOUT_H 0x43             // Gyroscope first high register
-#define ACCELEROMETER_CONFIG 0x1C            // Accelerometer configuration register
+#define ACCELEROMETER_CONFIG 0x1C    // Accelerometer configuration register
 #define GYRO_CONFIG 0x1B             // Gyroscope configuration register
 #define PWR_MGMT_1 0X6B              // Power management 1 register
 
 // TODO: make this as a function of the scale, use AFS_SEL registers
 #define ACCELEROMETER_SENSITIVITY 16384.0f //  in deg/s for a scale of +- 2g, see the data sheet
-#define GYROSCOPE_SENSITIVITY 131.0f     //  in g for scale of +- 250 deg/s, see the data sheet
-#define MPU6050_DATA_SIZE 6                    // Read 6 values in total, each axis value is stored in 2 registers
+#define GYROSCOPE_SENSITIVITY 131.0f       //  in g for scale of +- 250 deg/s, see the data sheet
+#define MPU6050_DATA_SIZE 6                // Read 6 values in total, each axis value is stored in 2 registers
 
-// uncomment this to calibrate the sensor
+// uncomment these to calibrate the sensor
 // #define SENSOR_CALIBRATE 1
+
+extern float AcceX_zero;
+extern float AcceY_zero;
+extern float AcceZ_zero;
 
 /**
  * @brief enum containing all the possible scales
@@ -60,7 +64,7 @@ typedef enum
 typedef enum
 {
     TWO_FIFTY_DEG_PER_SEC = 0x00, // +- 250 deg/sec full scale
-    FIVE_HUNDRED_DEG_PER_SEC = 0x1,
+    FIVE_HUNDRED_DEG_PER_SEC = 0x01,
     THOUSAND_DEG_PER_SEC = 0x10,
     TWO_THOUSAND_DEG_PER_SEC = 0x11
 } gyro_scale;
@@ -79,6 +83,13 @@ typedef enum
     z_axis
 } axes;
 
+typedef struct Accelerometer_calibration Accelerometer_calibration;
+struct Accelerometer_calibration
+{
+    float slope;
+    float yIntercept;
+};
+
 /**
  * @brief
  * Initialises an accelerometer to be used on
@@ -91,6 +102,17 @@ typedef enum
  * Failed to initialise the accelerometer.
  */
 bool Accelerometer_Init();
+
+/**
+ * @brief
+ * Function that returns the value of an axis
+ * This is a backend function, do not use outside
+ * of Accelerometer functions.
+ * @param axe
+ * Which axe to read from.
+ * @return float
+ */
+float Accelerometer_GetData(axes axe);
 
 /**
  * @brief
@@ -142,10 +164,6 @@ float Accelerometer_GetZ();
  */
 float Accelerometer_GetCompass();
 
-// Offset calibration function
-// CAUTION: place the IMU flat in order to get the proper values
-void Accelerometer_CalculateIMUError(unsigned correctionCount);
-
 /**
  * @brief
  * Sets the axis scales of the accelerometer.
@@ -164,4 +182,19 @@ void Accelerometer_SetScale(accelerometer_scale scale);
  * Scales are defined in the data sheet
  * @param scale
  */
-void Accelerometer_SetGyro(gyro_scale scale);
+void Accelerometer_SetGyroScale(gyro_scale scale);
+
+/**
+ * @brief
+ * Linear calibration of an accelerometer using the least squares method. It aims to calculate the slope
+ * (m) and y-intercept (b) of the best-fit line that relates the raw accelerometer readings to calibrated values.
+ * The calibration is performed in three parts, each corresponding to a different orientation of the sensor.
+ * @param calibration
+ * the calibration object created in the init() function
+ * @param calibrationTime
+ * Duration in milliseconds
+ * @param axe
+ * X,Y,Z axes
+ * @warning place the sensor flat in order to get the proper values
+ */
+void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, unsigned calibrationTime, axes axe);

@@ -18,8 +18,8 @@ void setup()
   XFactor_Init();
 }
 
-/// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  Execute_CurrentFunction();s
 }
+

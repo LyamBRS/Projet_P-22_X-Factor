@@ -10,6 +10,10 @@
  */
 #include "Sensors/Accelerometer/Accelerometer.hpp"
 
+float AcceX_zero = 0.0f;
+float AcceY_zero = 0.0f;
+float AcceZ_zero = 0.0f;
+
 /**
  * @brief
  * Initialises an accelerometer to be used on
@@ -23,18 +27,30 @@
  */
 bool Accelerometer_Init()
 {
+    // TODO: check error codes here
+    Serial.begin(MPU6050_BAUD_RATE);
     Wire.begin(); // Initialize communication
     Wire.setClock(MPU6050_CLOCK_SPEED);
     Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW); // Start communication with MPU6050_ADDRESS_AD0_LOW=0x68
     Wire.write(PWR_MGMT_1);                          // Talk to the power management
     Wire.write(0x0);                                 // Make a reset
-    Wire.endTransmission(true);                      // end the transmission
+    uint8_t error = Wire.endTransmission(true);      // end the transmission
+    if (error != 0)
+        return false;
 
-#ifdef SENSOR_CALIBRATE
-    Accelerometer_CalculateIMUError(10000);
-    delay(100);
-#endif
+    /*Set initial Acceleration for later use*/
+    unsigned nbReadings = 100;
+    float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
+    for (size_t i = 0; i < nbReadings; i++)
+    {
+        sumX += Accelerometer_GetX();
+        sumY += Accelerometer_GetY();
+        sumZ += Accelerometer_GetZ();
+    }
 
+    AcceX_zero = (sumX / nbReadings);
+    AcceY_zero = (sumY / nbReadings);
+    AcceZ_zero = (sumZ / nbReadings);
     return true;
 }
 
@@ -84,7 +100,16 @@ float Accelerometer_GetData(axes axe)
  */
 float Accelerometer_GetX()
 {
-    return Accelerometer_GetData(x_axis);
+    float AcceX = Accelerometer_GetData(x_axis);
+
+// TODO: this one is not so abvious, as the calibration should be written directly to the EEPROM for efficient use, mais peut etre apres ?
+#ifdef SENSOR_CALIBRATE
+    Accelerometer_calibration calibration;
+    Accelerometer_linearCalibration(&calibration, 5000, x_axis);
+    float AcceXcalibrated = AcceX - ((calibration.slope * AcceX) + calibration.yIntercept);
+    return AcceXcalibrated;
+#endif
+    return AcceX;
 }
 
 /**
@@ -98,7 +123,15 @@ float Accelerometer_GetX()
  */
 float Accelerometer_GetY()
 {
-    return Accelerometer_GetData(y_axis);
+    float AcceY = Accelerometer_GetData(y_axis);
+
+#ifdef SENSOR_CALIBRATE
+    Accelerometer_calibration calibration;
+    Accelerometer_linearCalibration(&calibration, 5000, y_axis);
+    float AcceYcalibrated = AcceY - ((calibration.slope * AcceY) + calibration.yIntercept);
+    return AcceYcalibrated;
+#endif
+    return AcceY;
 }
 
 /**
@@ -112,7 +145,16 @@ float Accelerometer_GetY()
  */
 float Accelerometer_GetZ()
 {
-    return Accelerometer_GetData(z_axis);
+    float AcceZ = Accelerometer_GetData(z_axis);
+
+#ifdef SENSOR_CALIBRATE
+    Accelerometer_calibration calibration;
+    Accelerometer_linearCalibration(&calibration, 5000, z_axis);
+    float AcceZcalibrated = AcceZ - ((calibration.slope * AcceZ) + calibration.yIntercept);
+    return AcceZcalibrated;
+#endif
+
+    return AcceZ;
 }
 
 /**
@@ -129,14 +171,9 @@ float Accelerometer_GetCompass()
     return 0.0f;
 }
 
-
-
-
-
-
 /**
  * @brief
- * Sets the axis scales of the accelerometer.
+ * Sets the sensor scales of the accelerometer.
  * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
  * @param scale
  */
@@ -150,7 +187,7 @@ void Accelerometer_SetScale(accelerometer_scale scale)
 
 /**
  * @brief
- * Sets the axis scales of the gyro.
+ * Sets the sensor scales of the gyro.
  * DO NOT USE OUTSIDE OF ACCELEROMETER.CPP
  * @param scale
  */
@@ -162,69 +199,90 @@ void Accelerometer_SetGyroScale(gyro_scale scale)
     Wire.endTransmission(true);
 }
 
-// // Offset calibration function
-// // CAUSTION: place the IMU flat in order to get the proper values
-void Accelerometer_CalculateIMUError(unsigned correctionCount)
+// TODO: debug this function
+void Accelerometer_linearCalibration(Accelerometer_calibration *calibration, unsigned calibrationTime, axes axe)
 {
-    float AccX = 0.0f, AccY = 0.0f, AccZ = 0.0f;
-    float GyroX = 0.0f, GyroY = 0.0f, GyroZ = 0.0f;
-    // float accAngleX = 0.0f, accAngleY = 0.0f;
-    // float gyroAngleX = 0.0f, gyroAngleY = 0.0f, gyroAngleZ = 0.0f;
-    // float roll = 0.0f, pitch = 0.0f, yaw = 0.0f;
-    float AccErrorX = 0.0f, AccErrorY = 0.0f;
-    float GyroErrorX = 0.0f, GyroErrorY = 0.0f, GyroErrorZ = 0.0f;
+    if (!calibration || calibrationTime <= 0)
+        return;
 
-    /*TODO: put the correct type here time_t */
-    // float elapsedTime = 0.0f, currentTime = 0.0f, previousTime = 0.0f;
-    // Read accelerometer values correctionCount times
-    for (size_t i = 0; i < correctionCount; i++)
+    unsigned nbPoints = 0, xSum = 0, ySum = 0, xSquareSum = 0, xTimesYSum = 0, offset = 0;
+    unsigned now = 0, endCalibration = 0;
+
+    Serial.println("Orient the sensor upwards against gravity - Click Enter When Ready");
+    while (Serial.available() && Serial.read())
+        ; // empty buffer
+    while (!Serial.available())
+        ; // wait for data
+    while (Serial.available() && Serial.read())
+        ; // empty buffer again
+
+    Serial.print("Beginning to Calibrate Part 1 (Acceleration = 1g) for ");
+    Serial.print(calibrationTime * 0.001);
+    Serial.println(" seconds");
+    now = millis();
+    endCalibration = now + calibrationTime;
+
+    while (now < endCalibration)
     {
-        Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
-        Wire.write(ACCELEROMETER_XOUT_H);
-        Wire.endTransmission(false);
-        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, MPU6050_DATA_SIZE, true);
-        AccX = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY;
-        AccY = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY;
-        AccZ = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY;
-        // Sum all readings
-        AccErrorX += ((atan((AccY) / sqrt(pow((AccX), 2) + pow((AccZ), 2))) * 180 / PI)); // TODO: add the reference
-        AccErrorY += ((atan(-1 * (AccX) / sqrt(pow((AccY), 2) + pow((AccZ), 2))) * 180 / PI));
+        nbPoints += 1;
+        offset = Accelerometer_GetData(axe) - 1;
+        xSum += 1;
+        ySum += offset;
+        xSquareSum += 1;
+        xTimesYSum += offset;
+        now = millis();
     }
 
-    // Divide the sum by correctionCount to get the error value
-    AccErrorX /= correctionCount;
-    AccErrorY /= correctionCount;
+    Serial.println("Orient the sensor downwards against gravity - Click Enter When Ready");
+    while (Serial.available() && Serial.read())
+        ; // empty buffer
+    while (!Serial.available())
+        ; // wait for data
+    while (Serial.available() && Serial.read())
+        ; // empty buffer again
 
-    // Read gyro values correctionCount times
-    for (size_t j = 0; j < correctionCount; j++)
+    // Gravity should be -1g in this scenerio
+    Serial.print("Beginning to Calibrate Part 2 (Acceleration = -1g) for ");
+    Serial.print(calibrationTime * 0.001);
+    Serial.println(" seconds");
+    now = millis();
+    endCalibration = now + calibrationTime;
+    while (now < endCalibration)
     {
-        Wire.beginTransmission(MPU6050_ADDRESS_AD0_LOW);
-        Wire.write(GYRO_XOUT_H);
-        Wire.endTransmission(false);
-        Wire.requestFrom(MPU6050_ADDRESS_AD0_LOW, MPU6050_DATA_SIZE, true);
-        GyroX = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSITIVITY;
-        GyroY = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSITIVITY;
-        GyroZ = (Wire.read() << 8 | Wire.read()) / GYROSCOPE_SENSITIVITY;
-        // Sum all readings
-        GyroErrorX += GyroX;
-        GyroErrorY += GyroY;
-        GyroErrorZ += GyroZ;
+        nbPoints += 1;
+        offset = Accelerometer_GetData(axe) + 1;
+        xSum += -1;
+        ySum += offset;
+        xSquareSum += 1;
+        xTimesYSum += -offset;
+        now = millis();
     }
 
-    // Divide the sum by correctionCount to get the error value
-    GyroErrorX /= correctionCount;
-    GyroErrorY /= correctionCount;
-    GyroErrorZ /= correctionCount;
+    Serial.println("Orient the sensor perpendicular against gravity - Click Enter When Ready");
+    while (Serial.available() && Serial.read())
+        ; // empty buffer
+    while (!Serial.available())
+        ; // wait for data
+    while (Serial.available() && Serial.read())
+        ; // empty buffer again
+    Serial.print("Beginning to Calibrate Part 3 (Acceleration = 0g) for ");
+    Serial.print(calibrationTime * 0.001);
+    Serial.print("seconds");
+    now = millis();
+    endCalibration = now + calibrationTime;
+    //     Just showing the zero for consistency purposes
+    while (now < endCalibration)
+    {
+        nbPoints += 1;
+        offset = Accelerometer_GetData(axe) + 0;
+        xSum += 0;
+        ySum += offset;
+        xSquareSum += 0;
+        xTimesYSum += (0 * offset);
+        now = millis();
+    }
 
-    // Print the error values on the Serial Monitor
-    //Serial.print("AccErrorX: ");
-    //Serial.println(AccErrorX);
-    //Serial.print("AccErrorY: ");
-    //Serial.println(AccErrorY);
-    //Serial.print("GyroErrorX: ");
-    //Serial.println(GyroErrorX);
-    //Serial.print("GyroErrorY: ");
-    //Serial.println(GyroErrorY);
-    //Serial.print("GyroErrorZ: ");
-    //Serial.println(GyroErrorZ);
+    // linear regression parameters formula
+    calibration->slope = ((nbPoints * xTimesYSum) - (xSum * ySum)) / ((nbPoints * xSquareSum) - pow(xSum, 2));
+    calibration->yIntercept = (ySum - (calibration->slope * xSum)) / nbPoints;
 }
