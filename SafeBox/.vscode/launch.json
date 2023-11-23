@@ -31,9 +31,15 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
+<<<<<<< HEAD
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
+=======
+            "executable": "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "projectEnvName": "megaatmega2560",
+            "toolchainBinDir": "C:/Users/faryc/.platformio/packages/toolchain-atmelavr/bin",
+>>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -44,18 +50,30 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
+<<<<<<< HEAD
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
+=======
+            "executable": "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "projectEnvName": "megaatmega2560",
+            "toolchainBinDir": "C:/Users/faryc/.platformio/packages/toolchain-atmelavr/bin",
+>>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
+<<<<<<< HEAD
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
+=======
+            "executable": "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
+            "projectEnvName": "megaatmega2560",
+            "toolchainBinDir": "C:/Users/faryc/.platformio/packages/toolchain-atmelavr/bin",
+>>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

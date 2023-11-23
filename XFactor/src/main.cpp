@@ -16,6 +16,10 @@
 void setup()
 {
   XFactor_Init();
+    //BoardInit();
+    //Alarm_Init();
+    //Package_StoreClaw();
+    //delay(1000); // needed for demo
 }
 
 void loop()
@@ -23,3 +27,47 @@ void loop()
   Execute_CurrentFunction();
 }
 
+  switch (value)
+  {
+    case PACKAGE_FOUND:
+      Package_DeployClaw();
+      Package_PickUp();
+      for (;;)
+      {
+        // lazy boi
+      }
+    case ALARM_TRIGGERED:
+      for (;;)
+      {
+        Execute_Alarm();
+      }
+  }*/
+  
+  //Execute_Alarm();
+  //BacktraceSomeVectors(1);
+  //Execute_Moving(50.0f);
+  /*Debug_Information("main", "loop", "DeployClaw : " + String(Package_DeployClaw()));
+  delay(2000);
+  Debug_Information("main", "loop", "DeployClaw : " + String(Package_StoreClaw()));
+  delay(2000);*/
+  //Debug_Information("main", "loop", "PickUp : " + String(Package_PickUp()));
+  /*if (Alarm_VerifyAccelerometer())
+  {
+    Debug_Information("main", "loop", "ALARM TRIGGERED");
+  }*/
+  //Debug_Information("main", "loop", "Alarm : " + String(Alarm_VerifyAccelerometer()));
+  //delay(100);
+  //delay(2000);
+  //Claws_GetSwitchStatus();
+  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
+  //delay(100);
+  //S3003_SetPosition(CLAWS_PINS_GRABBER, 90.0f);
+  //delay(2000);
+  /*S3003_SetPosition(CLAWS_PINS_HEIGHT, 50.0f);
+  Serial.println("FIRST : " + String("50"));
+  delay(2000);
+  Serial.println("FIRST : " + String("125"));
+  S3003_SetPosition(CLAWS_PINS_HEIGHT, 125.0f);
+  delay(2000);*/
+  Execute_CurrentFunction();
+}

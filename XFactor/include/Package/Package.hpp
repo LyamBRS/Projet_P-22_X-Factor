@@ -20,8 +20,8 @@
 #include "Colour/Colour.hpp"
 
 // #pragma region [DEFINES]
-#define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 15/100
-#define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 0
+#define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
+#define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 30
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]

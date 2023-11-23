@@ -82,3 +82,20 @@ bool ExecutionUtils_CommunicationCheck(int attempts);
  * currentExecutionFunctionId if no changes
  */
 int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attempts, bool isArmed);
+
+/**
+ * @brief
+ * This function allows you to create a simple
+ * blinking statement in your Execution functions
+ * Especially useful for the Alarm and Error.
+ * @param blinkingPeriodMS
+ * How long should the timer wait before it needs
+ * to return the end of period so that you can
+ * make your LED blink?
+ * @return true:
+ * The timer has reached the end. You must make
+ * the LED blink.
+ * @return false:
+ * The timer is still counting.
+ */
+bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS);

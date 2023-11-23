@@ -292,11 +292,12 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
+  int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false))
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false))
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -343,25 +344,18 @@ void Execute_SearchPreparations()
   
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false))
+    int checkFunctionId;
+    ResetVectors();
+
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
+
+    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
     {
-      int checkFunctionId;
-      ResetVectors();
-
-      checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
-
-      if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
-      {
-        SetNewExecutionFunction(checkFunctionId);
-      }
-      else
-      {
-        SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
-      }
+      SetNewExecutionFunction(checkFunctionId);
     }
     else
     {
-      SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_FOR_PACKAGE);
     }
   }
   else
@@ -407,30 +401,30 @@ void Execute_SearchForPackage()
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
-  int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / ROBOT_WIDTH_CM);
-  int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / ROBOT_WIDTH_CM);
+  int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
+  int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);
 
   MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
   searchPatternVectors[0].rotation_rad = STRAIGHT;
-  searchPatternVectors[0].distance_cm = DEMO_AREA_LENGTH_CM - ROBOT_WIDTH_CM;
+  searchPatternVectors[0].distance_cm = DEMO_AREA_LENGTH_CM - SCANNABLE_AREA_WIDTH;
 
   searchPatternVectors[1].rotation_rad = TURN_90_RIGHT;
-  searchPatternVectors[1].distance_cm = DEMO_AREA_WIDTH_CM - ROBOT_WIDTH_CM;
+  searchPatternVectors[1].distance_cm = DEMO_AREA_WIDTH_CM - SCANNABLE_AREA_WIDTH;
   currentIndex++;
 
   // totalStrafes * 2 because 2 moves per strafe
   for (currentIndex = 1; currentIndex < totalStrafes * 2; currentIndex += 4)
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
-    searchPatternVectors[currentIndex].distance_cm = ROBOT_WIDTH_CM;
+    searchPatternVectors[currentIndex].distance_cm = SCANNABLE_AREA_WIDTH;
 
-    strafeDistance_cm = currentIndex * 2 < fullStrafes ? DEMO_AREA_WIDTH_CM - (ROBOT_WIDTH_CM * 2) : DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+    strafeDistance_cm = currentIndex * 2 < fullStrafes ? DEMO_AREA_WIDTH_CM - (SCANNABLE_AREA_WIDTH * 2) : DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
       
     searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
 
     searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
-    searchPatternVectors[currentIndex + 2].distance_cm = ROBOT_WIDTH_CM;
+    searchPatternVectors[currentIndex + 2].distance_cm = SCANNABLE_AREA_WIDTH;
 
     searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
     searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
@@ -439,16 +433,16 @@ void Execute_SearchForPackage()
   if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_180;
-    searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
+    searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (SCANNABLE_AREA_WIDTH * 2);
     currentIndex++;
   }
 
   searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
-  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_LENGTH_CM - ROBOT_WIDTH_CM;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_LENGTH_CM - SCANNABLE_AREA_WIDTH;
   currentIndex++;
 
   searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
-  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_WIDTH_CM - ROBOT_WIDTH_CM;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_WIDTH_CM - SCANNABLE_AREA_WIDTH;
   currentIndex++;
 
   searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
@@ -464,43 +458,35 @@ void Execute_SearchForPackage()
 
   for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
   {
-    // WILL NEED TO KNOW ABOUT HOW MOVEMENT INTERRUPTIONS ARE HANDLED AND HOW PACKAGE DETECTION WORKS TO IMPLEMENT THIS :
-    // MOVEMENT INTERRUPTIONS
-    //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
-
-    // PACKAGE DETECTION
-    //if (Package_Detected())
-    //{
-    //  SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
-    //  return;
-    //}
-
-    if (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
+    switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
     {
-      if (GetAvailableVectors() - startAvailableVectors == 5)
-      {
-        startAvailableVectors = GetAvailableVectors();
-        checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-
-        if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+      case MOVEMENT_COMPLETED:
+        if (GetAvailableVectors() - startAvailableVectors == 5)
         {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
-        }
+          startAvailableVectors = GetAvailableVectors();
+          checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
-        checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+          if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+          {
+            SetNewExecutionFunction(checkFunctionId);
+            return;
+          }
 
-        if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
-        {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
+          checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+          if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+          {
+            SetNewExecutionFunction(checkFunctionId);
+            return;
+          }
         }
-      }
-    }
-    else
-    {
-      SetNewExecutionFunction(FUNCTION_ID_ERROR);
-      return;
+        break;
+      case PACKAGE_FOUND:
+        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        return;
+      case MOVEMENT_ERROR:
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
     }
   }
 
@@ -777,7 +763,7 @@ void Execute_ConfirmDropOff()
 
   XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
 
-  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_CONFIRM_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
   {
@@ -817,35 +803,35 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
-  XFactor_SetNewStatus(XFactor_Status::Alarm);
+  // - VARIABLES - //
+    static bool mustBeOn = false;
 
-  unsigned long timeStart = millis();
-  unsigned long timeNow;
-  int status = 0; // everything is closed
-  while (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::Off) // SafeBox_Status::Reset À AJOUTER
-  {
-    timeNow = millis();
-    if ((timeNow - timeStart) >= 1000)
+    SafeBox_SetNewStatus(SafeBox_Status::Alarm);
+
+    /*if(!SafeBox_CheckAndExecuteMessage())
     {
-      //SafeBox_ExchangeStatus(XFactor_Status::Alarm); WILL NEED TO SEE WHAT GOES THERE WITH SHAWN
-      if (status == 1)
-      {
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ALARM);
-        AX_BuzzerON();
-        status = 0;
-      }
-      else if (status == 0)
-      {
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-        AX_BuzzerOFF();
-        status = 1;
-      }
+        Debug_Error("Actions", "Execute_Alarm", "Failed to communicate with XFactor");
+    }*/
+
+
+    //ExecutionUtils_HandleReceivedXFactorStatus();
+    // - LED & BUZZER BLINK - //
+    if(ExecutionUtils_LedBlinker(500))
+    {
+        mustBeOn = !mustBeOn;
+
+        if(mustBeOn)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+            AX_BuzzerON();
+        }
+        else
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+            AX_BuzzerOFF();
+        }
     }
-    timeStart = timeNow;
-  }
-  AX_BuzzerOFF();
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_OFFLINE);
-  return;
+
 }
 
 /**
@@ -918,13 +904,9 @@ void Execute_ReturnInsideGarage()
   int checkFunctionId;
   bool hasEnteredGarage = false;
   
-  if (XFactor_GetStatus() == XFactor_Status::NoPackageFound)
-  {
-    // NO PACKAGE
-  }
   XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_RETURN_INSIDE_GARAGE);
 
   if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
   {
@@ -932,32 +914,26 @@ void Execute_ReturnInsideGarage()
     return;
   }
 
-  if (SafeBox_GetGarageState())
+  if (SafeBox_GetGarageState() && !hasEnteredGarage)
   {
     // DRIVE INTO GARAGE
-    // WILL NEED TO SEE SAFEBOX STATUS
+    hasEnteredGarage = true;
+    return;
   }
   else
   {
     SafeBox_ChangeGarageState(true);
+    return;
   }
 
   if (!SafeBox_GetGarageState())
   {
-
+    // Go place package
+    // Return to initial position
   }
   else
   {
     SafeBox_ChangeGarageState(false);
-  }
-
-  if (hasEnteredGarage)
-  {
-    
-  }
-  else
-  {
-    
   }
 }
 
@@ -975,7 +951,7 @@ void Execute_EndOfProgram()
 {
   int checkFunctionId;
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_END_OF_PROGRAM);
 
   if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
   {

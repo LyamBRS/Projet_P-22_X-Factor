@@ -30,10 +30,18 @@
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 
-#define SPEED_MAX 0.8f
-#define ACCELERATION_CONSTANT (SPEED_MAX/0.25f)
+#define SPEED_MAX 0.4f
+#define ACCELERATION_CONSTANT (-(SPEED_MAX-0.1f)/0.25f)
+
+#define SPEED_MAX_TURN (SPEED_MAX/2)
+#define ACCELERATION_CONSTANT_TURN (-(SPEED_MAX_TURN-0.1f)/0.25f)
 
 #define PID_INTERVAL_MS 10
+
+#define MOVEMENT_ERROR 0
+#define MOVEMENT_COMPLETED 1
+#define PACKAGE_FOUND 2
+#define ALARM_TRIGGERED 3
 
 //#pragma region [Base_functions]
 /**
@@ -62,7 +70,7 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-bool MoveFromVector(float radians, float distance, bool saveVector);
+int MoveFromVector(float radians, float distance, bool saveVector);
 
 /**
  * @brief
@@ -212,7 +220,7 @@ bool ResetParameters();
  * @return false:
  * Failed to execute the turning sequence
  */
-bool Execute_Turning(float targetRadians);
+int Execute_Turning(float targetRadians);
 
 /**
  * @brief Function that executes the
@@ -238,6 +246,6 @@ bool Execute_Turning(float targetRadians);
  * @return false:
  * Failed to execute the moving sequence
  */
-bool Execute_Moving(float targetDistance);
+int Execute_Moving(float targetDistance);
 
 //#pragma endregion
