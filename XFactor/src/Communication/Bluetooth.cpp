@@ -106,83 +106,75 @@ String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
  * @return String:
  * "SWEET_FUCK_ALL": No message were found.
  */
-String GetMessage()
+String GetMessage(int millisecondsTimeOut)
 {
     // - VARIABLES - //
     char receivedCharacter = 0;
+    bool hasReceivedMessage = false;
+
+    unsigned long currentTime = millis();
+    unsigned long oldTime = millis();
+
     //int messageBufferIndex = 0;
     String _currentMessage = "";
 
-    /**
-     * @bug
-     * Fuck you arduino.
-     * Your String class clashes with your own stack.
-     * Anyways, this is here to give the code a better
-     * chance at receiving some amount of characters
-     * before the available is checked.
-     */
-    delay(50);
-
-    // Empty the internal buffer
-    while(BT_SERIAL.available())
+    while ((currentTime-oldTime) < millisecondsTimeOut)
     {
-        receivedCharacter = (char)BT_SERIAL.read();
-        if(receivedCharacter >= 32 && receivedCharacter <= 126)
+        currentTime = millis();
+        // Empty the internal buffer
+        while(BT_SERIAL.available())
         {
-            _currentMessage += receivedCharacter;
-        }
-        else
-        {
-            // END OF STRING
-            if(receivedCharacter == '\n')
+            hasReceivedMessage = true;
+            receivedCharacter = (char)BT_SERIAL.read();
+            if(receivedCharacter >= 32 && receivedCharacter <= 126)
             {
-                //messageBufferIndex = BT_MessagesAvailable();
-
-                //if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
-                //{
-                    // Oh shit... Whos spamming? lmfao
-                //    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
-                //    _currentMessage = "";
-                //    _messageReceived = false;
-                //}
-                //else
-                //{
-                    //receivedBTMessages[messageBufferIndex] = _currentMessage;
-                    //MessageBuffer(_currentMessage, messageBufferIndex, 1);
-                    //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
-                    //_currentMessage = "";
-                    //_messageReceived = true;
-                    Debug_Information("-", "-", "returning message");
-                    return _currentMessage;
-                //}
+                _currentMessage += receivedCharacter;
             }
             else
             {
-                if(receivedCharacter == '\r')
+                // END OF STRING
+                if(receivedCharacter == '\n')
                 {
-                    // Expected. Disregarded
+                    //messageBufferIndex = BT_MessagesAvailable();
+
+                    //if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
+                    //{
+                    // Oh shit... Whos spamming? lmfao
+                    //    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
+                    //    _currentMessage = "";
+                    //    _messageReceived = false;
+                    //}
+                    //else
+                    //{
+                        //receivedBTMessages[messageBufferIndex] = _currentMessage;
+                        //MessageBuffer(_currentMessage, messageBufferIndex, 1);
+                        //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
+                        //_currentMessage = "";
+                        //_messageReceived = true;
+                        Debug_Information("-", "-", "returning message");
+                        return _currentMessage;
+                    //}
                 }
                 else
                 {
-                    Debug_Warning("Bluetooth", "BT_SERIAL_EVENT", "Unknown character");
+                    if(receivedCharacter == '\r')
+                    {
+                        // Expected. Disregarded
+                    }
+                    else
+                    {
+                        Debug_Warning("Bluetooth", "BT_SERIAL_EVENT", "Unknown character");
+                    }
                 }
             }
         }
-
-        /**
-         * @brief
-         * DO NOT TOUCH THIS DELAY.
-         * Its the sole reason communication works.
-         * Without it we go out of the interrupt, the
-         * string of received characters will be lost
-         * and so will your message.
-         *
-         * This allows more characters to be received while
-         * the functions loops.
-         */
-        delay(10);
     }
-    return _currentMessage;
+
+    if(hasReceivedMessage)
+    {
+        return _currentMessage;
+    }
+    return BT_NO_MESSAGE;
 }
 
 /**
@@ -416,7 +408,7 @@ String BT_GetLatestMessage()
 
     // - FUNCTION EXECUTION - //
     //oldestMessage = MessageBuffer("", 0, 0);
-    oldestMessage = GetMessage();
+    oldestMessage = GetMessage(500);
 
     // brings buffer forwards by one.
     //if(BT_SIZE_OF_MESSAGE_BUFFER>1)
@@ -473,7 +465,7 @@ String BT_MessageExchange(String message, int millisecondsTimeOut)
         return BT_ERROR_MESSAGE;
     }
 
-    String receivedBTMessage = GetMessage();
+    String receivedBTMessage = GetMessage(millisecondsTimeOut);
 
     // WARNING: Could already be a message in the buffer. Be careful to check for that.
     if(receivedBTMessage == BT_NEVER_RECEIVED_MESSAGE)

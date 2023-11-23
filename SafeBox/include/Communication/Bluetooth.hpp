@@ -169,7 +169,7 @@ String BT_MessageExchange(String message, int millisecondsTimeOut);
  * @return String:
  * "SWEET_FUCK_ALL": No message were found.
  */
-String GetMessage();
+String GetMessage(int millisecondsTimeOut);
 
 /**
  * @brief
