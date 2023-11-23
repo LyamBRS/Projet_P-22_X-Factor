@@ -33,6 +33,8 @@ float speedLeft    = 0.0f;
 
 unsigned long previousInterval_ms = 0;
 
+bool checkForSensors = true;
+
 //#pragma region Base_functions
 /**
  * @brief
@@ -60,8 +62,9 @@ unsigned long previousInterval_ms = 0;
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-int MoveFromVector(float radians, float distance, bool saveVector)
+int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors)
 {
+    checkForSensors = checkSensors;
     rightMovement    = 0;
     rotationMovement = 0;
 
@@ -150,7 +153,7 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
     for(int i = 0; i<AmountOfVectorsToBacktrace; i++){
         MovementVector backtraceVector = GetLastOppositeVector();
         Debug_Information("Movements.cpp", "BacktraceSomeVectors", "Rotation : " + String(backtraceVector.rotation_rad,2) + " Distance : " + String(backtraceVector.distance_cm, 2));
-        MoveFromVector(backtraceVector.rotation_rad, backtraceVector.distance_cm, false);
+        MoveFromVector(backtraceVector.rotation_rad, backtraceVector.distance_cm, false, DONT_CHECK_SENSORS);
         RemoveLastVector();
     }
     return true;
@@ -232,7 +235,7 @@ bool MoveStraight(float distance)
         return false;
     }
 
-    targetTicks = CentimetersToEncoder(distance);
+    targetTicks = CentimetersToEncoder(abs(distance));
 
     if (distance >= 0) direction = MOVEMENT_FORWARD;
     else direction = MOVEMENT_BACKWARD;
@@ -410,19 +413,22 @@ int Execute_Turning(float targetRadians)
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
         }
-
-        if (Alarm_VerifySensors())
-        {
-            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
-            status = ALARM_TRIGGERED;
-            break;
+    
+        if (checkForSensors){
+            if (Alarm_VerifySensors())
+            {
+                Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
+                status = ALARM_TRIGGERED;
+                break;
+            }
+            else if(Package_Detected())
+            {
+                Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
+                status = PACKAGE_FOUND;
+                break;
+            }
         }
-        else if(Package_Detected())
-        {
-            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
-            status = PACKAGE_FOUND;
-            break;
-        }
+            
     }
 
     rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
@@ -467,6 +473,8 @@ int Execute_Moving(float targetDistance)
         return false;
     }
 
+    Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
+
     int status = MOVEMENT_COMPLETED;
 
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
@@ -490,18 +498,19 @@ int Execute_Moving(float targetDistance)
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
         }
-
-        if (completionRatio <= 0.85f && Alarm_VerifySensors())
-        {
-            Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
-            status = ALARM_TRIGGERED;
-            break;
-        } 
-        else if(Package_Detected())
-        {
-            Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_PACKAGE_DETECTED");
-            status = PACKAGE_FOUND;
-            break;
+        if (checkForSensors){
+            if (completionRatio <= 0.85f && Alarm_VerifySensors())
+            {
+                Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
+                status = ALARM_TRIGGERED;
+                break;
+            } 
+            else if(Package_Detected())
+            {
+                Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_PACKAGE_DETECTED");
+                status = PACKAGE_FOUND;
+                break;
+            }
         }
     }
 

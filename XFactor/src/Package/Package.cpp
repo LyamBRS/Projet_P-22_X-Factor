@@ -161,6 +161,8 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
+    MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS);
+    Package_DeployClaw();
     for (int i = 0; i < 5; i++)
     {
         if (!pickup)
@@ -196,7 +198,7 @@ bool Package_PickUp()
 bool Package_AlignWithSafeBox()
 {
     // une longueur deja pres etablie, 90 a gauche, avance,
-    MoveFromVector(3.14159/2,0,false);
+    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS);
 
     return false;
 }

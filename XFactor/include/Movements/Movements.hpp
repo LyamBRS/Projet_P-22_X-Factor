@@ -30,7 +30,7 @@
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 
-#define SPEED_MAX 0.4f
+#define SPEED_MAX 0.2f
 #define ACCELERATION_CONSTANT (-(SPEED_MAX-0.1f)/0.25f)
 
 #define SPEED_MAX_TURN (SPEED_MAX/2)
@@ -42,6 +42,9 @@
 #define MOVEMENT_COMPLETED 1
 #define PACKAGE_FOUND 2
 #define ALARM_TRIGGERED 3
+
+#define DONT_CHECK_SENSORS 0
+#define CHECK_SENSORS 1
 
 //#pragma region [Base_functions]
 /**
@@ -65,12 +68,15 @@
  * @param saveVector
  * This parameter tells the function wether it should
  * try to save the vector in the vector buffer or not.
+ * @param checkSensors
+ * Determines whether the robot will be interrupted
+ * by the alarm or check for the package.
  * @return true: Successfully made the specified vector
  * @return false: Failed to move to the specified vector
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-int MoveFromVector(float radians, float distance, bool saveVector);
+int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors);
 
 /**
  * @brief

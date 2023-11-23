@@ -171,11 +171,11 @@ bool Alarm_VerifyAccelerometer()
         avgY = abs(valueY / counter);
         avgZ = abs(valueZ / counter);
         
-        Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Average X : " + String(avgX));
-        Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Threshold X : " + String(deltaThresholdX));
+        //Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Average X : " + String(avgX));
+        //Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Threshold X : " + String(deltaThresholdX));
 
-        Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Average Y : " + String(avgY));
-        Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Threshold Y : " + String(deltaThresholdY));
+        //Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Average Y : " + String(avgY));
+        //Debug_Information("Alarm","Alarm_VerifyAccelerometer", "Threshold Y : " + String(deltaThresholdY));
 
         valueX = 0.0f;
         valueY = 0.0f;

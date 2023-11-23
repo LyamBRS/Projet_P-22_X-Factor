@@ -18,7 +18,7 @@
 #include "Debug/Debug.hpp"
 
 // #pragma region [DEFINES]
-#define CLAWS_SQUEEZE_DISTANCE 5
+#define CLAWS_SQUEEZE_DISTANCE 10
 #define CLAWS_CLOSING_SPEED 1
 
 #define CLAWS_GRABBERS_MAX 15

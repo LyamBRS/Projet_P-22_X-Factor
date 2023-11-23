@@ -19,13 +19,17 @@ void setup()
     //BoardInit();
     //Alarm_Init();
     Package_StoreClaw();
-    delay(1000); // needed for demo
+    delay(2000); // needed for demo
 }
 
 void loop()
 {
-  //Serial.print("MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  int value = MoveFromVector(STRAIGHT, 70.0f, true);
+
+  Execute_CurrentFunction();
+
+
+  // PICKUP PACKAGE //
+  /*int value = MoveFromVector(STRAIGHT, 70.0f, true, CHECK_SENSORS);
 
   Debug_Information("main", "loop", "MoveFromVector : " + String(value));
   delay(2000);
@@ -33,7 +37,6 @@ void loop()
   switch (value)
   {
     case PACKAGE_FOUND:
-      Package_DeployClaw();
       Package_PickUp();
       for (;;)
       {
@@ -44,7 +47,12 @@ void loop()
       {
         Execute_Alarm();
       }
-  }
+  }*/
+
+  // END PACKAGE PICKUP //
+
+  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
+
   
   //Execute_Alarm();
   //BacktraceSomeVectors(1);
@@ -62,7 +70,7 @@ void loop()
   //delay(100);
   //delay(2000);
   //Claws_GetSwitchStatus();
-  //Debug_Information("main", "loop", "Alarm : " + String(GROVE_GetColor()));
+  
   //delay(100);
   //S3003_SetPosition(CLAWS_PINS_GRABBER, 90.0f);
   //delay(2000);
@@ -72,5 +80,5 @@ void loop()
   Serial.println("FIRST : " + String("125"));
   S3003_SetPosition(CLAWS_PINS_HEIGHT, 125.0f);
   delay(2000);*/
-  //Execute_CurrentFunction();
+  
 }

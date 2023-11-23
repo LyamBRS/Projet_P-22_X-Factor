@@ -286,7 +286,7 @@ void Execute_GettingOutOfGarage()
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false))
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false, DONT_CHECK_SENSORS))
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -333,7 +333,7 @@ void Execute_SearchPreparations()
   
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false))
+    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false, DONT_CHECK_SENSORS))
     {
       int checkFunctionId;
       ResetVectors();
@@ -454,7 +454,7 @@ void Execute_SearchForPackage()
 
   for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
   {
-    switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true))
+    switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true, CHECK_SENSORS))
     {
       case MOVEMENT_COMPLETED:
         if (GetAvailableVectors() - startAvailableVectors == 5)
