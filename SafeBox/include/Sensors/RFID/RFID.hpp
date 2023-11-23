@@ -26,28 +26,23 @@
  * @brief
  * Function that initialises what is required to
  * make the RFID module function on SafeBox.
- * @param RFIDPin
- * The pin used for the RFID module. May need to
- * be changed in the future depending on how the
- * sensor functions.
  * @return true:
  * Successfully initialised the RFID of SafeBox.
  * @return false
  */
-bool RFID_Init(int RFIDPin);
+bool RFID_Init();
 
 /**
  * @brief
  * Function that returns true or false depending
  * on if the user has his keycard on the RFID
  * module and that the card is valid.
- * @return true:
- * A card has been successfully read.
- * @return false:
- * There is no card / the card does not have the
- * correct number.
+ * @return int:
+ * -1: Incorrect card read
+ * 0: No card was read
+ * 1: Correct card was detected
  */
-bool RFID_HandleCard();
+int RFID_HandleCard();
 
 /**
  * @brief

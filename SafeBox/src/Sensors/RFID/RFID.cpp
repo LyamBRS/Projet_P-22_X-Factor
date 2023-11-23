@@ -25,7 +25,7 @@ bool isReadingRFID = false;
  * Successfully initialised the RFID of SafeBox.
  * @return false
  */
-bool RFID_Init(int RFIDPin)
+bool RFID_Init()
 {
    // Set la Del de l'Arduino
     pinMode(RFID_SENSOR_READING_PIN, INPUT);
@@ -48,7 +48,7 @@ bool RFID_Init(int RFIDPin)
  * There is no card / the card does not have the
  * correct number.
  */
-bool RFID_HandleCard()
+int RFID_HandleCard()
 {
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
   String receivedCard = "NO_CARDS_FOUND";
@@ -56,18 +56,22 @@ bool RFID_HandleCard()
 
   if(!RFID_CheckIfCardIsThere())
   {
-    return false;
+    return 0;
   }
+  Debug_Start("RFID_HandleCard");
   receivedCard = RFID_GetCardNumber();
 
     if (receivedCard.compareTo(RFID_VALID_CARD) == 0) {
         Debug_Information("RFID","RFID_HandleCard","Valid card");
-        return true;
+        Debug_End();
+        return 1;
     } else {
 
         if(receivedCard == "NO_CARDS_FOUND")
         {
-          return false;
+          Debug_Warning("RFID","RFID_HandleCard","No card was detected");
+          Debug_End();
+          return 0;
         }
         LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
         delay(500);
@@ -77,7 +81,8 @@ bool RFID_HandleCard()
         Debug_Warning("RFID","RFID_HandleCard",RFID_VALID_CARD);
         Debug_Warning("RFID","RFID_HandleCard","Got");
         Debug_Warning("RFID","RFID_HandleCard",receivedCard);
-        return false;
+        Debug_End();
+        return -1;
     }
 }
 
@@ -120,7 +125,7 @@ String RFID_GetCardNumber() {
   byte crecu = ' ';
   bool incoming = 0;
   bool thereWasACard = false;
-  String id_tag;
+  String id_tag = "NO_CARDS_FOUND";
 
   int currentCharacter = 0;
 
@@ -129,6 +134,7 @@ String RFID_GetCardNumber() {
   while (RFID_CheckIfCardIsThere()) {
     if(!thereWasACard)
     {
+      id_tag = "";
       LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
       thereWasACard = true;
     }
@@ -157,7 +163,7 @@ String RFID_GetCardNumber() {
 
           for (int i = 0; i < 10; i++) isReadingRFID = false;
           Debug_End();
-          return id_tag;
+          break;
 
         default:
           if (incoming)
@@ -170,5 +176,5 @@ String RFID_GetCardNumber() {
     }
   }
   Debug_End();
-  return "NO_CARDS_FOUND";
+  return id_tag;
 }
