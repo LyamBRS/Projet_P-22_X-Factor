@@ -254,14 +254,14 @@ void Execute_WaitForDelivery()
 
   int checkFunctionId;
 
-  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
+  checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
 
   if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
   }
-  
+
   if (SafeBox_GetDoorBellStatus())
   {
     SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
