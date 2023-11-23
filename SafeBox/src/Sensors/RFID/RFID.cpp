@@ -11,8 +11,6 @@
 
 // - INCLUDE - //
 #include "Sensors/RFID/RFID.hpp"
-#include <Arduino.h>
-
 bool isReadingRFID = false;
 
 /**
@@ -30,7 +28,7 @@ bool isReadingRFID = false;
 bool RFID_Init(int RFIDPin)
 {
    // Set la Del de l'Arduino
-    // pinMode(13, OUTPUT);
+    pinMode(RFID_SENSOR_READING_PIN, INPUT);
 
     // Initialise le Serial2 entre le module RFID et l'arduino
     RFID_SERIAL.begin(9600);
@@ -55,18 +53,30 @@ bool RFID_HandleCard()
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
   String receivedCard = "NO_CARDS_FOUND";
 
-  //receivedCard = RFID_GetCardNumber();
 
-    if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
+  if(!RFID_CheckIfCardIsThere())
+  {
+    return false;
+  }
+  receivedCard = RFID_GetCardNumber();
+
+    if (receivedCard.compareTo(RFID_VALID_CARD) == 0) {
         Debug_Information("RFID","RFID_HandleCard","Valid card");
         return true;
     } else {
 
-        //if(receivedCard == "NO_CARDS_FOUND")
-        //{
-        //  return false;
-       // }
-        Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
+        if(receivedCard == "NO_CARDS_FOUND")
+        {
+          return false;
+        }
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+        delay(500);
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);      
+
+        Debug_Warning("RFID","RFID_HandleCard","Expected:");
+        Debug_Warning("RFID","RFID_HandleCard",RFID_VALID_CARD);
+        Debug_Warning("RFID","RFID_HandleCard","Got");
+        Debug_Warning("RFID","RFID_HandleCard",receivedCard);
         return false;
     }
 }
@@ -83,10 +93,14 @@ bool RFID_HandleCard()
  */
 bool RFID_CheckIfCardIsThere()
 {
-    // Si elle lu la bonne carte, plus besoin de lire
-    if (RFID_HandleCard()) return true;
-    // elle n'a pas lu la bonne carte
-    return false;
+  if(digitalRead(RFID_SENSOR_READING_PIN))
+  {
+    return true;
+  }
+  else
+  {
+    return false;  
+  }
 }
 
 /**
@@ -103,16 +117,30 @@ bool RFID_CheckIfCardIsThere()
  */
 String RFID_GetCardNumber() {
   Debug_Start("RFID_GetCardNumber");
-  byte crecu, incoming = 0;
+  byte crecu = ' ';
+  bool incoming = 0;
+  bool thereWasACard = false;
   String id_tag;
+
+  int currentCharacter = 0;
 
   isReadingRFID = true;
 
-  while (1) {
+  while (RFID_CheckIfCardIsThere()) {
+    if(!thereWasACard)
+    {
+      LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
+      thereWasACard = true;
+    }
     if (RFID_SERIAL.available()) {
-
+      currentCharacter++;
       crecu = RFID_SERIAL.read();
-      Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
+
+      //String receivedCharacter = String(crecu);
+      //String currentChar = String(currentCharacter);
+      //currentChar.concat(receivedCharacter);
+
+      //Debug_Information("RFID","RFID_GetCardNumber",currentChar);
 
       switch (crecu) {
         case 0x02:
@@ -123,6 +151,7 @@ String RFID_GetCardNumber() {
 
         case 0x03:
           Debug_Information("RFID","RFID_GetCardNumber","END OF READING");
+          Debug_Information("RFID","RFID_GetCardNumber",id_tag);
           // END OF TRANSMIT
           incoming = 0;
 
@@ -133,12 +162,8 @@ String RFID_GetCardNumber() {
         default:
           if (incoming)
           {
-            Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
+            //Debug_Information("RFID","RFID_GetCardNumber",String(crecu));
             id_tag.concat(crecu);
-          }
-          else
-          {
-            Debug_Error("RFID","RFID_GetCardNumber",String(crecu));
           }
           break;
       }

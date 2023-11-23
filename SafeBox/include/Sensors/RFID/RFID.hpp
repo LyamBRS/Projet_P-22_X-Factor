@@ -15,10 +15,12 @@
 // - INCLUDE - //
 #include <Arduino.h>
 #include "Debug/Debug.hpp"
+#include "LED/LED.hpp"
 
 // - DEFINES - //
 #define RFID_VALID_CARD "4870485055685448534852481310"
 #define RFID_SERIAL Serial2
+#define RFID_SENSOR_READING_PIN 12
 
 /**
  * @brief
