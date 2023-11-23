@@ -12,6 +12,14 @@
 
 #pragma once
 
+#include <Arduino.h>
+#include "Debug/Debug.hpp"
+
+/// @brief Arduino analog pin that reads the ambiant noises around the detector
+#define DOORBELL_AMBIENT_NOISE_PIN A0
+/// @brief Arduino analog pin that reads the whistle noises around the detector
+#define DOORBELL_WHISLE_NOISE_PIN A1
+
 /**
  * @brief
  * Function that initialises the whistle detector
