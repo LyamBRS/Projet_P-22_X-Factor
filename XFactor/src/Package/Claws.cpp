@@ -83,17 +83,10 @@ bool Claws_SetGrabbers(unsigned char pourcent)
     float angle = (float)(pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100);
     angle+=CLAWS_GRABBERS_MIN;
 
-    if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX){
-        if(deploymentStatus)
-        {
-            S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
-            return true;
-        }
-        else
-        {
-            Debug_Error("Claws", "Claws_SetGrabbers", "Claw is not deployed");
-            return false;
-        }
+    if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX)
+    {
+        S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
+        return true;
     }
     else
     {
@@ -127,16 +120,8 @@ bool Claws_SetHeight(unsigned char pourcent)
 
     if(angle>=CLAWS_HEIGHT_MIN && angle<=CLAWS_HEIGHT_MAX)
     {
-        if(deploymentStatus)
-        {
-            S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
-            return true;
-        }
-        else
-        {
-            Debug_Error("Claws", "Claws_SetHeight", "Claw is not deployed.");
-            return false;
-        }
+        S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
+        return true;
     }
     else
     {
@@ -174,15 +159,15 @@ bool Claws_SetDeployment(bool deployment)
         if(deployment == CLAWS_STATUS_DEPLOYED)
         {
             deploymentStatus = CLAWS_STATUS_DEPLOYED;
-            if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
-            {
-                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
-                return false;
-            }
-
             if(!Claws_SetGrabbers(CLAWS_GRABBERS_DEPLOYED))
             {
                 Debug_Error("Claws", "Claws_SetDeployment", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
+                return false;
+            }
+
+            if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
                 return false;
             }
             return true;

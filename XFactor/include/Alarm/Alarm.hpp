@@ -18,7 +18,10 @@
 // #pragma region [DEFINES]
 
 #define ACCELEROMETER_NB_CHECKING 1 // Number of accelerometer detection trials
-#define THRESHOLD_VERIFY_ALARM_COUNTER 100
+
+#define THRESHOLD_OFFSET_X 0.15f
+#define THRESHOLD_OFFSET_Y 0.15f
+#define THRESHOLD_VERIFY_ALARM_COUNTER 10
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -47,6 +50,15 @@ bool Alarm_Init();
  * No alarm needs to be triggered
  */
 bool Alarm_VerifySensors();
+
+/**
+ * @brief
+ * Resets the X and Y variation
+ * thresholds to prevent the alarm
+ * from setting off its own
+ * movements
+ */
+void Alarm_ResetThresholds();
 
 /**
  * @brief

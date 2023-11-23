@@ -94,12 +94,8 @@ int MoveFromVector(float radians, float distance, bool saveVector)
             if (moveStatus == MOVEMENT_ERROR){
                 Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
             }
-            if (moveStatus == ALARM_TRIGGERED)
-            {
-                return ALARM_TRIGGERED;
-            }
-            Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
-            //return moveStatus;
+            Debug_Information("Movements", "MoveFromVector", "Turn status moving : NOT_ERROR");
+            return moveStatus;
         }
     }
 
@@ -419,12 +415,14 @@ int Execute_Turning(float targetRadians)
         {
             Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
             status = ALARM_TRIGGERED;
-        } 
-        /*else if(Package_Detected())
+            break;
+        }
+        else if(Package_Detected())
         {
             Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
             status = PACKAGE_FOUND;
-        }*/
+            break;
+        }
     }
 
     rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
@@ -493,16 +491,18 @@ int Execute_Moving(float targetDistance)
             previousInterval_ms = millis();
         }
 
-        if (Alarm_VerifySensors())
+        if (completionRatio <= 0.85f && Alarm_VerifySensors())
         {
             Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
             status = ALARM_TRIGGERED;
+            break;
         } 
-        /*else if(Package_Detected())
+        else if(Package_Detected())
         {
-            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
+            Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_PACKAGE_DETECTED");
             status = PACKAGE_FOUND;
-        }*/
+            break;
+        }
     }
 
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));

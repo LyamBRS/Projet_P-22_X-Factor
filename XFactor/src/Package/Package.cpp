@@ -53,47 +53,24 @@ bool pickup = false;
  */
 
 bool Package_Init()
-
 {
-
-    Debug_Start("Package_Init");
-
     if(GROVE_Init())
-
     {
-
         if(Claws_Init())
-
         {
-
-            Debug_End();
-
             return true;
-
         }
-
         else
-
         {
-
             Debug_Error("Package", "Package_Init", "Failed to initialise Claws");
-
         }
-
     }
-
     else
-
     {
-
         Debug_Error("Package", "Package_Init", "Failed to initialise GROVE");
-
     }
-
-    Debug_End();
 
     return false;
-
 }
 
  
@@ -184,15 +161,18 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
-    
-    if(pickup == false)
+    for (int i = 0; i < 5; i++)
     {
-        pickup = Claws_CloseUntilDetection();
-        if (pickup)
+        if (!pickup)
         {
-            Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
-        } 
-        return pickup;
+            pickup = Claws_CloseUntilDetection();
+            if (pickup)
+            {
+                Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+                return true;
+            }
+        }
+        delay(500); //MAY NEED TO BE REMOVED when we advance
     }
 
     return false;

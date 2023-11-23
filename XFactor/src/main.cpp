@@ -18,18 +18,34 @@ void setup()
   XFactor_Init();
     //BoardInit();
     //Alarm_Init();
+    Package_StoreClaw();
+    delay(1000); // needed for demo
 }
 
 void loop()
 {
-  Debug_Information("","","BEFORE RESET");
-  ENCODER_Reset(LEFT);
-  Debug_Information("","","LEFT RESET");
-  ENCODER_Reset(RIGHT);
-  Debug_Information("","","RIGHT RESET");
   //Serial.print("MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
-  Debug_Information("main", "loop", "MoveFromVector : " + String(MoveFromVector(STRAIGHT, 30.0f, true)));
+  int value = MoveFromVector(STRAIGHT, 70.0f, true);
+
+  Debug_Information("main", "loop", "MoveFromVector : " + String(value));
   delay(2000);
+
+  switch (value)
+  {
+    case PACKAGE_FOUND:
+      Package_DeployClaw();
+      Package_PickUp();
+      for (;;)
+      {
+        // lazy boi
+      }
+    case ALARM_TRIGGERED:
+      for (;;)
+      {
+        Execute_Alarm();
+      }
+  }
+  
   //Execute_Alarm();
   //BacktraceSomeVectors(1);
   //Execute_Moving(50.0f);
@@ -38,10 +54,10 @@ void loop()
   Debug_Information("main", "loop", "DeployClaw : " + String(Package_StoreClaw()));
   delay(2000);*/
   //Debug_Information("main", "loop", "PickUp : " + String(Package_PickUp()));
-  //if (Alarm_VerifyAccelerometer())
-  //{
-  //  Debug_Information("main", "loop", "ALARM TRIGGERED");
-  //}
+  /*if (Alarm_VerifyAccelerometer())
+  {
+    Debug_Information("main", "loop", "ALARM TRIGGERED");
+  }*/
   //Debug_Information("main", "loop", "Alarm : " + String(Alarm_VerifyAccelerometer()));
   //delay(100);
   //delay(2000);
