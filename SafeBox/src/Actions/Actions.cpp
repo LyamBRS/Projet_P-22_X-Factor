@@ -328,14 +328,7 @@ void Execute_Unlocked()
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-<<<<<<< HEAD
-
-    Lid_Unlock();
-
-    ExecutionUtils_HandleReceivedXFactorStatus();
-=======
     //ExecutionUtils_HandleReceivedXFactorStatus();
->>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
     if(RFID_HandleCard())
     {
         if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))

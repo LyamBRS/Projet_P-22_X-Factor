@@ -13,7 +13,7 @@
 //#include "SafeBox/Init.hpp"
 
 #include "Sensors/RFID/RFID.hpp"
-#include "Outputs/LEDs/WS2812/WS2812.hpp"
+#include "LED/LED.hpp"
 
 /// @brief Arduino's initialisation function.
 void setup()

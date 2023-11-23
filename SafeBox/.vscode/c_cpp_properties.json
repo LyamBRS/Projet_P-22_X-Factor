@@ -8,17 +8,11 @@
         {
             "name": "PlatformIO",
             "includePath": [
-<<<<<<< HEAD
-                "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/include",
-                "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/src",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-=======
                 "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/include",
                 "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src",
                 "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
                 "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
->>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
                 "C:/Users/trevy/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/trevy/.platformio/packages/framework-arduino-avr/variants/mega",
                 "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -30,17 +24,11 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-<<<<<<< HEAD
-                    "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/include",
-                    "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/src",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                    "C:/Users/trevy/Desktop/Safebox/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-=======
                     "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/include",
                     "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src",
                     "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
                     "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
->>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
                     "C:/Users/trevy/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/trevy/.platformio/packages/framework-arduino-avr/variants/mega",
                     "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",

@@ -12,6 +12,10 @@
 // - INCLUDES - //
 #include "Outputs/Motors/Servo/S3003.hpp"
 
+Servo servo1;
+Servo servo2;
+Servo servo3; 
+
 /**
  * @brief Initialisation function of a single
  * servo motor based on a given arduino pin
