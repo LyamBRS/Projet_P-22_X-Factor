@@ -53,11 +53,19 @@ bool RFID_Init(int RFIDPin)
 bool RFID_HandleCard()
 {
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
+  String receivedCard = "NO_CARDS_FOUND";
+
+  //receivedCard = RFID_GetCardNumber();
 
     if (RFID_GetCardNumber().compareTo(VALID_CARD_NUMBER) == 0) {
         Debug_Information("RFID","RFID_HandleCard","Valid card");
         return true;
     } else {
+
+        //if(receivedCard == "NO_CARDS_FOUND")
+        //{
+        //  return false;
+       // }
         Debug_Warning("RFID","RFID_HandleCard","Mismatched card");
         return false;
     }
@@ -97,10 +105,13 @@ String RFID_GetCardNumber() {
   byte crecu, incoming = 0;
   String id_tag;
 
+  int fuckUpCounter = 0;
+
   isReadingRFID = true;
 
   while (1) {
     if (RFID_SERIAL.available()) {
+      Debug_Information(" "," "," ");
       crecu = RFID_SERIAL.read();
       switch (crecu) {
         case 0x02:
@@ -123,6 +134,12 @@ String RFID_GetCardNumber() {
           break;
       }
     }
+
+    //fuckUpCounter++;
+    if(fuckUpCounter > 100)
+    {
+      return "NO_CARDS_FOUND";
+    }
   }
-  return "";
+  return "NO_CARDS_FOUND";
 }

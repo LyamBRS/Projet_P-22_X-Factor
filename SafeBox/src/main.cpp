@@ -15,11 +15,23 @@
 /// @brief Arduino's initialisation function.
 void setup()
 {
-  SafeBox_Init();
+  //SafeBox_Init();
+  LEDS_Init();
+  Debug_Init();
+  RFID_Init(0);
 }
 
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //Debug_Information("-","-","-");
+  if(RFID_HandleCard())
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
+  }
+  else
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);   
+  }
+  //Execute_CurrentFunction();
 }
