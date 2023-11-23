@@ -39,9 +39,9 @@
 #define PID_INTERVAL_MS 10
 
 #define MOVEMENT_ERROR 0
-#define ALARM_TRIGGERED 1
+#define MOVEMENT_COMPLETED 1
 #define PACKAGE_FOUND 2
-#define MOVEMENT_COMPLETED 3
+#define ALARM_TRIGGERED 3
 
 //#pragma region [Base_functions]
 /**

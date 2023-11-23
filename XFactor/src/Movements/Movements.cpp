@@ -71,31 +71,36 @@ int MoveFromVector(float radians, float distance, bool saveVector)
         return MOVEMENT_ERROR;
     }
 
-    int turnStatus = Execute_Turning(radians);
-    if (turnStatus != MOVEMENT_COMPLETED){
-        if (turnStatus == MOVEMENT_ERROR){
-            Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
+    if (radians != 0)
+    {
+        int turnStatus = Execute_Turning(radians);
+        if (turnStatus != MOVEMENT_COMPLETED){
+            if (turnStatus == MOVEMENT_ERROR){
+                Debug_Error("Movements", "MoveFromVector", "Failed to turn in radians");
+            }
+            /*if (turnStatus == ALARM_TRIGGERED)
+            {
+                return ALARM_TRIGGERED;
+            }*/
+            //Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
+            return turnStatus;
         }
-        if (turnStatus == ALARM_TRIGGERED)
-        {
-            Debug_Information("Movements", "MoveFromVector", "Turn status moving : ALARM_TRIGGERED");
-            return ALARM_TRIGGERED;
-        }
-        Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
-        //return turnStatus;
     }
 
-    int moveStatus = Execute_Moving(distance);
-    if (moveStatus != MOVEMENT_COMPLETED){
-        if (moveStatus == MOVEMENT_ERROR){
-            Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
+    if (distance != 0 )
+    {
+        int moveStatus = Execute_Moving(distance);
+        if (moveStatus != MOVEMENT_COMPLETED){
+            if (moveStatus == MOVEMENT_ERROR){
+                Debug_Error("Movements", "MoveFromVector", "Failed to go straight");
+            }
+            if (moveStatus == ALARM_TRIGGERED)
+            {
+                return ALARM_TRIGGERED;
+            }
+            Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
+            //return moveStatus;
         }
-        if (moveStatus == ALARM_TRIGGERED)
-        {
-            return ALARM_TRIGGERED;
-        }
-        Debug_Information("Movements", "MoveFromVector", "Turn status moving : PACKAGE_FOUND");
-        //return moveStatus;
     }
 
     if (saveVector){
@@ -115,7 +120,7 @@ int MoveFromVector(float radians, float distance, bool saveVector)
             return MOVEMENT_ERROR;
         }
     }
-    return true;
+    return MOVEMENT_COMPLETED;
 }
 
 /**
@@ -385,7 +390,7 @@ int Execute_Turning(float targetRadians)
     if (!TurnInRadians(targetRadians))
     {
         Debug_Error("Movements", "Execute_Turning", "Could not get the target movement");
-        return false;
+        return MOVEMENT_ERROR;
     }
 
     int status = MOVEMENT_COMPLETED;
@@ -410,7 +415,11 @@ int Execute_Turning(float targetRadians)
             previousInterval_ms = millis();
         }
 
-        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        if (Alarm_VerifySensors())
+        {
+            Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
+            status = ALARM_TRIGGERED;
+        } 
         //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
@@ -465,6 +474,7 @@ int Execute_Moving(float targetDistance)
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
+            
             completionRatio = rightPulse/targetTicks;
 
             currentSpeed = Accelerate(completionRatio, SPEED_MAX);
@@ -479,7 +489,12 @@ int Execute_Moving(float targetDistance)
             previousInterval_ms = millis();
         }
 
-        if (Alarm_VerifySensors()) status = ALARM_TRIGGERED;
+        if (Alarm_VerifySensors())
+        {
+            Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
+            status = ALARM_TRIGGERED;
+        } 
+        
         //else if(Package_Detected()) status = PACKAGE_FOUND;
     }
 
