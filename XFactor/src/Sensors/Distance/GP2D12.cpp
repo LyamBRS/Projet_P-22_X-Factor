@@ -43,7 +43,8 @@ unsigned short GP2D12_Read(int trigPin, int echoPin)
     digitalWrite(trigPin, LOW);
     
     duration = pulseIn(echoPin, HIGH);
-    cm = (duration*.0343)/2;
+    //cm = (duration*.0343)/2;
+    cm = (duration*.017);
     
     return cm;
 }
