@@ -400,26 +400,61 @@ void Execute_SearchForPackage()
 
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
+  MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
+
   float strafeDistance_cm = 0;
   int currentIndex = 0;
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
-  int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
-  int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);
+  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 2); // - 2 is removing the edges
+  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 1); // - 1 is removing left edge
 
-  MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
-  searchPatternVectors[0].rotation_rad = STRAIGHT;
+  /*int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
+  int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);*/
+
+  searchPatternVectors[0].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[0].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - (ROBOT_WIDTH_CM / 2);
+
+  searchPatternVectors[1].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[1].distance_cm = (DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_WIDTH_CM);
+
+  searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[2].distance_cm = (DEMO_AREA_WIDTH_CM - ((DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2) - ROBOT_WIDTH_CM));
+
+  /*searchPatternVectors[0].rotation_rad = STRAIGHT;
   searchPatternVectors[0].distance_cm = DEMO_AREA_LENGTH_CM - SCANNABLE_AREA_WIDTH;
 
   searchPatternVectors[1].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[1].distance_cm = DEMO_AREA_WIDTH_CM - SCANNABLE_AREA_WIDTH;
-  currentIndex++;
+  currentIndex++;*/
 
   // totalStrafes * 2 because 2 moves per strafe
-  for (currentIndex = 1; currentIndex < totalStrafes * 2; currentIndex += 4)
+  // currentIndex start value depending on amount of above start vectors
+  for (currentIndex = 3; currentIndex < totalStrafes * 2; currentIndex += 4)
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
+    searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+
+    if (currentIndex * 2 < fullStrafes)
+    {
+      strafeDistance_cm = DEMO_AREA_WIDTH_CM - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2);
+    }
+    else
+    {
+      strafeDistance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2);
+    }
+      
+    searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
+    searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
+
+    searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
+    searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+
+    searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
+    searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
+
+    /*searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex].distance_cm = SCANNABLE_AREA_WIDTH;
 
     strafeDistance_cm = currentIndex * 2 < fullStrafes ? DEMO_AREA_WIDTH_CM - (SCANNABLE_AREA_WIDTH * 2) : DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (ROBOT_WIDTH_CM * 2);
@@ -431,10 +466,29 @@ void Execute_SearchForPackage()
     searchPatternVectors[currentIndex + 2].distance_cm = SCANNABLE_AREA_WIDTH;
 
     searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
-    searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
+    searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;*/
   }
 
   if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
+  {
+    searchPatternVectors[currentIndex].rotation_rad = TURN_180;
+    searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - ROBOT_LENGTH_CM;
+    currentIndex++;
+  }
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM;
+  currentIndex++;
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[currentIndex].distance_cm = SAFEBOX_WIDTH_CM - ROBOT_WIDTH_CM;
+  currentIndex++;
+
+  searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[currentIndex].distance_cm = 0.0f; // Turn on self
+  currentIndex++;
+
+  /*if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_180;
     searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (SCANNABLE_AREA_WIDTH * 2);
@@ -451,11 +505,11 @@ void Execute_SearchForPackage()
 
   searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
   searchPatternVectors[currentIndex].distance_cm = 0.0f; // Turn on self
-  currentIndex++;
+  currentIndex++;*/
 
   if (currentIndex >= VECTOR_BUFFER_SIZE)
   {
-    Debug_Error("Actions.cpp", "Execute_SearchForPackages", "There is not enough place in the vector buffer to try the search");
+    Debug_Error("Actions.cpp", "Execute_SearchForPackages", "There is not enough space in the vector buffer to try the search");
     SetNewExecutionFunction(FUNCTION_ID_ERROR);
     return;
   }
