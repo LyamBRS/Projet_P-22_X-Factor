@@ -232,7 +232,13 @@ bool Package_Detected()
 
     currentColour = GROVE_GetColor();
 
-    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF))
+    {
+        return true;
+    }
+
+    if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < 20)
+    {
         return true;
     }
 
