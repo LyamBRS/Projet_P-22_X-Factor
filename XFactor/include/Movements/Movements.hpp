@@ -20,7 +20,7 @@
 
 
 //First 3 variables for the PID, Kp, Ki and Kd.
-#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
+#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0f
 
 #define TURN_90  PI/2
 #define TURN_180 PI
