@@ -26,6 +26,8 @@
 #define PACKAGE_BACK_MOVEMENT -10.0f
 // #pragma endregion
 
+#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 80.0f
+
 // #pragma region [FUNCTIONS]
 /**
  * @brief
@@ -141,10 +143,29 @@ bool Package_Transport();
 /**
  * @brief
  * Complex function that analyses XFactor's
- * related sensors to find potential packages
- * that may be around the robot as it moves. This
- * Function can also be used to verify that a
- * package is still inside of the claw.
+ * color sensor to verify is the object examined
+ * is indeed the package it needs to pick up.
+ *
+ * Packages are identified using color sensors.
+ * @return true:
+ * A package was detected near the robot.
+ * @return false:
+ * No packages are detected anywhere near or
+ * inside the robot.
+ */
+bool Package_Confirmed();
+
+/**
+ * @brief
+ * Complex function that analyses XFactor's
+ * distance sensors with the goal of locating
+ * the package. It reads all of the distance
+ * sensors and compares them to a threshold.
+ * 
+ * @param capteur
+ * This is used to read from the right sensor 
+ * so other functions know what to return 
+ * depending on which sensor triggered.
  *
  * Packages are identified using color sensors.
  * @return true:
