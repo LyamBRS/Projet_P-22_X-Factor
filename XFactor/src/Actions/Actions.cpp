@@ -401,14 +401,6 @@ void Execute_SearchForPackage()
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
   MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
-  int startAvailableVectors = GetAvailableVectors();
-
-  // SEE WHEN NEGATIVE
-  /*searchPatternVectors[0].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - (ROBOT_WIDTH_CM / 2);
-  searchPatternVectors[0].rotation_rad = -PI / 2;
-
-  searchPatternVectors[0].distance_cm = (DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_WIDTH_CM);
-  searchPatternVectors[0].rotation_rad = PI / 2;*/
 
   float strafeDistance_cm = 0;
   int currentIndex = 0;
@@ -420,8 +412,6 @@ void Execute_SearchForPackage()
 
   /*int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
   int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);*/
-
-  MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
 
   searchPatternVectors[0].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[0].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - (ROBOT_WIDTH_CM / 2);
