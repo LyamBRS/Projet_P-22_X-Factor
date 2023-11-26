@@ -212,6 +212,13 @@ void Execute_WaitAfterXFactor()
  */
 void Execute_WaitForDelivery()
 {
+
+    // CHECKS IF ITS THE FIRST EXECUTION
+    if(SafeBox_GetStatus() != SafeBox_Status::WaitingForDelivery)
+    {
+        XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
+    }
+
     if(!SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery))
     {
         Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to set status");
@@ -219,7 +226,7 @@ void Execute_WaitForDelivery()
         return;
     }
 
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
 
     SafeBox_CheckAndExecuteMessage();
 
@@ -250,6 +257,11 @@ void Execute_WaitForDelivery()
  */
 void Execute_StartOfDelivery()
 {
+    if(SafeBox_GetStatus() != SafeBox_Status::WaitingForRetrieval)
+    {
+        XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
+    }
+
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ARMED);
     SafeBox_CheckAndExecuteMessage();
@@ -338,6 +350,11 @@ void Execute_DropOff()
  */
 void Execute_Unlocked()
 {
+    if(SafeBox_GetStatus() != SafeBox_Status::Unlocked)
+    {
+        XFactor_SetNewStatus(XFactor_Status::Unlocked);
+    }
+
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
@@ -376,7 +393,7 @@ void Execute_Alarm()
 
     ExecutionUtils_HandleReceivedXFactorStatus();
     // - LED & BUZZER BLINK - //
-    if(ExecutionUtils_LedBlinker(500))
+    if(ExecutionUtils_LedBlinker(100))
     {
         mustBeOn = !mustBeOn;
 

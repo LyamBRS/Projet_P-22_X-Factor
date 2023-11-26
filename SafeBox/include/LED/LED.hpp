@@ -30,9 +30,11 @@
 /// @brief RGB color that the LED will have when SafeBox is unlocked by the user
 #define LED_COLOR_DISARMED 0,128,0
 /// @brief RGB color that the LED will have when SafeBox is locked and operational.
-#define LED_COLOR_ARMED 128,128,0
+#define LED_COLOR_ARMED 128,64,0
 /// @brief RGB color that the LED will have when SafeBox going nuts over the alarm.
 #define LED_COLOR_ALARM 255,0,0
+/// @brief RGB color that the LED will have when SafeBox is waiting for a delivery.
+#define LED_COLOR_WAITFORDELIVERY 64,0,64
 //#pragma endregion
 
 //#pragma region [XFACTOR_LED_NUMBERS]

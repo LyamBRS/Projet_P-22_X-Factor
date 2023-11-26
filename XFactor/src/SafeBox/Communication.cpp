@@ -13,6 +13,142 @@
 // - INCLUDE - //
 #include "SafeBox/Communication.hpp"
 
+bool currentGarageSuccess = false;
+bool currentLidSuccess = false;
+
+bool currentLidState = false;
+bool currentGarageState = false;
+bool currentDoorBellState = false;
+bool currentPackageCheckState = false;
+
+/**
+ * @brief 
+ * This function's purpose is to put an unknown
+ * answer into another function's parsing to see
+ * if it would work.
+ * @param answer 
+ * @return true:
+ * Accepted by another function
+ * @return false:
+ * No functions recognized this.
+ */
+bool ParseReceivedAnswer(String answer)
+{
+    Debug_Start("ParseReceivedAnswer");
+
+
+    if(answer == ANSWER_PACKAGE_CHECK_SUCCESS)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_PACKAGE_CHECK_FAILED");
+        currentPackageCheckState = true;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_PACKAGE_CHECK_FAILED)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_PACKAGE_CHECK_FAILED");
+        currentPackageCheckState = false;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_DOORBELL_RANG)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_DOORBELL_RANG");
+        currentDoorBellState = true;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_DOORBELL_NOT_RANG)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_DOORBELL_NOT_RANG");
+        currentDoorBellState = false;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_GARAGE_SUCCESS)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_GARAGE_SUCCESS");
+        currentGarageSuccess = true;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_GARAGE_FAILED)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_GARAGE_FAILED");
+        currentGarageSuccess = false;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_GARAGE_OPEN)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_GARAGE_OPEN");
+        currentGarageState = true;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_GARAGE_CLOSED)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_GARAGE_CLOSED");
+        currentGarageState = false;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_LID_SUCCESS)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_LID_SUCCESS");
+        currentLidSuccess = false;
+        Debug_End();
+        return true;
+    }
+    if(answer == ANSWER_LID_FAILED)
+    {
+        Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_LID_FAILED");
+        currentLidSuccess = false;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_LID_OPEN)
+    {
+        Debug_Error("Communication", "ParseAnswerInDifferentCommand", "ANSWER_LID_OPEN");
+        currentLidState = true;
+        Debug_End();
+        return true;
+    }
+
+    if(answer == ANSWER_LID_CLOSED)
+    {
+        Debug_Error("Communication", "ParseAnswerInDifferentCommand", "ANSWER_LID_CLOSED");
+        currentLidState = false;
+        Debug_End();
+        return true;
+    }
+    if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("O"))    {SafeBox_SetNewStatus(SafeBox_Status::Off);                 BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("WFX"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);   BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("WFD"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);  BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("WFRI")) {SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval); BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("WFR"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);    BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("RFDO")) {SafeBox_SetNewStatus(SafeBox_Status::ReadyForDropOff);     BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("U"))    {SafeBox_SetNewStatus(SafeBox_Status::Unlocked);            BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("DO"))   {SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);         BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("M"))    {SafeBox_SetNewStatus(SafeBox_Status::Maintenance);         BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("E"))    {SafeBox_SetNewStatus(SafeBox_Status::Error);               BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+    if(answer.endsWith("A"))    {SafeBox_SetNewStatus(SafeBox_Status::Alarm);               BT_ClearAllMessages();    Debug_Information("","",answer);     Debug_End();return true;}
+
+    Debug_Error("Communication", "ParseReceivedAnswer", "Answer matched no cases");
+    Debug_End();
+    return false;
+}
+
 //#pragma region [Command_Requests]
 
 /**
@@ -37,36 +173,12 @@ bool SafeBox_ChangeLidState(bool wantedState)
     String answer = "";
 
     answer = BT_MessageExchange(command, COMMS_TIMEOUT_MS);
-    if(answer != ANSWER_LID_SUCCESS)
+    if(!ParseReceivedAnswer(answer))
     {
-        if(answer == ANSWER_LID_FAILED)
-        {
-            Debug_Warning("Communication", "SafeBox_ChangeLidState", "Received lid failure");
-            Debug_End();
-            return false;
-        }
-
-        if(answer == ANSWER_LID_OPEN)
-        {
-            Debug_Error("Communication", "SafeBox_ChangeLidState", "Received lid open");
-            Debug_End();
-            return false;
-        }
-
-        if(answer == ANSWER_LID_CLOSED)
-        {
-            Debug_Error("Communication", "SafeBox_ChangeLidState", "Received lid closed");
-            Debug_End();
-            return false;
-        }
-
-        Debug_Error("Communication", "SafeBox_ChangeLidState", "Received unknown answer:");
-        Debug_Error("Communication", "SafeBox_ChangeLidState", answer);
-        Debug_End();
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeLidState", "UNKNOWN ANSWER");
     }
     Debug_End();
-    return true;
+    return currentLidSuccess;
 }
 
 /**
@@ -93,32 +205,9 @@ bool SafeBox_ChangeGarageState(bool wantedState)
 
     answer = BT_MessageExchange(command, COMMS_TIMEOUT_MS);
     if(answer != ANSWER_GARAGE_SUCCESS)
+    if(!ParseReceivedAnswer(answer))
     {
-        if(answer == ANSWER_GARAGE_FAILED)
-        {
-            Debug_Warning("Communication", "SafeBox_ChangeGarageState", "Received garage failure");
-            Debug_End();
-            return false;
-        }
-
-        if(answer == ANSWER_GARAGE_OPEN)
-        {
-            Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received garage open");
-            Debug_End();
-            return false;
-        }
-
-        if(answer == ANSWER_GARAGE_CLOSED)
-        {
-            Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received garage closed");
-            Debug_End();
-            return false;
-        }
-
-        Debug_Error("Communication", "SafeBox_ChangeGarageState", "Received unknown answer:");
-        Debug_Error("Communication", "SafeBox_ChangeGarageState", answer);
-        Debug_End();
-        return false;
+        Debug_Error("Communication", "SafeBox_ChangeGarageState", "UNKNOWN ANSWER");
     }
     Debug_End();
     return true;
@@ -142,18 +231,11 @@ bool SafeBox_CheckIfPackageDeposited()
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_CHECK_PACKAGE, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_PACKAGE_CHECK_SUCCESS) {Debug_End(); return true;}
-    if(answer == ANSWER_PACKAGE_CHECK_FAILED)
+    if(!ParseReceivedAnswer(answer))
     {
-        Debug_Warning("Communication", "SafeBox_CheckIfPackageDeposited", "SafeBox returned a failure");
-        Debug_End();
-        return false;
+        Debug_Error("Communication", "SafeBox_CheckIfPackageDeposited", "UNKNOWN ANSWER");
     }
-
-    Debug_Error("Communication", "SafeBox_CheckIfPackageDeposited", "Unknown answer:");
-    Debug_Error("Communication", "SafeBox_CheckIfPackageDeposited", answer);
-    Debug_End();
-    return false;
+    return currentPackageCheckState;
 }
 
 /**
@@ -209,6 +291,7 @@ bool SafeBox_ExchangeStatus()
         case(XFactor_Status::SearchingForAPackage):     statusEnding = "SFAP";  break;
         case(XFactor_Status::WaitingForDelivery):       statusEnding = "WFD";   break;
         case(XFactor_Status::WaitingAfterSafeBox):      statusEnding = "WASB";  break;
+        case(XFactor_Status::Unlocked):      statusEnding = "U";  break;
 
         default:
             Debug_Error("Communication", "SafeBox_ExchangeStatus", "Unknown XFactor status");
@@ -231,21 +314,24 @@ bool SafeBox_ExchangeStatus()
     }
 
     // - ANSWER CHECK - //
-    if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("O"))    {SafeBox_SetNewStatus(SafeBox_Status::Off);                 BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("WFX"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);   BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("WFD"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);  BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("WFRI")) {SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval); BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("WFR"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);    BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("RFDO")) {SafeBox_SetNewStatus(SafeBox_Status::ReadyForDropOff);     BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("U"))    {SafeBox_SetNewStatus(SafeBox_Status::Unlocked);            BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("DO"))   {SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);         BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("M"))    {SafeBox_SetNewStatus(SafeBox_Status::Maintenance);         BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("E"))    {SafeBox_SetNewStatus(SafeBox_Status::Error);               BT_ClearAllMessages(); return true;}
-    if(answer.endsWith("A"))    {SafeBox_SetNewStatus(SafeBox_Status::Alarm);               BT_ClearAllMessages(); return true;}
+    if(answer.endsWith("CE"))   {SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);  BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("O"))    {SafeBox_SetNewStatus(SafeBox_Status::Off);                 BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("WFX"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);   BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("WFD"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);  BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("WFRI")) {SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval); BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("WFR"))  {SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);    BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("RFDO")) {SafeBox_SetNewStatus(SafeBox_Status::ReadyForDropOff);     BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("U"))    {SafeBox_SetNewStatus(SafeBox_Status::Unlocked);            BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("DO"))   {SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);         BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("M"))    {SafeBox_SetNewStatus(SafeBox_Status::Maintenance);         BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("E"))    {SafeBox_SetNewStatus(SafeBox_Status::Error);               BT_ClearAllMessages();     Debug_End();return true;}
+    if(answer.endsWith("A"))    {SafeBox_SetNewStatus(SafeBox_Status::Alarm);               BT_ClearAllMessages();     Debug_End();return true;}
 
-    Debug_Error("Communication", "SafeBox_ExchangeStatus", "Received answer did not match:");
-    Debug_Error("Communication", "SafeBox_ExchangeStatus", answer);
+    if(!ParseReceivedAnswer(answer))
+    {
+        Debug_Error("Communication", "SafeBox_ExchangeStatus", "Received answer did not match:");
+        Debug_Error("Communication", "SafeBox_ExchangeStatus", answer);
+    }
 
     BT_ClearAllMessages();
     Debug_End();
@@ -269,22 +355,11 @@ bool SafeBox_GetLidState()
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_LID_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_LID_OPEN)
+    if(!ParseReceivedAnswer(answer))
     {
-        Debug_End();
-        return true;
+        Debug_Error("Communication", "SafeBox_GetLidState", "UNKNOWN ANSWER");
     }
-    if(answer == ANSWER_LID_CLOSED)
-    {
-        Debug_Warning("Communication", "SafeBox_GetLidState", "SafeBox returned a failure");
-        Debug_End();
-        return false;
-    }
-
-    Debug_Error("Communication", "SafeBox_GetLidState", "Unknown answer:");
-    Debug_Error("Communication", "SafeBox_GetLidState", answer);
-    Debug_End();
-    return false;
+    return currentGarageState;
 }
 
 /**
@@ -300,22 +375,11 @@ bool SafeBox_GetGarageState()
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_GARAGE_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_GARAGE_OPEN)
+    if(!ParseReceivedAnswer(answer))
     {
-        Debug_End();
-        return true;
+        Debug_Error("Communication", "SafeBox_GetGarageState", "UNKNOWN ANSWER");
     }
-    if(answer == ANSWER_GARAGE_CLOSED)
-    {
-        Debug_Warning("Communication", "SafeBox_GetGarageState", "SafeBox returned a failure");
-        Debug_End();
-        return false;
-    }
-
-    Debug_Error("Communication", "SafeBox_GetGarageState", "Unknown answer:");
-    Debug_Error("Communication", "SafeBox_GetGarageState", answer);
-    Debug_End();
-    return false;
+    return currentGarageState;
 }
 
 /**
@@ -347,21 +411,11 @@ bool SafeBox_GetDoorBellStatus()
     String answer = "";
 
     answer = BT_MessageExchange(COMMAND_DOORBELL_GET, COMMS_TIMEOUT_MS);
-    if(answer == ANSWER_DOORBELL_RANG)
+    if(!ParseReceivedAnswer(answer))
     {
-        Debug_End();
-        return true;
+        Debug_Error("Communication", "SafeBox_GetDoorBellStatus", "UNKNOWN ANSWER");
     }
-    if(answer == ANSWER_DOORBELL_NOT_RANG)
-    {
-        Debug_Warning("Communication", "SafeBox_GetDoorBellStatus", "SafeBox returned a failure");
-        Debug_End();
-        return false;
-    }
-
-    Debug_Error("Communication", "SafeBox_GetDoorBellStatus", "Unknown answer:");
-    Debug_Error("Communication", "SafeBox_GetDoorBellStatus", answer);
-    return false;
+    return currentDoorBellState;
 }
 
 //#pragma endregion

@@ -151,7 +151,6 @@ String GetMessage(int millisecondsTimeOut)
                         //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
                         //_currentMessage = "";
                         //_messageReceived = true;
-                        Debug_Information("-", "-", "returning message");
                         return _currentMessage;
                     //}
                 }

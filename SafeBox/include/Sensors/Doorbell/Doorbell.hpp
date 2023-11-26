@@ -12,14 +12,19 @@
 
 #pragma once
 
+#include <Arduino.h>
+#include "Debug/Debug.hpp"
+
+/// @brief Arduino analog pin that reads the ambiant noises around the detector
+#define DOORBELL_AMBIENT_NOISE_PIN A0
+/// @brief Arduino analog pin that reads the whistle noises around the detector
+#define DOORBELL_WHISLE_NOISE_PIN A1
+
 /**
  * @brief
  * Function that initialises the whistle detector
  * or doorbell reader used by SafeBox.
  *
- * @param doorbellPin
- * The pin that is used to read the whistle status
- * from.
  * @return true:
  * Successfully initialised the doorbell used by
  * SafeBox. (Whistle detector)
@@ -27,7 +32,7 @@
  * Failed to initialised the doorbell used on
  * SafeBox.
  */
-bool Doorbell_Init(int doorbellPin);
+bool Doorbell_Init();
 
 /**
  * @brief

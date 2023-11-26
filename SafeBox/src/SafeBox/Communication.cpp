@@ -285,6 +285,7 @@ bool SafeBox_SaveReceivedXFactorStatus(String command)
     if(command.endsWith("SFAP"))    {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);        return true;}
     if(command.endsWith("WFD"))     {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);          return true;}
     if(command.endsWith("WASB"))    {XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);         return true;}
+    if(command.endsWith("U"))       {XFactor_SetNewStatus(XFactor_Status::Unlocked);                    return true;}
 
     Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Unknown XFactor status");
     Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", command);
