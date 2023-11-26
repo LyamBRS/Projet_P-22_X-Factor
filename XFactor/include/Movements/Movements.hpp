@@ -20,7 +20,7 @@
 
 
 //First 3 variables for the PID, Kp, Ki and Kd.
-#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
+#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0f
 
 #define TURN_90  PI/2
 #define TURN_180 PI
@@ -30,7 +30,7 @@
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 
-#define SPEED_MAX 0.2f
+#define SPEED_MAX 0.4f
 #define ACCELERATION_CONSTANT (-(SPEED_MAX-0.1f)/0.25f)
 
 #define SPEED_MAX_TURN (SPEED_MAX/2)
