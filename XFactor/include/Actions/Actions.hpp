@@ -47,6 +47,8 @@
 #define ROBOT_WIDTH_CM 25.0f
 #define ROBOT_LENGTH_CM 25.0f
 
+#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 80.0f
+
 //#pragma endregion
 
 //#pragma region [ACTION_HANDLERS]
