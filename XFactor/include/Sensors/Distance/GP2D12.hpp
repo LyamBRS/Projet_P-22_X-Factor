@@ -10,6 +10,16 @@
 #pragma once
 
 #include "Arduino.h"
+
+#define FRONT_SENSOR_TRIG_PIN_NUMBER 46
+#define FRONT_SENSOR_ECHO_PIN_NUMBER 47
+
+#define LEFT_SENSOR_TRIG_PIN_NUMBER 10
+#define LEFT_SENSOR_ECHO_PIN_NUMBER 11
+
+#define RIGHT_SENSOR_TRIG_PIN_NUMBER 44
+#define RIGHT_SENSOR_ECHO_PIN_NUMBER 45
+
 /**
  * @brief Sets base values
  *
