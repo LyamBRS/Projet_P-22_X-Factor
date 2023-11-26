@@ -522,7 +522,8 @@ void Execute_SearchForPackage()
         if (GetAvailableVectors() - startAvailableVectors == 5)
         {
           startAvailableVectors = GetAvailableVectors();
-          checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+          //ABSTRACTION DE LA COMM
+          /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
           if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
           {
@@ -536,7 +537,7 @@ void Execute_SearchForPackage()
           {
             SetNewExecutionFunction(checkFunctionId);
             return;
-          }
+          }*/
         }
         break;
       case PACKAGE_FOUND:
