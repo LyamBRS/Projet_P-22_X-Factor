@@ -407,8 +407,8 @@ void Execute_SearchForPackage()
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
-  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 2); // - 2 is removing the edges
-  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 1); // - 1 is removing left edge
+  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
+  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
 
   /*int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
   int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);*/
@@ -435,6 +435,9 @@ void Execute_SearchForPackage()
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex].distance_cm));
 
     if (currentIndex * 2 < fullStrafes)
     {
@@ -447,12 +450,21 @@ void Execute_SearchForPackage()
       
     searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 1));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 1].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 1].distance_cm));
 
     searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
     searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 2));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 2].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 2].distance_cm));
 
     searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
     searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 3));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 3].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 3].distance_cm));
 
     /*searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex].distance_cm = SCANNABLE_AREA_WIDTH;
@@ -469,7 +481,7 @@ void Execute_SearchForPackage()
     searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;*/
   }
 
-  if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
+  if (currentIndex % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_180;
     searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - ROBOT_LENGTH_CM;

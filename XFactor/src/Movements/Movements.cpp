@@ -198,7 +198,7 @@ bool TurnInRadians(float radians)
 
     targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
 
-    if (radians >= 0) direction = TURN_RIGHT;
+    if (radians <= 0) direction = TURN_RIGHT;
     else direction = TURN_LEFT;
 
     return true;
