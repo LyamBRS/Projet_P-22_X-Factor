@@ -18,6 +18,7 @@
 #include "Sensors/Colour/GROVE.hpp"
 #include "Movements/Movements.hpp"
 #include "Colour/Colour.hpp"
+#include "Sensors/Distance/GP2D12.hpp"
 
 // #pragma region [DEFINES]
 #define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
