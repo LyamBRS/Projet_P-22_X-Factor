@@ -300,7 +300,7 @@ void Execute_GettingOutOfGarage()
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, true, DONT_CHECK_SENSORS))
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, true, DONT_CHECK_SENSORS))
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -355,7 +355,7 @@ void Execute_SearchPreparations()
 
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, true, DONT_CHECK_SENSORS))
+    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, true, DONT_CHECK_SENSORS)) // To see
     {
       int checkFunctionId;
     
@@ -422,8 +422,8 @@ void Execute_SearchForPackage()
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
-  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
-  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
+  /*int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
+  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));*/
 
   /*int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
   int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);*/
@@ -449,7 +449,7 @@ void Execute_SearchForPackage()
   for (currentIndex = 3; currentIndex < totalStrafes * 2; currentIndex += 4)
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
-    searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2;
     Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex));
     Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex].rotation_rad));
     Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex].distance_cm));
@@ -470,7 +470,7 @@ void Execute_SearchForPackage()
     Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 1].distance_cm));
 
     searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
-    searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2;
     Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 2));
     Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 2].rotation_rad));
     Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 2].distance_cm));

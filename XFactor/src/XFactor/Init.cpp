@@ -64,6 +64,7 @@ void XFactor_Init()
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
 
+                unsigned char cycleCounter = 0;
                 float currentPeak = 0.0f;
                 float multiplierR = 0;
                 float multiplierG = 0;
@@ -86,7 +87,15 @@ void XFactor_Init()
                     if(multiplierB<0) multiplierB=0;
 
                     currentPeak = currentPeak + 0.01;
-                    if(currentPeak>4.71) currentPeak = 0;
+                    if(currentPeak>4.71)
+                    {
+                        currentPeak = 0;
+                        cycleCounter++;
+                        if(cycleCounter > 5)
+                        {
+                            break;
+                        }
+                    }
 
                     LEDS_SetColor(LED_ID_STATUS_INDICATOR, (float)(255.0f*multiplierR), (float)(255.0f*multiplierG), (float)(255.0f*multiplierB));
                     delay(1);

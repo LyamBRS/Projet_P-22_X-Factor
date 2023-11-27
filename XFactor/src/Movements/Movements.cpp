@@ -452,7 +452,7 @@ int Execute_Turning(float targetRadians)
         }
     
         if (checkForSensors){
-            if (Alarm_VerifySensors())
+            /*if (Alarm_VerifySensors())
             {
                 Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
                 status = ALARM_TRIGGERED;
@@ -475,7 +475,7 @@ int Execute_Turning(float targetRadians)
             else if(distanceSensorCounter == 2){
                 if (Package_Detected(RIGHT_SENSOR)) return OBJECT_LOCATED_RIGHT;
                 distanceSensorCounter = 0;
-            }
+            }*/
         }
             
     }
@@ -561,7 +561,7 @@ int Execute_Moving(float targetDistance)
             Debug_Information("","",String(rightPulse-leftPulse));
         }
         if (checkForSensors){
-            if (completionRatio <= 0.85f && Alarm_VerifySensors())
+            /*if (completionRatio <= 0.85f && Alarm_VerifySensors())
             {
                 Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
                 status = ALARM_TRIGGERED;
@@ -596,7 +596,7 @@ int Execute_Moving(float targetDistance)
                     return OBJECT_LOCATED_RIGHT;
                 }
                 distanceSensorCounter = 0;
-            }
+            }*/
         }
     }
     Debug_Information("Movements", "Execute_Moving", "Exited while loop");
