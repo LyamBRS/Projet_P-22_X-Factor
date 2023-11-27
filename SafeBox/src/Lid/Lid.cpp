@@ -69,6 +69,8 @@ bool Lid_Close()
  */
 bool Lid_Unlock()
 {
+    //servo1.attach(SERVO_RFID_PIN); 
+    //servo1.write(PACKAGE_DOOR_UNLOCKED);
     return false;
 }
 
@@ -84,5 +86,7 @@ bool Lid_Unlock()
  */
 bool Lid_Lock()
 {
+    //servo1.attach(SERVO_RFID_PIN); 
+    //servo1.write(PACKAGE_DOOR_LOCKED);
     return false;
 }
