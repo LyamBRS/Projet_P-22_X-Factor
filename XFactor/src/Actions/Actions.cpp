@@ -308,12 +308,19 @@ void Execute_GettingOutOfGarage()
     }
     else
     {
+      Debug_Error("Actions", "Execute_GettingOutOfGarage", "Failed to move from vector");
       SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;   
     }
   }
   else
   {
-    SafeBox_ChangeGarageState(true);
+    if(!SafeBox_ChangeGarageState(true))
+    {
+      Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
+      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;
+    }
   }
 }
 
