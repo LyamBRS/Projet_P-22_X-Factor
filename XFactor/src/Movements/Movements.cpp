@@ -16,10 +16,10 @@
 
 
 // - GLOBAL VARIABLES - //
-int rightPulse = 0;
-int leftPulse  = 0;
-int previousRightPulse = 0;
-int previousLeftPulse  = 0;
+int32_t rightPulse = 0;
+int32_t leftPulse  = 0;
+int32_t previousRightPulse = 0;
+int32_t previousLeftPulse  = 0;
 double completionRatio = 0.0;
 
 float rightMovement = 0.0f;
@@ -408,6 +408,7 @@ bool ResetParameters()
  */
 int Execute_Turning(float targetRadians)
 {
+    int32_t absoluteOfRightPulse = 0;
     if (!TurnInRadians(targetRadians))
     {
         Debug_Error("Movements", "Execute_Turning", "Could not get the target movement");
@@ -424,9 +425,11 @@ int Execute_Turning(float targetRadians)
     
     while(completionRatio <= 1){
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
-            rightPulse = abs((float)ENCODER_Read(RIGHT));
-            leftPulse  = abs((float)ENCODER_Read(LEFT));
-            completionRatio = rightPulse/targetTicks;
+            rightPulse = abs(ENCODER_Read(RIGHT));
+            leftPulse  = abs(ENCODER_Read(LEFT));
+
+            absoluteOfRightPulse = abs(rightPulse);
+            completionRatio = ((float)absoluteOfRightPulse)/targetTicks;
 
             currentSpeed = Accelerate(completionRatio, SPEED_MAX_TURN);
 
@@ -505,7 +508,7 @@ int Execute_Turning(float targetRadians)
 int Execute_Moving(float targetDistance)
 {
     Debug_Start("Execute_Moving");
-    int absoluteOfRightPulse = 0;
+    int32_t absoluteOfRightPulse = 0;
 
     if (!MoveStraight(targetDistance))
     {
@@ -527,17 +530,15 @@ int Execute_Moving(float targetDistance)
     while(completionRatio<1){
         // PID called each 10 milliseconds
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
-            rightPulse = abs((float)ENCODER_Read(RIGHT));
-            leftPulse  = abs((float)ENCODER_Read(LEFT));
+            rightPulse = abs(ENCODER_Read(RIGHT));
+            leftPulse  = abs(ENCODER_Read(LEFT));
 
             absoluteOfRightPulse = abs(rightPulse);
-            completionRatio = absoluteOfRightPulse/targetTicks;
+            completionRatio = ((float)absoluteOfRightPulse)/targetTicks;
 
             currentSpeed = Accelerate(completionRatio, SPEED_MAX);
 
-            speedLeft = PID(PID_MOVEMENT_RATIO_P * currentSpeed,
-                            PID_MOVEMENT_RATIO_I * currentSpeed,
-                            PID_MOVEMENT_RATIO_D * currentSpeed,
+            speedLeft = PID(PID_MOVEMENT,
                             (leftPulse-previousLeftPulse), 
                             (rightPulse-previousRightPulse), 
                             currentSpeed);
