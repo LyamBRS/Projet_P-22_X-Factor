@@ -20,5 +20,6 @@
         "utilised",
         "utilises",
         "XFACTOR"
-    ]
+    ],
+    "cmake.configureOnOpen": false
 }

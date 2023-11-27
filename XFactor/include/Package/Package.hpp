@@ -174,7 +174,7 @@ bool Package_Confirmed();
  * No packages are detected anywhere near or
  * inside the robot.
  */
-bool Package_Detected();
+bool Package_Detected(int sensor);
 
 /**
  * @brief

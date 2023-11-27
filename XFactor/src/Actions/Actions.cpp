@@ -612,7 +612,7 @@ void Execute_ExamineFoundPackage()
     return;
   }
 
-  if (Package_Detected())
+  if (Package_Confirmed())
   {
     //XFactor_SetNewStatus(XFactor_Status::); PUT GOOD STATUS
     SafeBox_ExchangeStatus();
@@ -651,7 +651,7 @@ void Execute_PickUpPackage()
 
   Package_PickUp();
 
-  while(!Package_Detected())
+  while(!Package_Confirmed())
   {
     if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
