@@ -264,7 +264,7 @@ int Package_Detected(int capteur)
 {
     unsigned short distanceDetected_cm;
     MovementVector position;
-    if (Claws_GetSwitchStatus) return true;
+    if (Claws_GetSwitchStatus()) return true;
     else{
         switch(capteur){
             case FRONT_SENSOR:

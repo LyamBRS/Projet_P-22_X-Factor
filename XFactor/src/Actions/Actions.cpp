@@ -296,10 +296,11 @@ void Execute_GettingOutOfGarage()
 {
   XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+  ResetVectors();
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, false, DONT_CHECK_SENSORS))
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_WIDTH_CM, true, DONT_CHECK_SENSORS))
     {
       if (SafeBox_ExchangeStatus() && SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
       {
@@ -350,13 +351,13 @@ void Execute_GettingOutOfGarage()
 void Execute_SearchPreparations()
 {
   XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
-  
+  ResetVectors();
+
   if (!SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, false, DONT_CHECK_SENSORS))
+    if (MoveFromVector(STRAIGHT, ROBOT_WIDTH_CM, true, DONT_CHECK_SENSORS))
     {
       int checkFunctionId;
-      ResetVectors();
     
       checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
 
