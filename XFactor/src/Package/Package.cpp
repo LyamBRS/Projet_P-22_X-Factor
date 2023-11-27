@@ -262,12 +262,16 @@ bool Package_Confirmed()
 
 int Package_Detected(int capteur)
 {
+    unsigned short distanceDetected_cm;
+    MovementVector position;
     if (Claws_GetSwitchStatus) return true;
     else{
         switch(capteur){
             case FRONT_SENSOR:
-                if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                distanceDetected_cm = GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER);
+                if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
                 {
+                    
                     return PACKAGE_DETECTED;
                 }
                 break;
@@ -350,4 +354,58 @@ bool Package_GetStatus()
         return true;
     }
     return false;
+}
+
+/**
+ * @brief
+ * Return if the detected package is
+ * in fact SafeBox
+ *
+ * @return SAFEBOX_DETECTED:
+ * Safebox is detected
+ * @return PACKAGE_DETECTED:
+ * What was detected is not SafeBox.
+ * @return OUT_OF_BOUNDS_DETECTED:
+ * What was detected is not within the demonstration area.
+ */
+
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm)
+{
+    MovementVector position = GetSavedPosition();
+    switch (sensorId)
+    {
+    case FRONT_SENSOR:
+        break;
+    case LEFT_SENSOR:
+        position.rotation_rad += TURN_90_LEFT;
+        break;
+    case RIGHT_SENSOR:
+        position.rotation_rad += TURN_90_RIGHT;
+        break;
+    default:
+        break;
+    }
+
+    float positionX = cos(position.rotation_rad) * position.distance_cm;
+    float positionY = sin(position.rotation_rad) * position.distance_cm;
+
+    if (positionX < SAFEBOX_LENGTH_CM)
+    {
+        if (positionY + distanceDetected_cm < SAFEBOX_WIDTH_CM)
+        {
+            return SAFEBOX_DETECTED;
+        }
+    }
+    else if (positionY < SAFEBOX_WIDTH_CM)
+    {
+        if (positionX + distanceDetected_cm < SAFEBOX_LENGTH_CM)
+        {
+            return SAFEBOX_DETECTED;
+        }
+    }
+    else
+    {
+        
+    }
+    
 }
