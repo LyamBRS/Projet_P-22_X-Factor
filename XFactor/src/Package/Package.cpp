@@ -386,13 +386,26 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm)
         break;
     }
 
-    if ((cos(position.rotation_rad) * position.distance_cm) + distanceDetected_cm < SAFEBOX_LENGTH_CM)
-    {
-        return SAFEBOX_DETECTED;
-    }
+    float positionX = cos(position.rotation_rad) * position.distance_cm;
+    float positionY = sin(position.rotation_rad) * position.distance_cm;
 
-    if ((sin(position.rotation_rad) * position.distance_cm) + distanceDetected_cm < SAFEBOX_WIDTH_CM)
+    if (positionX < SAFEBOX_LENGTH_CM)
     {
-        return SAFEBOX_DETECTED;
+        if (positionY + distanceDetected_cm < SAFEBOX_WIDTH_CM)
+        {
+            return SAFEBOX_DETECTED;
+        }
     }
+    else if (positionY < SAFEBOX_WIDTH_CM)
+    {
+        if (positionX + distanceDetected_cm < SAFEBOX_LENGTH_CM)
+        {
+            return SAFEBOX_DETECTED;
+        }
+    }
+    else
+    {
+        
+    }
+    
 }
