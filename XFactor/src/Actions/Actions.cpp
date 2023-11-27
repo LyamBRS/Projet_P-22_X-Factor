@@ -295,6 +295,7 @@ void Execute_WaitForDelivery()
 void Execute_GettingOutOfGarage()
 {
   XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
   if (SafeBox_GetGarageState())
   {
