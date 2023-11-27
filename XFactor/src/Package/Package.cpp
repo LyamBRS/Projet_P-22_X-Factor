@@ -235,11 +235,6 @@ bool Package_Confirmed()
         return true;
     }
 
-    if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < 20)
-    {
-        return true;
-    }
-
     return false;
 }
 
@@ -256,45 +251,46 @@ bool Package_Confirmed()
  * depending on which sensor triggered.
  *
  * Packages are identified using color sensors.
- * @return true:
+ * @return PACKAGE_DETECTED:
  * A package was detected near the robot.
- * @return false:
+ * @return NOTHING_DETECTED:
  * No packages are detected anywhere near or
  * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
  */
 
-bool Package_Detected(int capteur)
+int Package_Detected(int capteur)
 {
     if (Claws_GetSwitchStatus) return true;
     else{
         switch(capteur){
             case FRONT_SENSOR:
-            if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER)<DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-            {
-                return true;
-            }
-            break;
+                if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
 
             case LEFT_SENSOR:
-            if (GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER)<DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-            {
-                return true;
-            }
-            break;
+                if (GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
 
             case RIGHT_SENSOR:
-            if (GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER)<DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-            {
-                return true;
-            }
-            break;
+                if (GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
 
             default:
-
-            return false;
-            break;
+                return NOTHING_DETECTED;
+                break;
         }
-        return false;
+        return NOTHING_DETECTED;
     }
 }
 
