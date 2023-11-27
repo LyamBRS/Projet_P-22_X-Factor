@@ -24,6 +24,10 @@
 #define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 70
 #define PACKAGE_BACK_MOVEMENT -10.0f
+
+#define NOTHING_DETECTED 0
+#define PACKAGE_DETECTED 1
+#define SAFEBOX_DETECTED 2
 // #pragma endregion
 
 #define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 40.0f
@@ -168,13 +172,15 @@ bool Package_Confirmed();
  * depending on which sensor triggered.
  *
  * Packages are identified using color sensors.
- * @return true:
+ * @return PACKAGE_DETECTED:
  * A package was detected near the robot.
- * @return false:
+ * @return NOTHING_DETECTED:
  * No packages are detected anywhere near or
  * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
  */
-bool Package_Detected(int sensor);
+int Package_Detected(int sensor);
 
 /**
  * @brief
