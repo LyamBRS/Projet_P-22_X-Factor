@@ -287,15 +287,24 @@ bool MoveStraight(float distance)
  */
 float Accelerate(float completionRatio, float maximumSpeed)
 {
+    double neededSpeed = 0;
     if ((completionRatio >= 0) && completionRatio <= 100)
     {
         if (maximumSpeed == SPEED_MAX)
         {
-            return ACCELERATION_CONSTANT*square(completionRatio-0.5)+maximumSpeed;
+            neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
+
+            //Parabola with a peak above maximum speed so it flattens out and we accelerate/deaccelerate faster.
+            //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
+            if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
+            return neededSpeed;
         }
         else if (maximumSpeed == SPEED_MAX_TURN)
         {
-            return ACCELERATION_CONSTANT_TURN*square(completionRatio-0.5)+maximumSpeed;
+            neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
+            //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
+            if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
+            return neededSpeed;
         }
     }
     else 
@@ -539,9 +548,10 @@ int Execute_Moving(float targetDistance)
             currentSpeed = Accelerate(completionRatio, SPEED_MAX);
 
             speedLeft = PID(PID_MOVEMENT,
-                            (leftPulse-previousLeftPulse), 
-                            (rightPulse-previousRightPulse), 
+                            leftPulse-previousLeftPulse, 
+                            rightPulse-previousRightPulse, 
                             currentSpeed);
+            
 
             SetMotorSpeed(LEFT, (float)direction*speedLeft);
             SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
@@ -549,6 +559,7 @@ int Execute_Moving(float targetDistance)
             previousLeftPulse  = leftPulse;
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
+            Debug_Information("","",String(rightPulse-leftPulse));
         }
         if (checkForSensors){
             if (completionRatio <= 0.85f && Alarm_VerifySensors())

@@ -23,7 +23,7 @@
 
 //First 3 variables for the PID, Kp, Ki and Kd.
 //#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
-#define PID_MOVEMENT 0.0064f, 0.0000f, 0.0000f
+#define PID_MOVEMENT 0.0064f, 0.0016f, 0.0020f
 
 #define PID_MOVEMENT_VALUE_P 0.0016f
 #define PID_MOVEMENT_VALUE_I 0.0002f

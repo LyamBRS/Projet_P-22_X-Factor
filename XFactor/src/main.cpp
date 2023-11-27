@@ -33,7 +33,7 @@ void loop()
  LEDS_SetColor(0, 0,0,255);
  if (ROBUS_IsBumper(3)){
     LEDS_SetColor(0, 0,255,0);
-    MoveFromVector(0, 500, false, false);
+    MoveFromVector(0, 100, false, false);
     //MoveStraight(1000);
  }
   LEDS_SetColor(0, 255,0,0);
