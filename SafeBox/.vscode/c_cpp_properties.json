@@ -8,57 +8,31 @@
         {
             "name": "PlatformIO",
             "includePath": [
-<<<<<<< HEAD
-                "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/include",
-                "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/src",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/cores/arduino",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/variants/mega",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-=======
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/include",
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/cores/arduino",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/variants/mega",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
->>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
+                "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/include",
+                "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/src",
+                "C:/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
+                "C:/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/.platformio/packages/framework-arduino-avr/variants/mega",
+                "C:/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-<<<<<<< HEAD
-                    "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/include",
-                    "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/src",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                    "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/cores/arduino",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/variants/mega",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                    "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-=======
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/include",
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/cores/arduino",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/variants/mega",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
->>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
+                    "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/include",
+                    "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/src",
+                    "C:/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "c:/Users/Cédric St-Louis/OneDrive - USherbrooke/Bureau/X_FACTOR_GIT_HUB/Projet_P-22_X-Factor-1/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
+                    "C:/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/.platformio/packages/framework-arduino-avr/variants/mega",
+                    "C:/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                     ""
                 ]
             },
@@ -74,11 +48,7 @@
             ],
             "cStandard": "gnu11",
             "cppStandard": "gnu++11",
-<<<<<<< HEAD
-            "compilerPath": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
-=======
-            "compilerPath": "C:/Users/faryc/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
->>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
+            "compilerPath": "C:/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
             "compilerArgs": [
                 "-mmcu=atmega2560",
                 ""
