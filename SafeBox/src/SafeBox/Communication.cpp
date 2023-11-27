@@ -75,6 +75,24 @@ bool SafeBox_CheckAndExecuteMessage()
         return false;
     }
 
+    if(latestMessage.endsWith(COMMAND_GARAGE_GET))
+    {
+        if(Garage_IsClosed())
+        {
+            if(BT_SendString(ANSWER_GARAGE_CLOSED)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed to TX ANSWER_GARAGE_CLOSED");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
+        }
+        else
+        {
+            if(BT_SendString(ANSWER_GARAGE_OPEN)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed to TX ANSWER_GARAGE_OPEN");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
+        } 
+    }
+
     if(latestMessage.endsWith(COMMAND_GARAGE_OPEN))
     {
         if(SafeBox_ChangeGarageState(true)) {return true;}
@@ -220,7 +238,7 @@ bool SafeBox_ChangeGarageState(bool wantedState)
     }
     else
     {
-        if(Lid_Close())
+        if(Garage_Close())
         {
             if(BT_SendString(ANSWER_GARAGE_SUCCESS)) return true;
             Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage close success");

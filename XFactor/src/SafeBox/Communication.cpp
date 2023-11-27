@@ -36,7 +36,7 @@ bool ParseReceivedAnswer(String answer)
 {
     Debug_Start("ParseReceivedAnswer");
 
-
+    Debug_Warning("Communication", "RX", answer);
     if(answer == ANSWER_PACKAGE_CHECK_SUCCESS)
     {
         Debug_Warning("Communication", "ParseAnswerInDifferentCommand", "ANSWER_PACKAGE_CHECK_FAILED");
