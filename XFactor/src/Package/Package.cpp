@@ -226,14 +226,14 @@ bool Package_Transport()
 
 bool Package_Confirmed()
 {
-    unsigned long currentColour = 0;
+    /*unsigned long currentColour = 0;
 
     currentColour = GROVE_GetColor();
 
-    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF))
+    if(Colour_Threshold(0x15000000, currentColour, 0xFFFFFFFF))
     {
         return true;
-    }
+    }*/
 
     return false;
 }
