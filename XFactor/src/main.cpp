@@ -30,8 +30,12 @@ void loop()
   delay(1000);
   //Execute_CurrentFunction();
   */
+ LEDS_SetColor(0, 0,0,255);
  if (ROBUS_IsBumper(3)){
-    MoveFromVector(0, 50, 0, 0);
+    LEDS_SetColor(0, 0,255,0);
+    MoveFromVector(0, 500, false, false);
+    //MoveStraight(1000);
  }
+  LEDS_SetColor(0, 255,0,0);
 
 }
