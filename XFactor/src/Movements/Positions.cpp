@@ -16,6 +16,7 @@
 
 float currentRelativeRotation_rad = 0;
 float currentDistance_cm = 0;
+RobotPosition robotPosition;
 
 /**
  * @brief Updates the total rotation of the robot
@@ -58,6 +59,22 @@ bool UpdateSavedDistance(float distanceMade_cm)
 }
 
 /**
+ * @brief Updates the robot's current position
+ * based on the recently completed vector.
+ * @param positionX_cm
+ * @param positionY_cm
+ * @return true:
+ * The position was updated successfully.
+ * @return false:
+ * The position failed to be updated.
+ */
+bool UpdateSavedPosition(float positionX_cm, float positionY_cm)
+{
+  robotPosition.positionX_cm += positionX_cm;
+  robotPosition.positionY_cm += positionY_cm;
+}
+
+/**
  * @brief Function that resets both global
  * variables that stores the robot's current
  * position. The distance and rotation will
@@ -77,6 +94,8 @@ bool ResetPositions()
 {
   currentRelativeRotation_rad = 0;
   currentDistance_cm = 0;
+  robotPosition.positionX_cm = 0.0f;
+  robotPosition.positionY_cm = 0.0f;
   return true;
 }
 
@@ -104,4 +123,18 @@ float GetSavedRotation()
 float GetSavedDistance()
 {
   return currentDistance_cm;
+}
+
+/**
+ * @brief Returns the current value
+ * of the global variable that
+ * stores the robot's current
+ * position.
+ * @return RobotPosition:
+ * Struct containing position in X
+ * and Y.
+ */
+RobotPosition GetSavedPosition()
+{
+  return robotPosition;
 }

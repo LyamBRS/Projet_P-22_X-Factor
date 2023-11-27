@@ -268,6 +268,7 @@ int Package_Detected(int capteur)
             case FRONT_SENSOR:
                 if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
                 {
+                    
                     return PACKAGE_DETECTED;
                 }
                 break;

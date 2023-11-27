@@ -13,6 +13,13 @@
 
 #pragma once
 
+#include "Vectors.hpp"
+
+typedef struct
+{
+    float positionX_cm;
+    float positionY_cm;
+} RobotPosition;
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be
@@ -44,6 +51,18 @@ bool UpdateSavedRotation(float newRelativeRotation_rad);
  * The distance failed to be updated.
  */
 bool UpdateSavedDistance(float distanceMade_cm);
+
+/**
+ * @brief Updates the robot's current position
+ * based on the recently completed vector.
+ * @param positionX_cm
+ * @param positionY_cm
+ * @return true:
+ * The position was updated successfully.
+ * @return false:
+ * The position failed to be updated.
+ */
+bool UpdateSavedPosition(float positionX_cm, float positionY_cm);
 
 /**
  * @brief Function that resets both global
@@ -82,3 +101,14 @@ float GetSavedRotation();
  * value of the saved rotation.
  */
 float GetSavedDistance();
+
+/**
+ * @brief Returns the current value
+ * of the global variable that
+ * stores the robot's current
+ * position.
+ * @return RobotPosition:
+ * Struct containing position in X
+ * and Y.
+ */
+RobotPosition GetSavedPosition();
