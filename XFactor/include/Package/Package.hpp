@@ -219,6 +219,21 @@ bool Package_SetStatus(bool newPackageStatus);
  * XFactor shouldn't be carrying a package.
  */
 bool Package_GetStatus();
+
+/**
+ * @brief
+ * Return if the detected package is
+ * in fact SafeBox
+ *
+ * @return SAFEBOX_DETECTED:
+ * Safebox is detected
+ * @return PACKAGE_DETECTED:
+ * What was detected is not SafeBox.
+ * @return OUT_OF_BOUNDS_DETECTED:
+ * What was detected is not within the demonstration area.
+ */
+
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad);
 // #pragma endregion
 
 

@@ -369,43 +369,75 @@ bool Package_GetStatus()
  * What was detected is not within the demonstration area.
  */
 
-int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm)
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad)
 {
     MovementVector position = GetSavedPosition();
+
+    /*MovementVector position;
+    position.distance_cm = 100.0f;
+    position.rotation_rad = PI/4;
+
+    relativeRotation_rad = -(PI / 4);
+    distanceDetected_cm = 40.0f;
+    sensorId = FRONT_SENSOR;*/
+
     switch (sensorId)
     {
-    case FRONT_SENSOR:
-        break;
-    case LEFT_SENSOR:
-        position.rotation_rad += TURN_90_LEFT;
-        break;
-    case RIGHT_SENSOR:
-        position.rotation_rad += TURN_90_RIGHT;
-        break;
-    default:
-        break;
+        case FRONT_SENSOR:
+            break;
+        case LEFT_SENSOR:
+            position.rotation_rad += TURN_90_LEFT;
+            break;
+        case RIGHT_SENSOR:
+            position.rotation_rad += TURN_90_RIGHT;
+            break;
+        default:
+            break;
     }
 
-    float positionX = cos(position.rotation_rad) * position.distance_cm;
-    float positionY = sin(position.rotation_rad) * position.distance_cm;
+    float cosPosition = cos(position.rotation_rad);
+    float sinPosition = sin(position.rotation_rad);
 
-    if (positionX < SAFEBOX_LENGTH_CM)
+    float positionX = cosPosition * position.distance_cm;
+    float positionY = sinPosition * position.distance_cm;
+
+    float distanceDetectedX_cm = -cos(relativeRotation_rad) * distanceDetected_cm;
+    float distanceDetectedY_cm = sin(relativeRotation_rad) * distanceDetected_cm;
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(positionX));
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionY : " + String(positionY));
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance X : " + String(distanceDetectedX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance Y : " + String(distanceDetectedY_cm));
+
+    if (positionY + distanceDetectedY_cm > DEMO_AREA_WIDTH_CM || positionY + distanceDetectedY_cm < 0)
     {
-        if (positionY + distanceDetected_cm < SAFEBOX_WIDTH_CM)
-        {
-            return SAFEBOX_DETECTED;
-        }
+        Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds Y");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
+        return OUT_OF_BOUNDS_DETECTED;
     }
-    else if (positionY < SAFEBOX_WIDTH_CM)
+
+    if (positionX + distanceDetectedX_cm > DEMO_AREA_LENGTH_CM || positionX + distanceDetectedX_cm < 0)
     {
-        if (positionX + distanceDetected_cm < SAFEBOX_LENGTH_CM)
-        {
-            return SAFEBOX_DETECTED;
-        }
+        Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
+        return OUT_OF_BOUNDS_DETECTED;
     }
-    else
+
+    /*if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM)
     {
-        
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected Y");
     }
-    
+
+    if (abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected X");
+    }*/
+
+    if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM && abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
+        return SAFEBOX_DETECTED;
+    }
+    return NOTHING_DETECTED;
 }
