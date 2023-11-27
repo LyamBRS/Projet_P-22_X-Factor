@@ -18,11 +18,15 @@
 #include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
 #include "Events/Events.hpp"            //// Allows the Execute movement functions to interrupt when a set goal is reached.
 #include "Distances.hpp"                //// Distance constants useful for movement
+#include "LED/LED.hpp"
 
 
 //First 3 variables for the PID, Kp, Ki and Kd.
 #define PID_MOVEMENT 0.0016f, 0.0002f, 0.0f
 
+
+#define CONSTANT_RATIO_STRAIGHT 1.0f
+#define CONSTANT_RATIO_TURN 1.0f
 #define TURN_90  PI/2
 #define TURN_180 PI
 
