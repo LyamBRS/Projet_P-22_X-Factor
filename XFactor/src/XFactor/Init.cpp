@@ -85,8 +85,8 @@ void XFactor_Init()
                     if(multiplierG<0) multiplierG=0;
                     if(multiplierB<0) multiplierB=0;
 
-                    currentPeak = currentPeak + 0.001;
-                    if(currentPeak>6.28) currentPeak = 0;
+                    currentPeak = currentPeak + 0.01;
+                    if(currentPeak>4.71) currentPeak = 0;
 
                     LEDS_SetColor(LED_ID_STATUS_INDICATOR, (float)(255.0f*multiplierR), (float)(255.0f*multiplierG), (float)(255.0f*multiplierB));
                     delay(1);
