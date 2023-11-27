@@ -392,6 +392,8 @@ int Execute_Turning(float targetRadians)
         return MOVEMENT_ERROR;
     }
 
+    targetTicks = targetTicks*CONSTANT_RATIO_TURN;
+
     int status = MOVEMENT_COMPLETED;
     int distanceSensorCounter = 0;
     
@@ -486,7 +488,9 @@ int Execute_Moving(float targetDistance)
         return false;
     }
 
-    Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
+    targetTicks = targetTicks*CONSTANT_RATIO_STRAIGHT;
+
+    //Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
 
     int status = MOVEMENT_COMPLETED;
     int distanceSensorCounter = 0;
