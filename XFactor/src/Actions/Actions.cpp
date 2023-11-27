@@ -403,13 +403,19 @@ void Execute_SearchForPackage()
   
   MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
 
+  for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
+  {
+    searchPatternVectors[vectorBufferIndex].rotation_rad = 0.0f;
+    searchPatternVectors[vectorBufferIndex].distance_cm = 0.0f;
+  }
+
   float strafeDistance_cm = 0;
   int currentIndex = 0;
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
-  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 2); // - 2 is removing the edges
-  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM) - 1); // - 1 is removing left edge
+  int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
+  int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
 
   /*int totalStrafes = (int)(DEMO_AREA_LENGTH_CM / SCANNABLE_AREA_WIDTH);
   int fullStrafes = (int)((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / SCANNABLE_AREA_WIDTH);*/
@@ -436,6 +442,9 @@ void Execute_SearchForPackage()
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex].distance_cm));
 
     if (currentIndex * 2 < fullStrafes)
     {
@@ -448,12 +457,21 @@ void Execute_SearchForPackage()
       
     searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 1));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 1].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 1].distance_cm));
 
     searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
     searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 2));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 2].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 2].distance_cm));
 
     searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
     searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
+    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 3));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 3].rotation_rad));
+    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 3].distance_cm));
 
     /*searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
     searchPatternVectors[currentIndex].distance_cm = SCANNABLE_AREA_WIDTH;
@@ -470,7 +488,7 @@ void Execute_SearchForPackage()
     searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;*/
   }
 
-  if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
+  /*if (currentIndex % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
   {
     searchPatternVectors[currentIndex].rotation_rad = TURN_180;
     searchPatternVectors[currentIndex].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - ROBOT_LENGTH_CM;
@@ -487,7 +505,7 @@ void Execute_SearchForPackage()
 
   searchPatternVectors[currentIndex].rotation_rad = TURN_90_LEFT;
   searchPatternVectors[currentIndex].distance_cm = 0.0f; // Turn on self
-  currentIndex++;
+  currentIndex++;*/
 
   /*if ((currentIndex * 2) % 2 == 0) // PAIR OU IMPAIR lorsqu'il atteint l'extrême droite
   {
@@ -517,13 +535,19 @@ void Execute_SearchForPackage()
 
   for (int i = 0; i < VECTOR_BUFFER_SIZE; i++)
   {
+    if (searchPatternVectors[i].rotation_rad == 0.0f && searchPatternVectors[i].distance_cm == 0.0f)
+    {
+      break;
+    }
+    
     switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true, CHECK_SENSORS))
     {
       case MOVEMENT_COMPLETED:
         if (GetAvailableVectors() - startAvailableVectors == 5)
         {
           startAvailableVectors = GetAvailableVectors();
-          checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+          //ABSTRACTION DE LA COMM
+          /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
           if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
           {
@@ -537,7 +561,7 @@ void Execute_SearchForPackage()
           {
             SetNewExecutionFunction(checkFunctionId);
             return;
-          }
+          }*/
         }
         break;
       case PACKAGE_FOUND:
@@ -612,7 +636,7 @@ void Execute_ExamineFoundPackage()
     return;
   }
 
-  if (Package_Detected())
+  if (Package_Confirmed())
   {
     //XFactor_SetNewStatus(XFactor_Status::); PUT GOOD STATUS
     SafeBox_ExchangeStatus();
@@ -651,7 +675,7 @@ void Execute_PickUpPackage()
 
   Package_PickUp();
 
-  while(!Package_Detected())
+  while(!Package_Confirmed())
   {
     if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
@@ -701,13 +725,19 @@ void Execute_ReturnHome()
 
   XFactor_SetNewStatus(XFactor_Status::ReturningHome);
 
-  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  MovementVector returnVector = GetReturnVector();
+  Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Rotation : " + String(returnVector.rotation_rad));
+  Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Distance : " + String(returnVector.distance_cm));
+
+
+  MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false);
+  /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
-  }
+  }*/
 
   SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
 }

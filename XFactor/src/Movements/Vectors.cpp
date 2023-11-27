@@ -161,7 +161,7 @@ MovementVector GetReturnVector()
     float positionX_cm = 0.0f;
     float positionY_cm = 0.0f;
 
-    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    float absoluteRotation = (float)PI;
     MovementVector returnVector;
 
     for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)

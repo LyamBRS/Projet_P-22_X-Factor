@@ -11,6 +11,10 @@
 
 #include "Arduino.h"
 
+#define FRONT_SENSOR 0
+#define LEFT_SENSOR  1
+#define RIGHT_SENSOR 2
+
 #define FRONT_SENSOR_TRIG_PIN_NUMBER 46
 #define FRONT_SENSOR_ECHO_PIN_NUMBER 47
 

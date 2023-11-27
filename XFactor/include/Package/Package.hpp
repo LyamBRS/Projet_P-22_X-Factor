@@ -24,7 +24,13 @@
 #define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 70
 #define PACKAGE_BACK_MOVEMENT -10.0f
+
+#define NOTHING_DETECTED 0
+#define PACKAGE_DETECTED 1
+#define SAFEBOX_DETECTED 2
 // #pragma endregion
+
+#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 40.0f
 
 // #pragma region [FUNCTIONS]
 /**
@@ -141,10 +147,8 @@ bool Package_Transport();
 /**
  * @brief
  * Complex function that analyses XFactor's
- * related sensors to find potential packages
- * that may be around the robot as it moves. This
- * Function can also be used to verify that a
- * package is still inside of the claw.
+ * color sensor to verify is the object examined
+ * is indeed the package it needs to pick up.
  *
  * Packages are identified using color sensors.
  * @return true:
@@ -153,7 +157,30 @@ bool Package_Transport();
  * No packages are detected anywhere near or
  * inside the robot.
  */
-bool Package_Detected();
+bool Package_Confirmed();
+
+/**
+ * @brief
+ * Complex function that analyses XFactor's
+ * distance sensors with the goal of locating
+ * the package. It reads all of the distance
+ * sensors and compares them to a threshold.
+ * 
+ * @param capteur
+ * This is used to read from the right sensor 
+ * so other functions know what to return 
+ * depending on which sensor triggered.
+ *
+ * Packages are identified using color sensors.
+ * @return PACKAGE_DETECTED:
+ * A package was detected near the robot.
+ * @return NOTHING_DETECTED:
+ * No packages are detected anywhere near or
+ * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
+ */
+int Package_Detected(int sensor);
 
 /**
  * @brief

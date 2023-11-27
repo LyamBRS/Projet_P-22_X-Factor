@@ -198,7 +198,7 @@ bool TurnInRadians(float radians)
 
     targetTicks = CentimetersToEncoder(abs(radians)*ARC_CONSTANT_CM);
 
-    if (radians >= 0) direction = TURN_RIGHT;
+    if (radians <= 0) direction = TURN_RIGHT;
     else direction = TURN_LEFT;
 
     return true;
@@ -392,7 +392,10 @@ int Execute_Turning(float targetRadians)
         return MOVEMENT_ERROR;
     }
 
+    targetTicks = targetTicks*CONSTANT_RATIO_TURN;
+
     int status = MOVEMENT_COMPLETED;
+    int distanceSensorCounter = 0;
     
     SetMotorSpeed(LEFT, (float)direction*-1.0f*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
@@ -421,11 +424,23 @@ int Execute_Turning(float targetRadians)
                 status = ALARM_TRIGGERED;
                 break;
             }
-            else if(Package_Detected())
+            else if(Package_Confirmed())
             {
                 Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_PACKAGE_DETECTED");
                 status = PACKAGE_FOUND;
                 break;
+            }
+            if(distanceSensorCounter == 0){
+                if (Package_Detected(FRONT_SENSOR)) return OBJECT_LOCATED_FRONT;
+                distanceSensorCounter += 1;
+            }
+            else if(distanceSensorCounter == 1){
+                if (Package_Detected(LEFT_SENSOR)) return OBJECT_LOCATED_LEFT;
+                distanceSensorCounter += 1;
+            }
+            else if(distanceSensorCounter == 2){
+                if (Package_Detected(RIGHT_SENSOR)) return OBJECT_LOCATED_RIGHT;
+                distanceSensorCounter = 0;
             }
         }
             
@@ -473,9 +488,12 @@ int Execute_Moving(float targetDistance)
         return false;
     }
 
-    Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
+    targetTicks = targetTicks*CONSTANT_RATIO_STRAIGHT;
+
+    //Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
 
     int status = MOVEMENT_COMPLETED;
+    int distanceSensorCounter = 0;
 
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
@@ -505,11 +523,23 @@ int Execute_Moving(float targetDistance)
                 status = ALARM_TRIGGERED;
                 break;
             } 
-            else if(Package_Detected())
+            else if(Package_Confirmed())
             {
                 Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_PACKAGE_DETECTED");
                 status = PACKAGE_FOUND;
                 break;
+            }
+            if(distanceSensorCounter == 0){
+                if (Package_Detected(FRONT_SENSOR)) return OBJECT_LOCATED_FRONT;
+                distanceSensorCounter += 1;
+            }
+            else if(distanceSensorCounter == 1){
+                if (Package_Detected(LEFT_SENSOR)) return OBJECT_LOCATED_LEFT;
+                distanceSensorCounter += 1;
+            }
+            else if(distanceSensorCounter == 2){
+                if (Package_Detected(RIGHT_SENSOR)) return OBJECT_LOCATED_RIGHT;
+                distanceSensorCounter = 0;
             }
         }
     }

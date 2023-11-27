@@ -213,10 +213,8 @@ bool Package_Transport()
 /**
  * @brief
  * Complex function that analyses XFactor's
- * related sensors to find potential packages
- * that may be around the robot as it moves. This
- * Function can also be used to verify that a
- * package is still inside of the claw.
+ * color sensor to verify is the object examined
+ * is indeed the package it needs to pick up.
  *
  * Packages are identified using color sensors.
  * @return true:
@@ -226,17 +224,74 @@ bool Package_Transport()
  * inside the robot.
  */
 
-bool Package_Detected()
+bool Package_Confirmed()
 {
     unsigned long currentColour = 0;
 
     currentColour = GROVE_GetColor();
 
-    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF))
+    {
         return true;
     }
 
     return false;
+}
+
+/**
+ * @brief
+ * Complex function that analyses XFactor's
+ * distance sensors with the goal of locating
+ * the package. It reads all of the distance
+ * sensors and compares them to a threshold.
+ * 
+ * @param capteur
+ * This is used to read from the right sensor 
+ * so other functions know what to return 
+ * depending on which sensor triggered.
+ *
+ * Packages are identified using color sensors.
+ * @return PACKAGE_DETECTED:
+ * A package was detected near the robot.
+ * @return NOTHING_DETECTED:
+ * No packages are detected anywhere near or
+ * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
+ */
+
+int Package_Detected(int capteur)
+{
+    if (Claws_GetSwitchStatus) return true;
+    else{
+        switch(capteur){
+            case FRONT_SENSOR:
+                if (GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
+
+            case LEFT_SENSOR:
+                if (GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
+
+            case RIGHT_SENSOR:
+                if (GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+                {
+                    return PACKAGE_DETECTED;
+                }
+                break;
+
+            default:
+                return NOTHING_DETECTED;
+                break;
+        }
+        return NOTHING_DETECTED;
+    }
 }
 
 /**
@@ -267,11 +322,11 @@ bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
 
-    if (Package_Detected() == true && Package_DeployClaw() == true && package_setUp == true){
+    if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
         return true;
     }
 
-    else if (!Package_Detected() == true && Package_StoreClaw() == true && package_setUp == false){
+    else if (!Package_Confirmed() == true && Package_StoreClaw() == true && package_setUp == false){
         return true;
     }
     package_setUp = false;
