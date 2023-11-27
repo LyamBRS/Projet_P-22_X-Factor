@@ -64,9 +64,32 @@ void XFactor_Init()
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
 
+                float currentPeak = 0.0f;
+                float multiplierR = 0;
+                float multiplierG = 0;
+                float multiplierB = 0;
                 while(AX_IsLowBat())
                 {
-        
+                    if(currentPeak > 3.14)
+                    {
+                        multiplierR = sin(currentPeak-3.14);
+                    }
+                    else
+                    {
+                        multiplierR = cos(currentPeak);
+                    }
+                    multiplierG = sin(currentPeak-1.57);
+                    multiplierB = sin(currentPeak);
+
+                    if(multiplierR<0) multiplierR=0;
+                    if(multiplierG<0) multiplierG=0;
+                    if(multiplierB<0) multiplierB=0;
+
+                    currentPeak = currentPeak + 0.01;
+                    if(currentPeak>4.71) currentPeak = 0;
+
+                    LEDS_SetColor(LED_ID_STATUS_INDICATOR, (float)(255.0f*multiplierR), (float)(255.0f*multiplierG), (float)(255.0f*multiplierB));
+                    delay(1);
                 }
 
                 if(Alarm_Init()){
