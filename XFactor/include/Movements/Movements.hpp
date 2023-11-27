@@ -26,8 +26,8 @@
 #define TURN_90  PI/2
 #define TURN_180 PI
 
-#define TURN_RIGHT -1
-#define TURN_LEFT   1
+#define TURN_RIGHT  1
+#define TURN_LEFT   -1
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 

@@ -32,9 +32,20 @@
 
 //#pragma region DISTANCES // WILL BE MIGRATED TO MOVEMENTS
 
+#define STRAIGHT 0.0f
+#define TURN_90_RIGHT TURN_90 * TURN_RIGHT
+#define TURN_90_LEFT TURN_90 * TURN_LEFT
 
+#define SAFEBOX_LENGTH_CM 60.0f
+#define SAFEBOX_WIDTH_CM 75.0f
 
+#define DEMO_AREA_WIDTH_CM 200.0f
+#define DEMO_AREA_LENGTH_CM 200.0f
 
+#define SCANNABLE_AREA_WIDTH 25.0f
+
+#define ROBOT_WIDTH_CM 25.0f
+#define ROBOT_LENGTH_CM 25.0f
 
 //#pragma endregion
 

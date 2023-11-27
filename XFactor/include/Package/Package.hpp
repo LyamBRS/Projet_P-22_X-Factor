@@ -26,7 +26,7 @@
 #define PACKAGE_BACK_MOVEMENT -10.0f
 // #pragma endregion
 
-#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 80.0f
+#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 40.0f
 
 // #pragma region [FUNCTIONS]
 /**
