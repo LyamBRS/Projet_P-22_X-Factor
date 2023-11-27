@@ -13,13 +13,9 @@
 
 #pragma once
 
-#include "Vectors.hpp"
+#include "Movements/VectorDefines.hpp"
+#include "Movements/Vectors.hpp"
 
-typedef struct
-{
-    float positionX_cm;
-    float positionY_cm;
-} RobotPosition;
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be
@@ -108,7 +104,7 @@ float GetSavedDistance();
  * stores the robot's current
  * position.
  * @return RobotPosition:
- * Struct containing position in X
- * and Y.
+ * Vector needed to go from start position
+ * to the current position
  */
-RobotPosition GetSavedPosition();
+MovementVector GetSavedPosition();

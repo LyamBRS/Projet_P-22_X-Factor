@@ -12,14 +12,9 @@
 #pragma once
 
 #include "Movements/Positions.hpp"
+#include "Movements/VectorDefines.hpp"
 #include "Debug/Debug.hpp"
 #include "math.h"
-
-typedef struct 
-{
-    float rotation_rad;
-    float distance_cm;
-} MovementVector;
 
 #define VECTOR_BUFFER_SIZE 32 // MAY NEED TO CHANGE
 

@@ -16,7 +16,7 @@
 
 float currentRelativeRotation_rad = 0;
 float currentDistance_cm = 0;
-RobotPosition robotPosition;
+MovementVector robotPosition; // Vector representing start to current point.
 
 /**
  * @brief Updates the total rotation of the robot
@@ -68,10 +68,10 @@ bool UpdateSavedDistance(float distanceMade_cm)
  * @return false:
  * The position failed to be updated.
  */
-bool UpdateSavedPosition(float positionX_cm, float positionY_cm)
+bool UpdateSavedPosition()
 {
-  robotPosition.positionX_cm += positionX_cm;
-  robotPosition.positionY_cm += positionY_cm;
+  robotPosition = GetOppositeVector(GetReturnVector());
+  return true;
 }
 
 /**
@@ -94,8 +94,8 @@ bool ResetPositions()
 {
   currentRelativeRotation_rad = 0;
   currentDistance_cm = 0;
-  robotPosition.positionX_cm = 0.0f;
-  robotPosition.positionY_cm = 0.0f;
+  robotPosition.rotation_rad = 0.0f;
+  robotPosition.distance_cm = 0.0f;
   return true;
 }
 
@@ -131,10 +131,10 @@ float GetSavedDistance()
  * stores the robot's current
  * position.
  * @return RobotPosition:
- * Struct containing position in X
- * and Y.
+ * Vector needed to go from start position
+ * to the current position
  */
-RobotPosition GetSavedPosition()
+MovementVector GetSavedPosition()
 {
   return robotPosition;
 }
