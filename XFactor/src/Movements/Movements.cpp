@@ -482,6 +482,7 @@ int Execute_Turning(float targetRadians)
  */
 int Execute_Moving(float targetDistance)
 { 
+    static bool currentLEDStatus = false;
     if (!MoveStraight(targetDistance))
     {
         Debug_Error("Movements", "Execute_Turning", "Could not get the target movement");
@@ -499,10 +500,21 @@ int Execute_Moving(float targetDistance)
     SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
     
     while(completionRatio<=1){
+        // PID called each 10 milliseconds
         if((millis()-previousInterval_ms)>PID_INTERVAL_MS){
             rightPulse = abs((float)ENCODER_Read(RIGHT));
             leftPulse  = abs((float)ENCODER_Read(LEFT));
             
+            currentLEDStatus = !currentLEDStatus;
+            if(currentLEDStatus)
+            {
+                LEDS_SetColor(0, 0,0,255);
+            }
+            else
+            {
+                LEDS_SetColor(0, 255,0,0);
+            }
+
             completionRatio = rightPulse/targetTicks;
 
             currentSpeed = Accelerate(completionRatio, SPEED_MAX);
