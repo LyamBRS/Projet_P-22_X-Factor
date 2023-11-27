@@ -552,7 +552,6 @@ int Execute_Moving(float targetDistance)
                             rightPulse-previousRightPulse, 
                             currentSpeed);
             
-
             SetMotorSpeed(LEFT, (float)direction*speedLeft);
             SetMotorSpeed(RIGHT, (float)direction*currentSpeed);
             

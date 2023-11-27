@@ -63,6 +63,12 @@ void XFactor_Init()
             if (LEDS_Init()){
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
+
+                while(AX_IsLowBat())
+                {
+        
+                }
+
                 if(Alarm_Init()){
                     if(Package_Init()){
                         if(XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery)){
