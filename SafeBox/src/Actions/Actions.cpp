@@ -179,9 +179,17 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    static float currentRadian = 0;
+    float currentRatio = 0;
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
 
-    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS))
+    currentRadian = currentRadian + 0.1f;
+    if(currentRadian>3.14)
+    {
+        currentRadian = 0;
+    }
+    currentRatio = sin(currentRadian);
+    if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, (unsigned char)(32.0f*currentRatio), (unsigned char)(32.0f*currentRatio), 0))
     {
         Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
         return;
@@ -216,12 +224,26 @@ void Execute_WaitForDelivery()
     // CHECKS IF ITS THE FIRST EXECUTION
     if(SafeBox_GetStatus() != SafeBox_Status::WaitingForDelivery)
     {
-        XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
+        SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);
     }
 
     if(!SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery))
     {
         Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to set status");
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    if(!Garage_Close())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to close garage door");
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    if(!Lid_Lock())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to lock lid door");
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
         return;
     }
@@ -355,12 +377,27 @@ void Execute_Unlocked()
         XFactor_SetNewStatus(XFactor_Status::Unlocked);
     }
 
+    if(!Garage_Open())
+    {
+        Debug_Error("Actions", "Execute_Unlocked", "Failed to close garage door");
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    if(!Lid_Unlock())
+    {
+        Debug_Error("Actions", "Execute_Unlocked", "Failed to unlock lid door");
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
     //ExecutionUtils_HandleReceivedXFactorStatus();
     if(RFID_HandleCard() == 1)
     {
+        Debug_Information("Actions", "Execute_Unlocked", "Going to Wait for delivery");
         if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))
         {
             Debug_Error("Actions", "Execute_Unlocked", "Failed to set new execution function");

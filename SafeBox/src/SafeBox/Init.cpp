@@ -54,20 +54,22 @@ void SafeBox_Init()
     //MessageBuffer("", 0, 0);
 
     if(Debug_Init()){
+        Debug_Start("SafeBox_Init");
         if (BT_Init()){
             if (LEDS_Init()){
                 LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_INITIALISING);
                 delay(1000);
-                if(Alarm_Init() || true){
-                    if(Package_Init() || true){
-                        if(Garage_Init() || true){
-                            if(Lid_Init() || true){
+                if(Alarm_Init()){
+                    if(Package_Init()){
+                        if(Garage_Init()){
+                            if(Lid_Init()){
                                 if(Doorbell_Init()){
                                     if(RFID_Init()){
                                         if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
                                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                                 // Function is successful.
                                                 Debug_Information("Init", "SafeBox_Init", "Successful initialisation");
+                                                Debug_End();
                                                 return;
                                             } else Debug_Error("Init", "SafeBox_Init", "SetNewExecutionFunction Failed");
                                         } else Debug_Error("Init", "SafeBox_Init", "SafeBox_SetNewStatus Failed");
@@ -91,4 +93,5 @@ void SafeBox_Init()
         }
     }
     // Cant continue initialisation.
+    Debug_End();
 }

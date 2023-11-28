@@ -12,6 +12,10 @@
 // - INCLUDES - //
 #include "Outputs/Motors/Servo/S3003.hpp"
 
+Servo servo1;
+Servo servo2;
+Servo servo3; 
+
 /**
  * @brief Initialisation function of a single
  * servo motor based on a given arduino pin
@@ -19,9 +23,14 @@
  * @param servoMotorPin
  * Arduino pin number
  */
-void S3003_Init(int servoMotorPin)
+void S3003_Init()
 {
-
+    servo1.attach(SERVO_RFID_PIN); 
+    servo1.write(95);
+    servo2.attach(SERVO_PORTE_HAUT_PIN ); 
+    servo2.write(85);
+    servo3.attach(SERVO_PORTE_BAS_PIN ); 
+    servo3.write(85);
 }
 
 /**
@@ -32,7 +41,10 @@ void S3003_Init(int servoMotorPin)
  * position.
  * @param WantedPosition
  */
-void S3003_SetPosition(int servoMotorPin, float WantedPosition)
+void S3003_SetPosition(int angle)
 {
 
+    servo1.write(angle);
+    servo2.write(angle);
+    servo3.write(angle);
 }

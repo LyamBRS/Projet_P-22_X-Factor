@@ -13,6 +13,54 @@
 #include "Actions/Utils.hpp"
 
 /**
+ * @brief 
+ * Function which blocks the program until a
+ * successful status exchange occurs with
+ * SafeBox. This function will execute until
+ * the status received isnt CommunicationError
+ */
+void ExecutionUtils_ForceAStatusExchange()
+{
+  while(SafeBox_GetStatus() == SafeBox_Status::CommunicationError)
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
+    SafeBox_ExchangeStatus();
+    delay(500);
+  }
+}
+
+/**
+ * @brief
+ * This function handles the first time that a
+ * state gets executed. Its goal is to set the
+ * status of XFactor to the corresponding,
+ * specified status, and erase the status that
+ * is currently saved for SafeBox. This prevents
+ * the program from automatically changing the
+ * execution function back to an unwanted
+ * execution function automatically.
+ * 
+ * @param wantedStatus
+ * The status that XFactor should hold while in
+ * this current state.
+ */
+void ExecutionUtils_HandleFirstExecution(XFactor_Status wantedStatus)
+{
+  // - Variables - //
+  XFactor_Status currentStatus = XFactor_GetStatus();
+
+  if (currentStatus != wantedStatus)
+  {
+    // First time that this status is set.
+    // SafeBox's status will be automatically
+    // reset.
+    SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+  }
+
+  XFactor_SetNewStatus(wantedStatus);
+}
+
+/**
  * @brief Function that checks
  * for some common cases of failure
  * that returns a new function id based on
@@ -69,18 +117,21 @@ int ExecutionUtils_StatusCheck(int currentExecutionFunctionId)
  */
 int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attempts, bool isArmed)
 {
-  for (int currentAttempt = 0; currentAttempt < attempts; currentAttempt ++)
+  for (int currentAttempt = 0; currentAttempt < attempts; currentAttempt++)
   {
     if (SafeBox_ExchangeStatus())
     {
-      if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
-      {
-        return currentExecutionFunctionId;
-      }
+      SafeBox_Status currentSafeBoxStatus = SafeBox_GetStatus();
+
+      if(currentSafeBoxStatus == SafeBox_Status::Alarm) return FUNCTION_ID_ALARM;
+      if(currentSafeBoxStatus == SafeBox_Status::Unlocked) return FUNCTION_ID_UNLOCKED;
+
+      return currentExecutionFunctionId;
     }
     else
     {
-      return FUNCTION_ID_ERROR;
+      return currentExecutionFunctionId;
+      //return FUNCTION_ID_ERROR;
     }
   }
 

@@ -9,3 +9,20 @@
  * @copyright Copyright (c) 2023
  */
 #pragma once
+
+#define STRAIGHT 0.0f
+#define TURN_90_RIGHT TURN_90 * TURN_RIGHT
+#define TURN_90_LEFT TURN_90 * TURN_LEFT
+
+#define SAFEBOX_LENGTH_CM 65.0f
+#define SAFEBOX_WIDTH_CM 80.0f
+
+#define DEMO_AREA_WIDTH_CM 200.0f
+#define DEMO_AREA_LENGTH_CM 200.0f
+
+#define SCANNABLE_AREA_WIDTH 25.0f
+
+#define ROBOT_WIDTH_CM 28.0f
+#define ROBOT_LENGTH_CM 52.0f
+
+#define DISTANCE_SENSOR_DIFF_BETWEEN_SIDE_AND_FRONT_CM 10.0f //roughly

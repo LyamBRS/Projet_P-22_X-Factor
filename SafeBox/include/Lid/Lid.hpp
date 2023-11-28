@@ -13,7 +13,9 @@
 
 // - INCLUDES - //
 #include "Outputs/Motors/Servo/S3003.hpp"
-
+#include "Debug/Debug.hpp"
+#define PACKAGE_DOOR_LOCKED 0
+#define PACKAGE_DOOR_UNLOCKED 95
 /**
  * @brief
  * Function that initialises the servo motors and

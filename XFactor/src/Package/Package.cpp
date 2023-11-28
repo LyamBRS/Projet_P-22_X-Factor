@@ -17,6 +17,8 @@
 bool package_setUp = false;
 bool pickup = false;
 
+unsigned short distanceDetected_cm;
+
 /**
  * @brief
  * Initialisation function that initialises the
@@ -103,8 +105,22 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
-    MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS);
-    Package_DeployClaw();
+    Debug_Start("Package_PickUp");
+    
+    if(!MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS, true, false))
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
+        Debug_End();
+        return false
+    }
+    
+    if(!Package_DeployClaw())
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to deploy the claw");
+        Debug_End();
+        return false
+    }
+
     for (int i = 0; i < 5; i++)
     {
         if (!pickup)
@@ -112,13 +128,22 @@ bool Package_PickUp()
             pickup = Claws_CloseUntilDetection();
             if (pickup)
             {
-                Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+                if(!Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT))
+                {
+                    Debug_Error("Package", "Package_PickUp", "Failed to set height of the claw");
+                    Debug_End();
+                    return false;
+                }
+                Debug_Error("Package", "Package_PickUp", "Successfully picked up the package");
+                Debug_End();
                 return true;
             }
         }
         delay(500); //MAY NEED TO BE REMOVED when we advance
     }
 
+    Debug_Error("Package", "Package_PickUp", "Failed to pick up the package");
+    Debug_End();
     return false;
 }
 
@@ -140,7 +165,7 @@ bool Package_PickUp()
 bool Package_AlignWithSafeBox()
 {
     // une longueur deja pres etablie, 90 a gauche, avance,
-    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS);
+    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS, true, false);
 
     return false;
 }
@@ -213,10 +238,8 @@ bool Package_Transport()
 /**
  * @brief
  * Complex function that analyses XFactor's
- * related sensors to find potential packages
- * that may be around the robot as it moves. This
- * Function can also be used to verify that a
- * package is still inside of the claw.
+ * color sensor to verify is the object examined
+ * is indeed the package it needs to pick up.
  *
  * Packages are identified using color sensors.
  * @return true:
@@ -226,17 +249,84 @@ bool Package_Transport()
  * inside the robot.
  */
 
-bool Package_Detected()
+bool Package_Confirmed()
 {
     unsigned long currentColour = 0;
 
     currentColour = GROVE_GetColor();
 
-    if(Colour_Threshold(0x00000000, currentColour, 0xFFFFFFFF)){
+    if (currentColour < 23) return true;
+    /*if(Colour_Threshold(0x15000000, currentColour, 0xFFFFFFFF))
+    {
         return true;
-    }
+    }*/
 
     return false;
+}
+
+/**
+ * @brief
+ * Complex function that analyses XFactor's
+ * distance sensors with the goal of locating
+ * the package. It reads all of the distance
+ * sensors and compares them to a threshold.
+ * 
+ * @param capteur
+ * This is used to read from the right sensor 
+ * so other functions know what to return 
+ * depending on which sensor triggered.
+ *
+ * Packages are identified using color sensors.
+ * @return PACKAGE_DETECTED:
+ * A package was detected near the robot.
+ * @return NOTHING_DETECTED:
+ * No packages are detected anywhere near or
+ * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
+ */
+int Package_Detected(int capteur, float relativeRotation_rad)
+{
+    if (Claws_GetSwitchStatus())
+    {
+        return true;
+    } 
+    else
+    {
+        switch(capteur){
+            case FRONT_SENSOR:
+                distanceDetected_cm = GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER);
+                break;
+            case LEFT_SENSOR:
+                distanceDetected_cm = GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER);
+                break;
+            case RIGHT_SENSOR:
+                distanceDetected_cm = GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER);
+                break;
+            default:
+                return NOTHING_DETECTED;
+                break;
+        }
+        //Debug_Information("Package.cpp", "Package_Detected", "Sensor : " + String(capteur));
+        //Debug_Information("Package.cpp", "Package_Detected", "Distance : " + String(distanceDetected_cm));
+        return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+
+        //return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad);
+    }
+}
+
+/**
+ * @brief
+ * Getter for the detected distance
+ * of the last distance detector
+ * that measured the distance
+ *
+ * @return unsigned short :
+ * distance in centimeters
+ */
+unsigned short Package_GetDetectedDistance()
+{
+    return distanceDetected_cm;
 }
 
 /**
@@ -267,11 +357,11 @@ bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
 
-    if (Package_Detected() == true && Package_DeployClaw() == true && package_setUp == true){
+    if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
         return true;
     }
 
-    else if (!Package_Detected() == true && Package_StoreClaw() == true && package_setUp == false){
+    else if (!Package_Confirmed() == true && Package_StoreClaw() == true && package_setUp == false){
         return true;
     }
     package_setUp = false;
@@ -295,4 +385,92 @@ bool Package_GetStatus()
         return true;
     }
     return false;
+}
+
+/**
+ * @brief
+ * Return if the detected package is
+ * in fact SafeBox or if the detected
+ * object is out of the assigned area
+ *
+ * @return SAFEBOX_DETECTED:
+ * Safebox is detected
+ * @return PACKAGE_DETECTED:
+ * What was detected is not SafeBox.
+ * @return OUT_OF_BOUNDS_DETECTED:
+ * What was detected is not within the demonstration area.
+ */
+
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad)
+{
+    MovementVector position = GetSavedPosition();
+    position.rotation_rad += relativeRotation_rad;
+    /*MovementVector position;
+    position.distance_cm = 100.0f;
+    position.rotation_rad = PI/4;
+
+    relativeRotation_rad = -(PI / 4);
+    distanceDetected_cm = 40.0f;
+    sensorId = FRONT_SENSOR;*/
+
+    switch (sensorId)
+    {
+        case FRONT_SENSOR:
+            break;
+        case LEFT_SENSOR:
+            position.rotation_rad += TURN_90_LEFT;
+            break;
+        case RIGHT_SENSOR:
+            position.rotation_rad += TURN_90_RIGHT;
+            break;
+        default:
+            break;
+    }
+
+    float cosPosition = cos(position.rotation_rad);
+    float sinPosition = sin(position.rotation_rad);
+
+    float positionX = cosPosition * position.distance_cm;
+    float positionY = sinPosition * position.distance_cm;
+
+    float distanceDetectedX_cm = -cos(relativeRotation_rad) * distanceDetected_cm;
+    float distanceDetectedY_cm = sin(relativeRotation_rad) * distanceDetected_cm;
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(positionX));
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionY : " + String(positionY));
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance X : " + String(distanceDetectedX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance Y : " + String(distanceDetectedY_cm));
+
+    if (positionY + distanceDetectedY_cm > DEMO_AREA_WIDTH_CM || positionY + distanceDetectedY_cm < 0)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds Y");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
+        return OUT_OF_BOUNDS_DETECTED;
+    }
+
+    if (positionX + distanceDetectedX_cm > DEMO_AREA_LENGTH_CM || positionX + distanceDetectedX_cm < 0)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
+        return OUT_OF_BOUNDS_DETECTED;
+    }
+
+    /*if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected Y");
+    }
+
+    if (abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected X");
+    }*/
+
+    if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM && abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
+    {
+        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
+        return SAFEBOX_DETECTED;
+    }
+    return PACKAGE_DETECTED;
 }

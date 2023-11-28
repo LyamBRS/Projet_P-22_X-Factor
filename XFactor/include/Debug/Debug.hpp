@@ -77,6 +77,13 @@ void Debug_Stop();
 void Debug_Resume();
 
 /**
+ * @brief 
+ * Continuously prints the last error that was
+ * printed. This works even if debug has stopped.
+ */
+void Debug_PrintLastError();
+
+/**
  * @brief Makes the code shift right the further
  * it goes into functions. In other words, the
  * bigger the stack, the more indentation there

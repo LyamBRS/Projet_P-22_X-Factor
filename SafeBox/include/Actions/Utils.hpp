@@ -17,6 +17,7 @@
 #include "SafeBox/Communication.hpp"
 #include "SafeBox/Status.hpp"
 #include "Sensors/RFID/RFID.hpp"
+#include "math.h"
 
 // - DEFINES - //
 

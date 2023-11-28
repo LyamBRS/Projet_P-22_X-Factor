@@ -158,10 +158,10 @@ bool RemoveLastVector()
  */
 MovementVector GetReturnVector()
 {
-    float positionX_cm = 0.0f;
+    float positionX_cm = ROBOT_LENGTH_CM;
     float positionY_cm = 0.0f;
 
-    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    float absoluteRotation = (float)PI;
     MovementVector returnVector;
 
     for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
@@ -169,7 +169,7 @@ MovementVector GetReturnVector()
         if (!(vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
         && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad))
         {
-            absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+            absoluteRotation -= vectorBuffer[vectorBufferIndex].rotation_rad;
             positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
             positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
         }
@@ -177,15 +177,22 @@ MovementVector GetReturnVector()
         {
             if (vectorBufferIndex == 0)
             {
-                Debug_Error("Vectors.cpp", "GetReturnVector", "Vector buffer is empty; the robot should not move");
+                Debug_Warning("Vectors.cpp", "GetReturnVector", "Vector buffer is empty; the robot should not move");
                 return emptyMovementVector;
             }
             break;
         }
     }
     
-    returnVector.rotation_rad = (float)atan(positionY_cm/positionX_cm);
+    returnVector.rotation_rad = absoluteRotation - (float)atan2(positionY_cm,-positionX_cm);
+
+    Debug_Information("Vectors", "GetReturnVector", "Position X : " + String(positionX_cm));
+    Debug_Information("Vectors", "GetReturnVector", "Position Y : " + String(positionY_cm));
+
+    Debug_Information("Vectors", "GetReturnVector", "Rotation : " + String(returnVector.rotation_rad));
+
     returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
+    //return returnVector;
     return GetOppositeVector(returnVector);
 }
 

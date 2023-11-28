@@ -38,6 +38,32 @@
 //#pragma endregion
 
 /**
+ * @brief 
+ * Function which blocks the program until a
+ * successful status exchange occurs with
+ * SafeBox. This function will execute until
+ * the status received isnt CommunicationError
+ */
+void ExecutionUtils_ForceAStatusExchange();
+
+/**
+ * @brief
+ * This function handles the first time that a
+ * state gets executed. Its goal is to set the
+ * status of XFactor to the corresponding,
+ * specified status, and erase the status that
+ * is currently saved for SafeBox. This prevents
+ * the program from automatically changing the
+ * execution function back to an unwanted
+ * execution function automatically.
+ * 
+ * @param wantedStatus
+ * The status that XFactor should hold while in
+ * this current state.
+ */
+void ExecutionUtils_HandleFirstExecution(XFactor_Status wantedStatus);
+
+/**
  * @brief Function that checks
  * for some common cases of failure
  * that returns a new function id based on

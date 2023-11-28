@@ -17,20 +17,32 @@
 #include "Movements/Positions.hpp"      //// Keeps tracks of the robot's current position and rotations as it moves around.
 #include "Movements/Vectors.hpp"        //// Handles the know how of where the robot needs to go and where it came from.
 #include "Events/Events.hpp"            //// Allows the Execute movement functions to interrupt when a set goal is reached.
+#include "Distances.hpp"                //// Distance constants useful for movement
+#include "LED/LED.hpp"
 
 
 //First 3 variables for the PID, Kp, Ki and Kd.
-#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
+//#define PID_MOVEMENT 0.0016f, 0.0002f, 0.0005f
+#define PID_MOVEMENT 0.0064f, 0.0016f, 0.0020f
 
+#define PID_MOVEMENT_VALUE_P 0.0016f
+#define PID_MOVEMENT_VALUE_I 0.0002f
+#define PID_MOVEMENT_VALUE_D 0.0000f
+
+#define PID_MOVEMENT_RATIO_P (PID_MOVEMENT_VALUE_P / SPEED_MAX)
+#define PID_MOVEMENT_RATIO_I (PID_MOVEMENT_VALUE_I / SPEED_MAX)
+#define PID_MOVEMENT_RATIO_D (PID_MOVEMENT_VALUE_D / SPEED_MAX)
+
+#define CONSTANT_RATIO_STRAIGHT 1.0f
+#define CONSTANT_RATIO_TURN 1.03f
 #define TURN_90  PI/2
 #define TURN_180 PI
 
-#define TURN_RIGHT -1
-#define TURN_LEFT   1
+#define TURN_RIGHT  1
+#define TURN_LEFT   -1
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 
-#define SPEED_MAX 0.2f
 #define ACCELERATION_CONSTANT (-(SPEED_MAX-0.1f)/0.25f)
 
 #define SPEED_MAX_TURN (SPEED_MAX/2)
@@ -38,10 +50,13 @@
 
 #define PID_INTERVAL_MS 10
 
-#define MOVEMENT_ERROR 0
-#define MOVEMENT_COMPLETED 1
-#define PACKAGE_FOUND 2
-#define ALARM_TRIGGERED 3
+#define MOVEMENT_ERROR       0
+#define MOVEMENT_COMPLETED   1
+#define PACKAGE_FOUND        2
+#define ALARM_TRIGGERED      3
+#define OBJECT_LOCATED_FRONT 4
+#define OBJECT_LOCATED_LEFT  5
+#define OBJECT_LOCATED_RIGHT 6
 
 #define DONT_CHECK_SENSORS 0
 #define CHECK_SENSORS 1
@@ -76,7 +91,7 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors);
+int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors, bool checkAlarm, bool examineMode);
 
 /**
  * @brief
@@ -252,6 +267,6 @@ int Execute_Turning(float targetRadians);
  * @return false:
  * Failed to execute the moving sequence
  */
-int Execute_Moving(float targetDistance);
+int Execute_Moving(float targetDistance, float targetRadians);
 
 //#pragma endregion

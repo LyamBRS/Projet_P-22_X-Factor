@@ -14,7 +14,9 @@
 
 #pragma once
 
+#include "Debug/Debug.hpp"
 
+#define SPEED_MAX 0.4f
 /**
  * @brief Basic PID function that returns an
  * adjusted value over time based on a wanted
