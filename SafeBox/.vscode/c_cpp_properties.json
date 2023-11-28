@@ -8,26 +8,10 @@
         {
             "name": "PlatformIO",
             "includePath": [
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/include",
-                "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
-                "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/cores/arduino",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/variants/mega",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-=======
-<<<<<<< HEAD
->>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
                 "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/include",
                 "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/src",
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
                 "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/variants/mega",
@@ -35,47 +19,15 @@
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-<<<<<<< HEAD
-=======
-=======
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/include",
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/cores/arduino",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/variants/mega",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
->>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
->>>>>>> c7d298ca42e40c9620830c517a694c73f8475b45
->>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                    "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/include",
-                    "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                    "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
-                    "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/cores/arduino",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/variants/mega",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                    "C:/Users/trevy/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-=======
-<<<<<<< HEAD
->>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
                     "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/include",
                     "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/src",
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Servo/src",
                     "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/variants/mega",
@@ -83,22 +35,6 @@
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "/Users/shawncouture1/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
-<<<<<<< HEAD
-=======
-=======
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/include",
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
-                    "C:/Users/faryc/OneDrive/Desktop/S1-P22/Projet_P-22_X-Factor/SafeBox/.pio/libdeps/megaatmega2560/Adafruit NeoPixel",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/cores/arduino",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/variants/mega",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/HID/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
-                    "C:/Users/faryc/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
->>>>>>> 3a1b7124ffc440148f0c9908e221ffcade13b57e
->>>>>>> c7d298ca42e40c9620830c517a694c73f8475b45
->>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
                     ""
                 ]
             },

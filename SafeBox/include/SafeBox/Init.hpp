@@ -14,9 +14,9 @@
 // - INCLUDES - //
 #include "SafeBox/Status.hpp"
 
+#include "LED/LED.hpp"
 #include "Actions/Actions.hpp"
 #include "Communication/Bluetooth.hpp"
-#include "LED/LED.hpp"
 #include "Alarm/Alarm.hpp"
 #include "Package/Package.hpp"
 #include "Lid/Lid.hpp"

@@ -202,7 +202,7 @@ void Debug_Warning(String fileName, String functionName, String warningMessage)
                 DEBUG_SERIAL.print("[WARNS]: ");
                 #ifdef DEBUG_STACK_TRACE_ENABLED
                     DEBUG_SERIAL.print(GetIndentation());
-                #elif
+                #else
                     DEBUG_SERIAL.print(fileName);
                     DEBUG_SERIAL.print(": ");
                     DEBUG_SERIAL.print(functionName);

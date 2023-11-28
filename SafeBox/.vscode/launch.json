@@ -9,28 +9,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-<<<<<<< HEAD
-=======
-            "name": "C/C++ Runner: Debug Session",
-            "type": "cppdbg",
-            "request": "launch",
-            "args": [],
-            "stopAtEntry": false,
-            "externalConsole": true,
-            "cwd": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Outputs/Motors/Servo",
-            "program": "c:/Users/trevy/OneDrive/Documents/GitHub/Projet_P-22_X-Factor/SafeBox/src/Outputs/Motors/Servo/build/Debug/outDebug",
-            "MIMode": "gdb",
-            "miDebuggerPath": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
->>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",

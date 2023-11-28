@@ -136,6 +136,7 @@ String RFID_GetCardNumber() {
     {
       id_tag = "";
       LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
+      LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_COMMUNICATING);
       thereWasACard = true;
     }
     if (RFID_SERIAL.available()) {

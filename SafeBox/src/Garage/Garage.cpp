@@ -24,8 +24,20 @@
  */
 bool Garage_Init()
 {
+    Debug_Start("Garage_Init");
+    GP2D12_Init(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
     S3003_Init();
-    return false;
+
+    delay(10);
+    if(GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN) == 0)
+    {
+        Debug_Error("Garage", "Garage_Init", "Distance sensor returned 0");
+        Debug_End();
+        return false;
+    }
+
+    Debug_End();
+    return true;
 }
 
 /**
@@ -39,10 +51,11 @@ bool Garage_Init()
  */
 bool Garage_Open()
 {
-    
-    //servo2.write(ANGLE_OPEN);
-    //servo3.write(ANGLE_OPEN);
-    return false;
+    Debug_Start("Garage_Open");
+    servo2.write(ANGLE_OPEN);
+    servo3.write(ANGLE_OPEN);
+    Debug_End();
+    return true;
 }
 
 /**
@@ -56,9 +69,11 @@ bool Garage_Open()
  */
 bool Garage_Close()
 {
-    //servo2.write(ANGLE_CLOSED);
-    //servo3.write(ANGLE_CLOSED);
-    return false;
+    Debug_Start("Garage_Close");
+    servo2.write(ANGLE_CLOSED);
+    servo3.write(ANGLE_CLOSED);
+    Debug_End();
+    return true;
 }
 
 /**
@@ -74,7 +89,9 @@ bool Garage_Close()
  */
 bool Garage_XFactorInside()
 {
-    
+    Debug_Start("Garage_XFactorInside");
+    Debug_Warning("Garage", "Garage_XFactorInside", "BYPASSED");
+    Debug_End();
     return false;
 }
 
@@ -91,6 +108,21 @@ bool Garage_XFactorInside()
  */
 bool Garage_IsClosed()
 {
-    
-    return false;
+    Debug_Start("Garage_XFactorInside");
+    unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
+    Debug_Warning("Garage", "Garage_XFactorInside", String(doorDistance));
+    if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
+    {
+        Debug_End();
+        return true;
+    }
+    else
+    {
+        Debug_End();
+        return false;       
+    }
+
+    //Debug_Warning("Garage", "Garage_XFactorInside", String(GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN)));
+    //Debug_End();
+    //return false;
 }

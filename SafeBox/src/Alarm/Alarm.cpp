@@ -27,7 +27,10 @@
  */
 bool Alarm_Init()
 {
-    return false;
+    Debug_Start("Alarm_Init");
+    Debug_Warning("Alarm", "Alarm_Init", "BYPASSED");
+    Debug_End();
+    return true;
 }
 
 /**

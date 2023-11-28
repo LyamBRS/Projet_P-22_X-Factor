@@ -13,6 +13,7 @@
 #pragma once
 // - INCLUDES - //
 #include "Sensors/Accelerometer/Accelerometer.hpp" //// Needs to be initialised in alarms initialise function, and used in accelerometer getters.
+#include "Debug/Debug.hpp"
 
 // #pragma region [DEFINES]
 
