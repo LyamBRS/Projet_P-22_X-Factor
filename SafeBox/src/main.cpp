@@ -17,7 +17,7 @@
 void setup()
 {
   //SafeBox_Init();
-  RFID_Init(0);
+  RFID_Init();
   LEDS_Init();
   S3003_Init();
 }
@@ -26,12 +26,10 @@ void setup()
 void loop()
 {
   //Execute_CurrentFunction();
-  if(RFID_HandleCard())
-  {
-    LEDS_SetColor(0,0,255,0);
-  }
-  else
-  {
-    LEDS_SetColor(0,255,0,0);   
-  }
+  /*Garage_Open();
+  delay(5000);
+  Garage_Close();
+  delay(5000);
+  */
+
 }

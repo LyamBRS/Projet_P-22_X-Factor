@@ -14,8 +14,8 @@
 // - INCLUDES - //
 #include "Outputs/Motors/Servo/S3003.hpp"
 #include "Sensors/Distance/GP2D12.hpp"
-#define ANGLE_OPEN 185
-#define ANGLE_CLOSED 85
+#define ANGLE_OPEN 205
+#define ANGLE_CLOSED 75
 
 /**
  * @brief
