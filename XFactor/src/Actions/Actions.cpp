@@ -300,7 +300,7 @@ void Execute_GettingOutOfGarage()
 
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false, DONT_CHECK_SENSORS))
+    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false, DONT_CHECK_SENSORS, true, false))
     {
       SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS); // Should do a COM Status Exchange
     }
@@ -400,6 +400,7 @@ void Execute_SearchPreparations()
 void Execute_SearchForPackage()
 {
   int checkFunctionId;
+  int movementStatus;
 
   XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
   
@@ -434,45 +435,7 @@ void Execute_SearchForPackage()
   searchPatternVectors[4].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[4].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
 
-  currentIndex = 5;
-
-  // totalStrafes * 2 because 2 moves per strafe
-  // currentIndex start value depending on amount of above start vectors
-  /*for (currentIndex = 3; currentIndex < totalStrafes * 2; currentIndex += 4)
-  {
-    searchPatternVectors[currentIndex].rotation_rad = TURN_90_RIGHT;
-    searchPatternVectors[currentIndex].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2;
-    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex].rotation_rad));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex].distance_cm));
-
-    if (currentIndex * 2 < fullStrafes)
-    {
-      strafeDistance_cm = DEMO_AREA_WIDTH_CM - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2);
-    }
-    else
-    {
-      strafeDistance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - (DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2);
-    }
-      
-    searchPatternVectors[currentIndex + 1].rotation_rad = TURN_90_RIGHT;
-    searchPatternVectors[currentIndex + 1].distance_cm = strafeDistance_cm;
-    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 1));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 1].rotation_rad));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 1].distance_cm));
-
-    searchPatternVectors[currentIndex + 2].rotation_rad = TURN_90_LEFT;
-    searchPatternVectors[currentIndex + 2].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2;
-    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 2));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 2].rotation_rad));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 2].distance_cm));
-
-    searchPatternVectors[currentIndex + 3].rotation_rad = TURN_90_LEFT;
-    searchPatternVectors[currentIndex + 3].distance_cm = strafeDistance_cm;
-    Debug_Information("Actions", "Execute_SearchForPackage", "Index : " + String(currentIndex + 3));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Rotation : " + String(searchPatternVectors[currentIndex + 3].rotation_rad));
-    Debug_Information("Actions", "Execute_SearchForPackage", "Distance : " + String(searchPatternVectors[currentIndex + 3].distance_cm));
-  }*/
+  currentIndex = 5; //Number of vectors "hard coded" into the vector buffer for the search pattern
 
   if (currentIndex >= VECTOR_BUFFER_SIZE)
   {
@@ -485,43 +448,46 @@ void Execute_SearchForPackage()
   {
     if (searchPatternVectors[i].rotation_rad == 0.0f && searchPatternVectors[i].distance_cm == 0.0f)
     {
-      break;
+      break; // has reach end of populated vector buffer
     }
     
-    switch (MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true, CHECK_SENSORS))
+    movementStatus = MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true, CHECK_SENSORS, true, false);
+
+    // COMM ABTRACTION
+    /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+    if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+
+    checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
+
+    if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_ALARM)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }*/
+
+    switch (movementStatus)
     {
       case MOVEMENT_COMPLETED:
-        checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-
-        if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
-        {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
-        }
-
-        checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE);
-
-        if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_ALARM)
-        {
-          SetNewExecutionFunction(checkFunctionId);
-          return;
-        }
-        /*if (GetAvailableVectors() - startAvailableVectors == 5)
-        {
-          startAvailableVectors = GetAvailableVectors();
-          //ABSTRACTION DE LA COMM
-
-          checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-
-          if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
-          {
-            SetNewExecutionFunction(checkFunctionId);
-            return;
-          }
-        }*/
         break;
-      case PACKAGE_FOUND:
-        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+      case OBJECT_LOCATED_FRONT:
+        MoveFromVector(STRAIGHT, Package_GetDetectedDistance() + (DISTANCE_SENSOR_DIFF_BETWEEN_SIDE_AND_FRONT_CM / 2), true, DONT_CHECK_SENSORS, true, false);
+        Execute_ExamineFoundPackage();
+        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        return;
+      case OBJECT_LOCATED_LEFT:
+        MoveFromVector(TURN_90_LEFT - (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
+        Execute_ExamineFoundPackage();
+        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        return;
+      case OBJECT_LOCATED_RIGHT:
+        MoveFromVector(TURN_90_RIGHT + (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
+        Execute_ExamineFoundPackage();
+        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case MOVEMENT_ERROR:
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
@@ -530,7 +496,6 @@ void Execute_SearchForPackage()
   }
 
   //FOLLOW BOX
-
 
   XFactor_SetNewStatus(XFactor_Status::NoPackageFound);
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
@@ -585,22 +550,65 @@ void Execute_ExamineFoundPackage()
 {
   int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+
+  int moveStatus;
+  for (;;)
+  {
+    moveStatus = MoveFromVector(TURN_90_RIGHT, 0.0f, true, true, true, false);
+
+    switch (moveStatus)
+    {
+      case MOVEMENT_COMPLETED:
+        break;
+      case OBJECT_LOCATED_FRONT:
+        if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
+        {
+          Execute_PickUpPackage();
+          return;
+          //SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+        }
+        break;
+    default:
+      break;
+    }
+
+    moveStatus = MoveFromVector(TURN_180, 0.0f, true, true, true, false);
+
+    switch (moveStatus)
+    {
+      case MOVEMENT_COMPLETED:
+        break;
+      case OBJECT_LOCATED_FRONT:
+        if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
+        {
+          Execute_PickUpPackage();
+          //SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+        }
+        break;
+    default:
+      break;
+    }
+  }
+  
+
   // ALIGN WITH POTENTIAL PACKAGE
 
-  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  // COM ABSTRACTION
+  /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
-  }
+  }*/
 
-  if (Package_Confirmed())
+  /*if (Package_Confirmed())
   {
     //XFactor_SetNewStatus(XFactor_Status::); PUT GOOD STATUS
     SafeBox_ExchangeStatus();
     SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
-  }
+  }*/
 }
 
 /**
@@ -634,7 +642,7 @@ void Execute_PickUpPackage()
 
   Package_PickUp();
 
-  while(!Package_Confirmed())
+  while(!Claws_GetSwitchStatus())
   {
     if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
@@ -653,7 +661,10 @@ void Execute_PickUpPackage()
     }
     Package_PickUp();
   }
-  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+
+  Package_Transport();
+  Execute_ReturnHome();
+  //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
 /**
@@ -689,7 +700,7 @@ void Execute_ReturnHome()
   Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Distance : " + String(returnVector.distance_cm));
 
 
-  MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false);
+  MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false, true, false);
   /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)

@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Debug/Debug.hpp"
 
 #define FRONT_SENSOR 0
 #define LEFT_SENSOR  1
@@ -23,6 +24,10 @@
 
 #define RIGHT_SENSOR_TRIG_PIN_NUMBER 44
 #define RIGHT_SENSOR_ECHO_PIN_NUMBER 45
+
+#define SPEED_OF_SOUND_CM_MS 34.3f 
+#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 40.0f
+#define TIMEOUT_DISTANCE_MEASURE_US ((DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 3) / SPEED_OF_SOUND_CM_MS) * 1000 * 2
 
 /**
  * @brief Sets base values

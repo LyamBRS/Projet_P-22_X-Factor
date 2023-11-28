@@ -31,8 +31,6 @@
 #define OUT_OF_BOUNDS_DETECTED 3
 // #pragma endregion
 
-#define DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM 40.0f
-
 // #pragma region [FUNCTIONS]
 /**
  * @brief
@@ -181,7 +179,18 @@ bool Package_Confirmed();
  * @return BOX_DETECTED
  * SafeBox has been detected near the robot
  */
-int Package_Detected(int sensor);
+int Package_Detected(int sensor, float relativeRotation_rad);
+
+/**
+ * @brief
+ * Getter for the detected distance
+ * of the last distance detector
+ * that measured the distance
+ *
+ * @return unsigned short :
+ * distance in centimeters
+ */
+unsigned short Package_GetDetectedDistance();
 
 /**
  * @brief

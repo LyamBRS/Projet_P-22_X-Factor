@@ -17,6 +17,8 @@
 bool package_setUp = false;
 bool pickup = false;
 
+unsigned short distanceDetected_cm;
+
 /**
  * @brief
  * Initialisation function that initialises the
@@ -103,7 +105,7 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
-    MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS);
+    MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS, true, false);
     Package_DeployClaw();
     for (int i = 0; i < 5; i++)
     {
@@ -140,7 +142,7 @@ bool Package_PickUp()
 bool Package_AlignWithSafeBox()
 {
     // une longueur deja pres etablie, 90 a gauche, avance,
-    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS);
+    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS, true, false);
 
     return false;
 }
@@ -226,11 +228,12 @@ bool Package_Transport()
 
 bool Package_Confirmed()
 {
-    /*unsigned long currentColour = 0;
+    unsigned long currentColour = 0;
 
     currentColour = GROVE_GetColor();
 
-    if(Colour_Threshold(0x15000000, currentColour, 0xFFFFFFFF))
+    if (currentColour < 23) return true;
+    /*if(Colour_Threshold(0x15000000, currentColour, 0xFFFFFFFF))
     {
         return true;
     }*/
@@ -259,43 +262,48 @@ bool Package_Confirmed()
  * @return BOX_DETECTED
  * SafeBox has been detected near the robot
  */
-
-int Package_Detected(int capteur)
+int Package_Detected(int capteur, float relativeRotation_rad)
 {
-    unsigned short distanceDetected_cm;
-    MovementVector position;
-    if (Claws_GetSwitchStatus()) return true;
-    else{
+    if (Claws_GetSwitchStatus())
+    {
+        return true;
+    } 
+    else
+    {
         switch(capteur){
             case FRONT_SENSOR:
                 distanceDetected_cm = GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER);
-                if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-                {
-                    
-                    return PACKAGE_DETECTED;
-                }
                 break;
-
             case LEFT_SENSOR:
-                if (GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-                {
-                    return PACKAGE_DETECTED;
-                }
+                distanceDetected_cm = GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER);
                 break;
-
             case RIGHT_SENSOR:
-                if (GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER) < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
-                {
-                    return PACKAGE_DETECTED;
-                }
+                distanceDetected_cm = GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER);
                 break;
-
             default:
                 return NOTHING_DETECTED;
                 break;
         }
-        return NOTHING_DETECTED;
+        //Debug_Information("Package.cpp", "Package_Detected", "Sensor : " + String(capteur));
+        //Debug_Information("Package.cpp", "Package_Detected", "Distance : " + String(distanceDetected_cm));
+        return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+
+        //return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad);
     }
+}
+
+/**
+ * @brief
+ * Getter for the detected distance
+ * of the last distance detector
+ * that measured the distance
+ *
+ * @return unsigned short :
+ * distance in centimeters
+ */
+unsigned short Package_GetDetectedDistance()
+{
+    return distanceDetected_cm;
 }
 
 /**
@@ -359,7 +367,8 @@ bool Package_GetStatus()
 /**
  * @brief
  * Return if the detected package is
- * in fact SafeBox
+ * in fact SafeBox or if the detected
+ * object is out of the assigned area
  *
  * @return SAFEBOX_DETECTED:
  * Safebox is detected
@@ -372,7 +381,7 @@ bool Package_GetStatus()
 int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad)
 {
     MovementVector position = GetSavedPosition();
-
+    position.rotation_rad += relativeRotation_rad;
     /*MovementVector position;
     position.distance_cm = 100.0f;
     position.rotation_rad = PI/4;
@@ -420,6 +429,7 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     if (positionX + distanceDetectedX_cm > DEMO_AREA_LENGTH_CM || positionX + distanceDetectedX_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
 
@@ -439,5 +449,5 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
         LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
         return SAFEBOX_DETECTED;
     }
-    return NOTHING_DETECTED;
+    return PACKAGE_DETECTED;
 }

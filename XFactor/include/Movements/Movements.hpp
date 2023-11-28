@@ -43,7 +43,6 @@
 #define MOVEMENT_FORWARD   1
 #define MOVEMENT_BACKWARD -1
 
-#define SPEED_MAX 0.4f
 #define ACCELERATION_CONSTANT (-(SPEED_MAX-0.1f)/0.25f)
 
 #define SPEED_MAX_TURN (SPEED_MAX/2)
@@ -92,7 +91,7 @@
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors);
+int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors, bool checkAlarm, bool examineMode);
 
 /**
  * @brief
@@ -268,6 +267,6 @@ int Execute_Turning(float targetRadians);
  * @return false:
  * Failed to execute the moving sequence
  */
-int Execute_Moving(float targetDistance);
+int Execute_Moving(float targetDistance, float targetRadians);
 
 //#pragma endregion

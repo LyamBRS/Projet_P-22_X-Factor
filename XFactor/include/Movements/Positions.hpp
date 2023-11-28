@@ -58,7 +58,7 @@ bool UpdateSavedDistance(float distanceMade_cm);
  * @return false:
  * The position failed to be updated.
  */
-bool UpdateSavedPosition(float positionX_cm, float positionY_cm);
+bool UpdateSavedPosition();
 
 /**
  * @brief Function that resets both global
