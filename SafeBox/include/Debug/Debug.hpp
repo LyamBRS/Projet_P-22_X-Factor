@@ -29,6 +29,7 @@
 
 #define MAX_INDENTATION_LEVEL 10
 
+
 // - FUNCTIONS - //
 
 /**
@@ -74,6 +75,13 @@ void Debug_Stop();
  * @ref Debug_Stop is called.
  */
 void Debug_Resume();
+
+/**
+ * @brief 
+ * Continuously prints the last error that was
+ * printed. This works even if debug has stopped.
+ */
+void Debug_PrintLastError();
 
 /**
  * @brief Makes the code shift right the further

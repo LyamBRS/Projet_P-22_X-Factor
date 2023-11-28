@@ -29,7 +29,6 @@ unsigned short distanceDetected_cm;
  * @return false:
  * Failed to initialise package functions.
  */
-
 bool Package_Init()
 {
     GP2D12_Init(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER);
@@ -111,14 +110,14 @@ bool Package_PickUp()
     {
         Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
         Debug_End();
-        return false
+        return false;
     }
     
     if(!Package_DeployClaw())
     {
         Debug_Error("Package", "Package_PickUp", "Failed to deploy the claw");
         Debug_End();
-        return false
+        return false;
     }
 
     for (int i = 0; i < 5; i++)

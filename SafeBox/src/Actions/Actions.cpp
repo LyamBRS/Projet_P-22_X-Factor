@@ -470,7 +470,7 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-    Debug_Error("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
+    Debug_Warning("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
     Debug_Stop();
 
     // - VARIABLES - //
@@ -488,6 +488,7 @@ void Execute_Error()
 
         if(mustBeOn)
         {
+            Debug_PrintLastError();
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ERROR);
         }
         else

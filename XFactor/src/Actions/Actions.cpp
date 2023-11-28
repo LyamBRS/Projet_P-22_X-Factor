@@ -216,7 +216,7 @@ void Execute_WaitAfterSafeBox()
   ExecutionUtils_HandleFirstExecution(XFactor_Status::WaitingAfterSafeBox);
 
   // - Forces status exchange until a new one is received.
-  ExecutionUtils_ForceAStatusExchange();
+  //ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
   // Attempt to perform a status exchange with SafeBox.
@@ -541,6 +541,7 @@ void Execute_SearchForPackage()
         SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case MOVEMENT_ERROR:
+        Debug_Error("Actions", "Execute_SearchForPackage", "Movement failed");
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
         return;
     }
@@ -626,6 +627,8 @@ void Execute_ExamineFoundPackage()
           return;
         }
         break;
+      case MOVEMENT_ERROR:
+        Debug_Error("Actions", "Execute_ExamineFoundPackage", "12764: Failed to execute mouvements");
     default:
       break;
     }
@@ -644,6 +647,8 @@ void Execute_ExamineFoundPackage()
           return;
         }
         break;
+      case MOVEMENT_ERROR:
+        Debug_Error("Actions", "Execute_ExamineFoundPackage", "12765: Failed to execute mouvements");
     default:
       break;
     }
@@ -831,7 +836,6 @@ void Execute_PreparingForDropOff()
   // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
   ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
-
 
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
   if (checkFunctionId != FUNCTION_ID_PREPARING_FOR_DROP_OFF)
@@ -1163,7 +1167,7 @@ void Execute_Unlocked()
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
   if (checkFunctionId != FUNCTION_ID_UNLOCKED)
   {
-    Debug_Error("Actions", "Execute_Unlocked", "Changing execution function");
+    Debug_Warning("Actions", "Execute_Unlocked", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
     return;
   }

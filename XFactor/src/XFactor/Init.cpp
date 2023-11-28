@@ -126,5 +126,6 @@ void XFactor_Init()
         }
     }
     // Cant continue initialisation.
+    SetNewExecutionFunction(FUNCTION_ID_ERROR);
     Debug_End();
 }

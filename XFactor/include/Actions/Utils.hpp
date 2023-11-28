@@ -12,6 +12,7 @@
 #pragma once
 
 // - INCLUDE - //
+#include "LED/LED.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
 
