@@ -16,6 +16,9 @@
 #define SERVO_PORTE_HAUT_PIN 8
 #define SERVO_PORTE_BAS_PIN 9
 
+extern Servo servo1;
+extern Servo servo2;
+extern Servo servo3; 
 /**
  * @brief Initialisation function of a single
  * servo motor based on a given arduino pin

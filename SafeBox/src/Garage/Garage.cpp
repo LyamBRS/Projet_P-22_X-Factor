@@ -40,8 +40,8 @@ bool Garage_Init()
 bool Garage_Open()
 {
     
-    //servo2.write(ANGLE_OPEN);
-    //servo3.write(ANGLE_OPEN);
+    servo2.write(ANGLE_OPEN);
+    servo3.write(ANGLE_OPEN);
     return false;
 }
 
@@ -56,8 +56,8 @@ bool Garage_Open()
  */
 bool Garage_Close()
 {
-    //servo2.write(ANGLE_CLOSED);
-    //servo3.write(ANGLE_CLOSED);
+    servo2.write(ANGLE_CLOSED);
+    servo3.write(ANGLE_CLOSED);
     return false;
 }
 
