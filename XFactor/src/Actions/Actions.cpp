@@ -476,18 +476,18 @@ void Execute_SearchForPackage()
         break;
       case OBJECT_LOCATED_FRONT:
         MoveFromVector(STRAIGHT, Package_GetDetectedDistance() + (DISTANCE_SENSOR_DIFF_BETWEEN_SIDE_AND_FRONT_CM / 2), true, DONT_CHECK_SENSORS, true, false);
-        Execute_ExamineFoundPackage();
-        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        //Execute_ExamineFoundPackage();
+        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case OBJECT_LOCATED_LEFT:
         MoveFromVector(TURN_90_LEFT - (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
-        Execute_ExamineFoundPackage();
-        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        //Execute_ExamineFoundPackage();
+        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case OBJECT_LOCATED_RIGHT:
         MoveFromVector(TURN_90_RIGHT + (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
-        Execute_ExamineFoundPackage();
-        //SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
+        //Execute_ExamineFoundPackage();
+        SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case MOVEMENT_ERROR:
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
@@ -552,7 +552,7 @@ void Execute_ExamineFoundPackage()
   XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
 
   int moveStatus;
-  for (;;)
+  for (;;) //change when im less retarded
   {
     moveStatus = MoveFromVector(TURN_90_RIGHT, 0.0f, true, true, true, false);
 
@@ -563,9 +563,9 @@ void Execute_ExamineFoundPackage()
       case OBJECT_LOCATED_FRONT:
         if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
         {
-          Execute_PickUpPackage();
+          //Execute_PickUpPackage();
+          SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
           return;
-          //SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
         }
         break;
     default:
@@ -581,18 +581,15 @@ void Execute_ExamineFoundPackage()
       case OBJECT_LOCATED_FRONT:
         if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
         {
-          Execute_PickUpPackage();
-          //SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+          //Execute_PickUpPackage();
+          SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+          return;
         }
         break;
     default:
       break;
     }
   }
-  
-
-  // ALIGN WITH POTENTIAL PACKAGE
-
 
   // COM ABSTRACTION
   /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
@@ -663,8 +660,8 @@ void Execute_PickUpPackage()
   }
 
   Package_Transport();
-  Execute_ReturnHome();
-  //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  //Execute_ReturnHome();
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
 /**
