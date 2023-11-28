@@ -480,7 +480,7 @@ int Execute_Turning(float targetRadians)
             
     }
 
-    rotationMovement = direction * (EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM;
+    rotationMovement = -(EncoderToCentimeters((float)ENCODER_Read(RIGHT)))*ARC_TICK_TO_CM; // TO LOOK AT
 
     if(!Stop())
     {
@@ -558,7 +558,7 @@ int Execute_Moving(float targetDistance)
             previousLeftPulse  = leftPulse;
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
-            Debug_Information("","",String(rightPulse-leftPulse));
+            //Debug_Information("","",String(rightPulse-leftPulse));
         }
         if (checkForSensors){
             /*if (completionRatio <= 0.85f && Alarm_VerifySensors())

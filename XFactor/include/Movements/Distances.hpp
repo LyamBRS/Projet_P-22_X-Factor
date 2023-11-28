@@ -22,5 +22,5 @@
 
 #define SCANNABLE_AREA_WIDTH 25.0f
 
-#define ROBOT_WIDTH_CM 25.0f
-#define ROBOT_LENGTH_CM 25.0f
+#define ROBOT_WIDTH_CM 28.0f
+#define ROBOT_LENGTH_CM 52.0f

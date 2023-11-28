@@ -158,7 +158,7 @@ bool RemoveLastVector()
  */
 MovementVector GetReturnVector()
 {
-    float positionX_cm = 0.0f;
+    float positionX_cm = ROBOT_LENGTH_CM;
     float positionY_cm = 0.0f;
 
     float absoluteRotation = (float)PI;
@@ -184,9 +184,28 @@ MovementVector GetReturnVector()
         }
     }
     
-    returnVector.rotation_rad = (float)atan(positionY_cm/positionX_cm);
+    returnVector.rotation_rad = (float)atan(abs(positionY_cm)/positionX_cm);
+
+    Debug_Information("Vectors", "GetReturnVector", "Position X : " + String(positionX_cm));
+    Debug_Information("Vectors", "GetReturnVector", "Position Y : " + String(positionY_cm));
+
+    Debug_Information("Vectors", "GetReturnVector", "Rotation PRE : " + String(returnVector.rotation_rad));
+
+    /*if (positionX_cm < 0 && positionY_cm > 0)
+    {
+        returnVector.rotation_rad += PI / 2;
+    }*/
+
+    /*if (positionY_cm < 0 && positionX_cm < 0)
+    {
+        returnVector.rotation_rad += PI;
+    }*/
+
+    Debug_Information("Vectors", "GetReturnVector", "Rotation POST : " + String(returnVector.rotation_rad));
+
     returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
-    return GetOppositeVector(returnVector);
+    return returnVector;
+    //return GetOppositeVector(returnVector);
 }
 
 /**
