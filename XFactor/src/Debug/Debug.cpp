@@ -17,6 +17,8 @@
 // - LOCAL GLOBAL - //
 volatile int _indentationLevel = 0;
 
+String IHopeThisWorks = "";
+
 /**
  * @brief Used to keep track of wether debug
  * functions should be debugging or not.
@@ -126,6 +128,21 @@ void Debug_Resume()
 }
 
 /**
+ * @brief 
+ * Continuously prints the last error that was
+ * printed. This works even if debug has stopped.
+ */
+void Debug_PrintLastError()
+{
+    #ifdef DEBUG_ENABLED
+        DEBUG_SERIAL.print("[LAST ERROR]: ");
+        DEBUG_SERIAL.print(IHopeThisWorks);
+        DEBUG_SERIAL.print("\n\r");
+        DEBUG_SERIAL.flush();
+    #endif
+}
+
+/**
  * @brief Makes the code shift right the further
  * it goes into functions. In other words, the
  * bigger the stack, the more indentation there
@@ -167,6 +184,7 @@ void Debug_Error(String fileName, String functionName, String errorMessage)
     #ifdef DEBUG_ENABLED
         if(debuggingStatus)
         {
+            IHopeThisWorks = errorMessage;
             DEBUG_SERIAL.print("[ERROR]: ");
             #ifdef DEBUG_STACK_TRACE_ENABLED
                 DEBUG_SERIAL.print(GetIndentation());

@@ -28,6 +28,10 @@ bool Garage_Init()
     GP2D12_Init(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
     S3003_Init();
 
+    // This delay is there to ensure that Arduino
+    // has enough time to configure the pins used
+    // This should take micro seconds, but its
+    // good enough
     delay(10);
     if(GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN) == 0)
     {

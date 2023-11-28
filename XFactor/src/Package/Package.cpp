@@ -105,8 +105,22 @@ bool Package_Release()
 
 bool Package_PickUp()
 {
-    MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS, true, false);
-    Package_DeployClaw();
+    Debug_Start("Package_PickUp");
+    
+    if(!MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS, true, false))
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
+        Debug_End();
+        return false
+    }
+    
+    if(!Package_DeployClaw())
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to deploy the claw");
+        Debug_End();
+        return false
+    }
+
     for (int i = 0; i < 5; i++)
     {
         if (!pickup)
@@ -114,13 +128,22 @@ bool Package_PickUp()
             pickup = Claws_CloseUntilDetection();
             if (pickup)
             {
-                Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
+                if(!Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT))
+                {
+                    Debug_Error("Package", "Package_PickUp", "Failed to set height of the claw");
+                    Debug_End();
+                    return false;
+                }
+                Debug_Error("Package", "Package_PickUp", "Successfully picked up the package");
+                Debug_End();
                 return true;
             }
         }
         delay(500); //MAY NEED TO BE REMOVED when we advance
     }
 
+    Debug_Error("Package", "Package_PickUp", "Failed to pick up the package");
+    Debug_End();
     return false;
 }
 

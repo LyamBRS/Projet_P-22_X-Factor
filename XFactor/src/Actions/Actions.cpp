@@ -211,12 +211,18 @@ unsigned char GetCurrentExecutionFunction()
 void Execute_WaitAfterSafeBox()
 {
   Debug_Start("Execute_WaitAfterSafeBox");
-  XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);
+  
+  // - Reset previously seen SafeBox status.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::WaitingAfterSafeBox);
+
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITING_FOR_COMMS);
 
+  // Attempt to perform a status exchange with SafeBox.
   if (SafeBox_ExchangeStatus())
   {
-    if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError) // XFACTOR STATUS TO CONFIRM
+    if (SafeBox_GetStatus() != SafeBox_Status::CommunicationError)
     {
       Debug_Information("Actions", "Execute_WaitAfterSafeBox", "SafeBox detected");
       SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
@@ -250,16 +256,16 @@ void Execute_WaitAfterSafeBox()
 void Execute_WaitForDelivery()
 {
   Debug_Start("Execute_WaitForDelivery");
-  XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
+
+  // - Handling indicators and previous executions
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::WaitingForDelivery);
+
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
 
+  // - Perform status exchange with SafeBox
   SafeBox_ExchangeStatus();
-  if (SafeBox_GetDoorBellStatus())
-  {
-    Debug_Stop();
-    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
-  }
-
   int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
   if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
   {
@@ -267,6 +273,12 @@ void Execute_WaitForDelivery()
     SetNewExecutionFunction(checkFunctionId);
     Debug_End();
     return;
+  }
+
+  // - Check if SafeBox has detected a doorbell
+  if (SafeBox_GetDoorBellStatus())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
   }
   Debug_End();
 }
@@ -295,14 +307,30 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
-  XFactor_SetNewStatus(XFactor_Status::LeavingSafeBox);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::LeavingSafeBox);
+
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
+  // - Perform status exchange with SafeBox
+  SafeBox_ExchangeStatus();
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
+  {
+    Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Changing execution function");
+    SetNewExecutionFunction(checkFunctionId);
+    Debug_End();
+    return;
+  }
+
+  // - Garage movement handling
   if (SafeBox_GetGarageState())
   {
     if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false, DONT_CHECK_SENSORS, true, false))
     {
-      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS); // Should do a COM Status Exchange
+      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
     }
     else
     {
@@ -347,17 +375,33 @@ void Execute_GettingOutOfGarage()
  */
 void Execute_SearchPreparations()
 {
-  XFactor_SetNewStatus(XFactor_Status::PreparingForTheSearch);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::PreparingForTheSearch);
   ResetVectors();
 
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+
+  // - Perform status exchange with SafeBox
+  SafeBox_ExchangeStatus();
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
+  if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
+  {
+    Debug_Warning("Actions", "Execute_SearchPreparations", "Changing execution function");
+    SetNewExecutionFunction(checkFunctionId);
+    Debug_End();
+    return;
+  }
+
+  // - Close the garage until it does.
   if (!SafeBox_GetGarageState())
   {
-    int checkFunctionId;
-    
-    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
-
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_UNLOCKED)
+    int checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_PREPARATIONS, MAX_COMMUNICATION_ATTEMPTS, true);
+    if (checkFunctionId != FUNCTION_ID_SEARCH_PREPARATIONS)
     {
+      Debug_Warning("Actions", "Execute_SearchPreparations", "Alarm or unlocked detected.");
       SetNewExecutionFunction(checkFunctionId);
     }
     else
@@ -367,6 +411,7 @@ void Execute_SearchPreparations()
   }
   else
   {
+    // Try to close the garage until it does.
     SafeBox_ChangeGarageState(false);
   }
 }
@@ -399,10 +444,18 @@ void Execute_SearchPreparations()
  */
 void Execute_SearchForPackage()
 {
-  int checkFunctionId;
-  int movementStatus;
+  // - VARIABLES - //
+  int checkFunctionId = 0;
+  int movementStatus = 0;
+  float strafeDistance_cm = 0;
+  int currentIndex = 0;
 
-  XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::SearchingForAPackage);
+
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
   
   MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
 
@@ -412,8 +465,6 @@ void Execute_SearchForPackage()
     searchPatternVectors[vectorBufferIndex].distance_cm = 0.0f;
   }
 
-  float strafeDistance_cm = 0;
-  int currentIndex = 0;
   int startAvailableVectors = GetAvailableVectors();
 
   // Initial search pattern vectors
@@ -548,11 +599,18 @@ void Execute_AvoidObstacle()
  */
 void Execute_ExamineFoundPackage()
 {
-  int checkFunctionId;
-  XFactor_SetNewStatus(XFactor_Status::ExaminatingAPackage);
+  // - VARIABLES - //
+  int checkFunctionId = 0;
+  int moveStatus = 0;
 
-  int moveStatus;
-  for (;;) //change when im less retarded
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::ExaminatingAPackage);
+
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+  for (;;) //change when im less retarded (ahahahahah)
   {
     moveStatus = MoveFromVector(TURN_90_RIGHT, 0.0f, true, true, true, false);
 
@@ -632,35 +690,53 @@ void Execute_ExamineFoundPackage()
  */
 void Execute_PickUpPackage()
 {
+  // - VARIABLES - //
   int pickUpAttempt = 1;
-  int checkFunctionId;
+  int checkFunctionId = 0;
 
-  XFactor_SetNewStatus(XFactor_Status::PickingUpAPackage);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::PickingUpAPackage);
 
-  Package_PickUp();
+  // - Forces status exchange until a new one is received.
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
+  // - Try to pick up the package
+  //if(!Package_PickUp())
+  //{
+  //  Debug_Warning("Actions", "Execute_PickUpPackage", "Failed to pick up package");
+  //}
+
+  // - Check if claw really picked up the package
   while(!Claws_GetSwitchStatus())
   {
     if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
       // If we have time, undo the last vectors then redo ExamineFoundPackage
+      Debug_Error("Actions", "Execute_PickUpPackage", "Max attempts reached.");
       SetNewExecutionFunction(FUNCTION_ID_ERROR);
       return;
     }
     pickUpAttempt++;
 
-    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PICK_UP_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
     if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
     {
+      Debug_Warning("Actions", "Execute_PickUpPackage", "New execution function set prematurely");
       SetNewExecutionFunction(checkFunctionId);
       return;
     }
-    Package_PickUp();
+    
+    if(!Package_PickUp())
+    {
+      Debug_Warning("Actions", "Execute_PickUpPackage", "Pick up attempt failed");      
+    }
   }
 
-  Package_Transport();
-  //Execute_ReturnHome();
+  if(!Package_Transport())
+  {
+    Debug_Error("Actions", "Execute_PickUpPackage", "Failed to transport the package");
+  }
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
@@ -688,16 +764,28 @@ void Execute_PickUpPackage()
  */
 void Execute_ReturnHome()
 {
+  // - VARIABLES - //
   int checkFunctionId;
 
-  XFactor_SetNewStatus(XFactor_Status::ReturningHome);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::ReturningHome);
+
+  // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
 
   MovementVector returnVector = GetReturnVector();
   Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Rotation : " + String(returnVector.rotation_rad));
   Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Distance : " + String(returnVector.distance_cm));
 
 
-  MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false, true, false);
+  if(!MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false, true, false))
+  {
+    Debug_Error("Actions", "Execute_ReturnHome", "Failed to move from vector");
+    SetNewExecutionFunction(FUNCTION_ID_ERROR);
+    return;
+  }
   /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
 
   if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
@@ -732,16 +820,21 @@ void Execute_ReturnHome()
  */
 void Execute_PreparingForDropOff()
 {
-  int checkFunctionId;
+  // - VARIABLES - //
+  int checkFunctionId = 0;
 
-  XFactor_SetNewStatus(XFactor_Status::PreparingForDropOff);
-
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::PreparingForDropOff);
   ResetVectors();
   ResetMovements();
 
-  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  if (checkFunctionId != FUNCTION_ID_PREPARING_FOR_DROP_OFF)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
@@ -750,6 +843,10 @@ void Execute_PreparingForDropOff()
   if (Package_AlignWithSafeBox())
   {
     SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+  }
+  else
+  {
+    Debug_Error("Actions", "Execute_PreparingForDropOff", "Failed to align with SafeBox");
   }
 }
 
@@ -775,8 +872,12 @@ void Execute_PreparingForDropOff()
  */
 void Execute_PackageDropOff()
 {
-  // WILL NEED TO SEE WITH CHANGES TO SAFEBOX LAYOUT
-  XFactor_SetNewStatus(XFactor_Status::DroppingOff);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::DroppingOff);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+  // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
+  ExecutionUtils_ForceAStatusExchange();
 
   if (SafeBox_GetLidState())
   {
@@ -788,6 +889,10 @@ void Execute_PackageDropOff()
       {
         SetNewExecutionFunction(FUNCTION_ID_CONFIRM_DROP_OFF);
       }
+    }
+    else
+    {
+      Debug_Error("Actions", "Execute_PackageDropOff", "Failed to release package");
     }
   }
   else
@@ -815,13 +920,19 @@ void Execute_PackageDropOff()
  */
 void Execute_ConfirmDropOff()
 {
-  int checkFunctionId;
+  // - VARIABLES - //
+  int checkFunctionId = 0;
 
-  XFactor_SetNewStatus(XFactor_Status::ConfirmingDropOff);
+  // - First execution handling.
+  ExecutionUtils_HandleFirstExecution(XFactor_Status::ConfirmingDropOff);
+
+  // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
+  ExecutionUtils_ForceAStatusExchange();
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
 
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_CONFIRM_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
-
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_CONFIRM_DROP_OFF)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
@@ -830,6 +941,7 @@ void Execute_ConfirmDropOff()
   if (SafeBox_CheckIfPackageDeposited())
   {
     // GO NEXT
+    Debug_Warning("Actions", "Execute_ConfirmDropOff", "NOT CODED YET BRUV");
   }
   else
   {
@@ -859,37 +971,35 @@ void Execute_ConfirmDropOff()
  */
 void Execute_Alarm()
 {
-  Debug_Information("Actions", "Execute_Alarm","Start");
   // - VARIABLES - //
-    static bool mustBeOn = false;
-    XFactor_SetNewStatus(XFactor_Status::Alarm);
+  static bool mustBeOn = false;
+  XFactor_SetNewStatus(XFactor_Status::Alarm);
 
-    int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_ALARM);
-    if (checkFunctionId != FUNCTION_ID_ALARM)
-    {
-      AX_BuzzerOFF();
-      SetNewExecutionFunction(checkFunctionId);
-      return;
-    }
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_ALARM);
+  if (checkFunctionId != FUNCTION_ID_ALARM)
+  {
+    AX_BuzzerOFF();
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
 
 
-    //ExecutionUtils_HandleReceivedXFactorStatus();
-    // - LED & BUZZER BLINK - //
-    if(ExecutionUtils_LedBlinker(100))
-    {
-        mustBeOn = !mustBeOn;
-
-        if(mustBeOn)
-        {
-            SafeBox_ExchangeStatus();
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
-            AX_BuzzerON();
-        }
-        else
-        {
-            LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
-            AX_BuzzerOFF();
-        }
+  //ExecutionUtils_HandleReceivedXFactorStatus();
+  // - LED & BUZZER BLINK - //
+  if(ExecutionUtils_LedBlinker(100))
+  {
+      mustBeOn = !mustBeOn;
+      if(mustBeOn)
+      {
+          SafeBox_ExchangeStatus();
+          LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+          AX_BuzzerON();
+      }
+      else
+      {
+          LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+          AX_BuzzerOFF();
+      }
     }
 }
 
@@ -915,8 +1025,9 @@ void Execute_Alarm()
  */
 void Execute_Error()
 {
-  Debug_Error("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
+  Debug_Warning("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
   Debug_Stop();
+
 
   // - VARIABLES - //
   static bool mustBeOn = false; // everything is closed
@@ -930,6 +1041,7 @@ void Execute_Error()
 
       if(mustBeOn)
       {
+        Debug_PrintLastError();
         LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
       }
       else
