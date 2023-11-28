@@ -14,8 +14,15 @@
 // - INCLUDES - //
 #include "Outputs/Motors/Servo/S3003.hpp"
 #include "Sensors/Distance/GP2D12.hpp"
-#define ANGLE_OPEN 205
+#include "Debug/Debug.hpp"
+#define ANGLE_OPEN 215
 #define ANGLE_CLOSED 75
+
+#define GARAGE_ECHO_PIN 11
+#define GARAGE_TRIG_PIN 10
+
+#define GARAGE_DISTANCE_VALUE_CLOSED 50
+#define GARAGE_DISTANCE_VALUE_OPEN 90
 
 /**
  * @brief

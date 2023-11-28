@@ -230,7 +230,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Information("Utils", "100", "Good status received");
+                    //Debug_Information("Utils", "100", "Good status received");
                     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
                     break;
 
@@ -328,7 +328,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Information("Utils", "101", "Good status received");
+                    //Debug_Information("Utils", "101", "Good status received");
                     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
                     break;
 
@@ -422,7 +422,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingForDelivery):
-                    Debug_Error("Utils", "102", "Good status");
+                    //Debug_Error("Utils", "102", "Good status");
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
@@ -531,12 +531,12 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ConfirmingDropOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
                 case(XFactor_Status::DroppingOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
@@ -581,7 +581,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PreparingForDropOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
@@ -644,11 +644,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ExaminatingAPackage):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::LeavingSafeBox):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::Maintenance):
@@ -667,11 +667,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PackageExaminationFailed):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::PackagePickUpFailed):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::PreparingForDropOff):
@@ -680,7 +680,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PreparingForTheSearch):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::ReturningHome):
@@ -689,7 +689,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::SearchingForAPackage):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::WaitingForDelivery):
@@ -712,7 +712,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
             switch(currentXFactorStatus)
             {
                 case(XFactor_Status::CalculatingRouteHome):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::CommunicationError):
@@ -730,7 +730,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::EnteringSafeBox):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::ExaminatingAPackage):
@@ -749,7 +749,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::NoPackageFound):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::PackageDropOffFailed):
@@ -778,7 +778,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ReturningHome):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::SearchingForAPackage):

@@ -9,40 +9,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-<<<<<<< HEAD
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
-=======
-            "name": "C/C++ Runner: Debug Session",
-            "type": "cppdbg",
-            "request": "launch",
-            "args": [],
-            "stopAtEntry": false,
-            "externalConsole": true,
-            "cwd": "c:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src",
-            "program": "c:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/src/build/Debug/outDebug",
-            "MIMode": "gdb",
-            "miDebuggerPath": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "type": "platformio-debug",
-            "request": "launch",
-            "name": "PIO Debug",
-            "executable": "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
-            "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/trevy/.platformio/packages/toolchain-atmelavr/bin",
->>>>>>> 8afa0d5c1833fe61abe2617ce219096b956b48c1
             "internalConsoleOptions": "openOnSessionStart",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -53,30 +25,18 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-<<<<<<< HEAD
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
-=======
-            "executable": "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
-            "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/trevy/.platformio/packages/toolchain-atmelavr/bin",
->>>>>>> 8afa0d5c1833fe61abe2617ce219096b956b48c1
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-<<<<<<< HEAD
             "executable": "/Users/shawncouture1/Github/S1/Projet/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
             "projectEnvName": "megaatmega2560",
             "toolchainBinDir": "/Users/shawncouture1/.platformio/packages/toolchain-atmelavr/bin",
-=======
-            "executable": "C:/Users/trevy/Desktop/xfactor/Projet_P-22_X-Factor/SafeBox/.pio/build/megaatmega2560/firmware.elf",
-            "projectEnvName": "megaatmega2560",
-            "toolchainBinDir": "C:/Users/trevy/.platformio/packages/toolchain-atmelavr/bin",
->>>>>>> 8afa0d5c1833fe61abe2617ce219096b956b48c1
             "internalConsoleOptions": "openOnSessionStart",
             "loadMode": "manual"
         }

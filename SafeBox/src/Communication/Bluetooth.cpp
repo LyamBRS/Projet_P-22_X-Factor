@@ -167,6 +167,7 @@ String GetMessage(int millisecondsTimeOut)
                     }
                 }
             }
+            delay(10);
         }
     }
 
@@ -408,7 +409,7 @@ String BT_GetLatestMessage()
 
     // - FUNCTION EXECUTION - //
     //oldestMessage = MessageBuffer("", 0, 0);
-    oldestMessage = GetMessage(500);
+    oldestMessage = GetMessage(50);
 
     // brings buffer forwards by one.
     //if(BT_SIZE_OF_MESSAGE_BUFFER>1)
