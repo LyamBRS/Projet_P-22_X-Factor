@@ -18,10 +18,25 @@
 #include "SafeBox/Status.hpp"
 #include "Sensors/RFID/RFID.hpp"
 #include "math.h"
+#include "Alarm/Alarm.hpp"
 
 // - DEFINES - //
+#define EXECUTIONUTILS_CLOCKS_TILL_GARAGE_ALARM 150
 
 // - FUNCTIONS - //
+
+/**
+ * @brief
+ * This function ensures that the door is read as
+ * closed. If its not the case after X amount of
+ * attempts, the alarm needs to be executed
+ * because the door is NOT supposed to be open.
+ * @return true:
+ * We good, no alarms mate
+ * @return false:
+ * Euuh... Why is the door not closed? 
+ */
+bool ExecutionUtils_CheckIfGarageIsClosed();
 
 /**
  * @brief

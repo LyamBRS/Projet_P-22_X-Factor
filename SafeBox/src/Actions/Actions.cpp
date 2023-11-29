@@ -203,6 +203,18 @@ void Execute_WaitAfterXFactor()
         return;
     }
 
+    // - Allows the user to bypass the waiting for XFactor
+    if(RFID_HandleCard() == 1 && Doorbell_GetState())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "Going to unlocked");
+        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
+        {
+            Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set new execution function");
+            SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        }
+        return;
+    }
+
     ExecutionUtils_HandleReceivedXFactorStatus();
 }
 
@@ -220,10 +232,10 @@ void Execute_WaitAfterXFactor()
  */
 void Execute_WaitForDelivery()
 {
-
     // CHECKS IF ITS THE FIRST EXECUTION
     if(SafeBox_GetStatus() != SafeBox_Status::WaitingForDelivery)
     {
+        Debug_Information("Actions", "Execute_WaitForDelivery", "Start of wait for delivery");
         SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);
     }
 
@@ -249,8 +261,14 @@ void Execute_WaitForDelivery()
     }
 
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
-
     SafeBox_CheckAndExecuteMessage();
+
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
 
     if(!ExecutionUtils_HandleArmedUnlocking())
     {
@@ -284,6 +302,13 @@ void Execute_StartOfDelivery()
         XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
     }
 
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
+
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR,LED_COLOR_ARMED);
     SafeBox_CheckAndExecuteMessage();
@@ -310,6 +335,14 @@ void Execute_WaitForRetrieval()
 {
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
+
     SafeBox_CheckAndExecuteMessage();
     ExecutionUtils_HandleReceivedXFactorStatus();
     ExecutionUtils_HandleArmedUnlocking();
@@ -332,6 +365,14 @@ void Execute_WaitForReturn()
 {
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
+
     SafeBox_CheckAndExecuteMessage();
     ExecutionUtils_HandleReceivedXFactorStatus();
     ExecutionUtils_HandleArmedUnlocking();
@@ -351,6 +392,14 @@ void Execute_DropOff()
 {
     SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
+
     SafeBox_CheckAndExecuteMessage();
     ExecutionUtils_HandleReceivedXFactorStatus();
     ExecutionUtils_HandleArmedUnlocking();
@@ -391,10 +440,17 @@ void Execute_Unlocked()
         return;
     }
 
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
     SafeBox_SetNewStatus(SafeBox_Status::Unlocked);
     SafeBox_CheckAndExecuteMessage();
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
-    //ExecutionUtils_HandleReceivedXFactorStatus();
+
+    if(!ExecutionUtils_CheckIfGarageIsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;
+    }
+
     if(RFID_HandleCard() == 1)
     {
         Debug_Information("Actions", "Execute_Unlocked", "Going to Wait for delivery");
@@ -425,9 +481,7 @@ void Execute_Alarm()
     static bool mustBeOn = false;
 
     SafeBox_SetNewStatus(SafeBox_Status::Alarm);
-
     SafeBox_CheckAndExecuteMessage();
-
     ExecutionUtils_HandleReceivedXFactorStatus();
     // - LED & BUZZER BLINK - //
     if(ExecutionUtils_LedBlinker(100))
@@ -437,24 +491,24 @@ void Execute_Alarm()
         if(mustBeOn)
         {
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
-            // AX_BuzzerON();
+            Alarm_SetState(true);
         }
         else
         {
             LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
-            // AX_BuzzerOFF();
-        }
-    }
+            Alarm_SetState(false);
 
-    // - RFID DISARM ALARM CHECKS - //
-    if (RFID_HandleCard() == 1)
-    {
-        // AX_BuzzerOFF();
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
-        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
-        {
-            Debug_Error("Actions", "Execute_Alarm", "Failed to set new execution function");
-            SetNewExecutionFunction(FUNCTION_ID_ERROR);
+            // - RFID DISARM ALARM CHECKS - //
+            if (RFID_HandleCard() == 1)
+            {
+                LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+                if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
+                {
+                    Debug_Error("Actions", "Execute_Alarm", "Failed to set new execution function");
+                    SetNewExecutionFunction(FUNCTION_ID_ERROR);
+                }
+                Alarm_SetState(false);
+            }
         }
     }
 }
@@ -477,7 +531,7 @@ void Execute_Error()
     static bool mustBeOn = false; // everything is closed
 
     // - PROGRAM - //
-    SafeBox_SetNewStatus(SafeBox_Status::Error);
+    //SafeBox_SetNewStatus(SafeBox_Status::Error);
     ExecutionUtils_HandleReceivedXFactorStatus();
     SafeBox_CheckAndExecuteMessage();
 

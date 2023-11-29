@@ -50,19 +50,30 @@ bool RFID_Init()
  */
 int RFID_HandleCard()
 {
+  // - VARIABLES - //
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
   String receivedCard = "NO_CARDS_FOUND";
 
-
+  // - Bypassed if there is no cards on the sensor
   if(!RFID_CheckIfCardIsThere())
   {
     return 0;
   }
+  
   Debug_Start("RFID_HandleCard");
   receivedCard = RFID_GetCardNumber();
 
     if (receivedCard.compareTo(RFID_VALID_CARD) == 0) {
         Debug_Information("RFID","RFID_HandleCard","Valid card");
+
+        Alarm_SetState(true);
+        delay(40);
+        Alarm_SetState(false);
+        delay(40);
+        Alarm_SetState(true);
+        delay(40);
+        Alarm_SetState(false);
+
         Debug_End();
         return 1;
     } else {
@@ -74,8 +85,10 @@ int RFID_HandleCard()
           return 0;
         }
         LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
-        delay(500);
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);      
+        Alarm_SetState(true);
+        delay(250);
+        LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_OFFLINE);
+        Alarm_SetState(false);   
 
         Debug_Warning("RFID","RFID_HandleCard","Expected:");
         Debug_Warning("RFID","RFID_HandleCard",RFID_VALID_CARD);

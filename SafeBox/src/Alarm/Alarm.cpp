@@ -28,24 +28,33 @@
 bool Alarm_Init()
 {
     Debug_Start("Alarm_Init");
-    Debug_Warning("Alarm", "Alarm_Init", "BYPASSED");
+    //Debug_Warning("Alarm", "Alarm_Init", "BYPASSED");
+    pinMode(ALARM_BUZZER_PIN, OUTPUT);
     Debug_End();
     return true;
 }
 
 /**
  * @brief
- * Verifies all the sensors of SafeBox that can
- * be utilized to trigger an alarm.
+ * Sets the needed alarm state.
  *
  * @return true:
- * An alarm needs to be triggered
+ * Successfully set alarm to specified mode
  * @return false:
- * No alarm needs to be triggered
+ * Failed to set alarm to specified mode
  */
-bool Alarm_VerifySensors()
+bool Alarm_SetState(bool wantedState)
 {
-    return false;
+    if(wantedState)
+    {
+        digitalWrite(ALARM_BUZZER_PIN, HIGH);
+    }
+    else
+    {
+        digitalWrite(ALARM_BUZZER_PIN, LOW);
+    }
+
+    return true;
 }
 
 /**

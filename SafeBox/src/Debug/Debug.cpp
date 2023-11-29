@@ -54,15 +54,17 @@ bool Debug_Init()
  */
 void Debug_Start(String nameOfTheFunction)
 {
-    #ifdef DEBUG_INFORMATION_ENABLED
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            DEBUG_SERIAL.print("[     ]: ");
-            DEBUG_SERIAL.print(GetIndentation());
-            DEBUG_SERIAL.print("[");
-            DEBUG_SERIAL.print(nameOfTheFunction);
-            DEBUG_SERIAL.println("]:");
-            DEBUG_SERIAL.flush();
-            if(_indentationLevel < MAX_INDENTATION_LEVEL) _indentationLevel++;
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                DEBUG_SERIAL.print("[     ]: ");
+                DEBUG_SERIAL.print(GetIndentation());
+                DEBUG_SERIAL.print("[");
+                DEBUG_SERIAL.print(nameOfTheFunction);
+                DEBUG_SERIAL.println("]:");
+                DEBUG_SERIAL.flush();
+                if(_indentationLevel < MAX_INDENTATION_LEVEL) _indentationLevel++;
+            #endif
         #endif
     #endif
 }
@@ -73,13 +75,15 @@ void Debug_Start(String nameOfTheFunction)
  */
 void Debug_End()
 {
-    #ifdef DEBUG_INFORMATION_ENABLED
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            if(_indentationLevel > 0) _indentationLevel--;
-            DEBUG_SERIAL.print("[     ]: ");
-            DEBUG_SERIAL.print(GetIndentation());
-            DEBUG_SERIAL.println("[END]");
-            DEBUG_SERIAL.flush();
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                if(_indentationLevel > 0) _indentationLevel--;
+                DEBUG_SERIAL.print("[     ]: ");
+                DEBUG_SERIAL.print(GetIndentation());
+                DEBUG_SERIAL.println("[END]");
+                DEBUG_SERIAL.flush();
+            #endif
         #endif
     #endif
 }

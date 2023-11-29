@@ -13,6 +13,13 @@
 #include "Garage/Garage.hpp"
 
 /**
+ * @brief 
+ * Global local variable used to keep track of
+ * what the garage is supposed to be.
+ */
+volatile bool supposedGarageStatus = false;
+
+/**
  * @brief
  * Initialises the garage of SafeBox.
  * Initialises the servo motors and sensors used
@@ -58,6 +65,8 @@ bool Garage_Open()
     Debug_Start("Garage_Open");
     servo2.write(ANGLE_OPEN);
     servo3.write(ANGLE_OPEN);
+    supposedGarageStatus = true;
+    Debug_Information("Garage", "Garage_Open", "Garage should no longer check to see if its closed");
     Debug_End();
     return true;
 }
@@ -76,6 +85,8 @@ bool Garage_Close()
     Debug_Start("Garage_Close");
     servo2.write(ANGLE_CLOSED);
     servo3.write(ANGLE_CLOSED);
+    supposedGarageStatus = false;
+    Debug_Information("Garage", "Garage_Close", "Garage should now check to see if its closed");
     Debug_End();
     return true;
 }
@@ -100,6 +111,20 @@ bool Garage_XFactorInside()
 }
 
 /**
+ * @brief 
+ * Returns wether the garage SHOULD be closed
+ * or not.
+ * @return true:
+ * Should be opened.
+ * @return false:
+ * Should be closed.
+ */
+bool Garage_GetSupposedWantedStatus()
+{
+    return supposedGarageStatus;
+}
+
+/**
  * @brief
  * Function that analyses the distance sensor
  * that is inside SafeBox's garage and tells the
@@ -112,9 +137,9 @@ bool Garage_XFactorInside()
  */
 bool Garage_IsClosed()
 {
-    Debug_Start("Garage_XFactorInside");
+    Debug_Start("Garage_IsClosed");
     unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
-    Debug_Warning("Garage", "Garage_XFactorInside", String(doorDistance));
+    //Debug_Warning("Garage", "Garage_IsClosed", String(doorDistance));
     if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
     {
         Debug_End();

@@ -151,7 +151,7 @@ String GetMessage(int millisecondsTimeOut)
                         //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
                         //_currentMessage = "";
                         //_messageReceived = true;
-                        Debug_Information("-", "-", "returning message");
+                        //Debug_Information("-", "-", "returning message");
                         return _currentMessage;
                     //}
                 }
@@ -167,7 +167,7 @@ String GetMessage(int millisecondsTimeOut)
                     }
                 }
             }
-            delay(10);
+            delay(20);
         }
     }
 
@@ -226,7 +226,7 @@ bool BT_SendString(String message)
     }
 
     // - FUNCTION EXECUTION - //
-    Debug_Information("Bluetooth", "BT_SendString", message);
+    //Debug_Information("Bluetooth", "BT_SendString", message);
     unsigned int byteSent = BT_SERIAL.println(message);
     BT_SERIAL.flush();
 

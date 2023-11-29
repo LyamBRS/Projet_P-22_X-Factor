@@ -21,20 +21,12 @@ void setup()
 /// @brief Arduino's while(1) function.
 void loop()
 {
-  Execute_CurrentFunction();
+  //Execute_CurrentFunction();
 
-  /*
-  Garage_Close();
-  for(int i=0; i<1000; i++)
-  {
-    Garage_IsClosed(); 
-    delay(1);
-  }
   Garage_Open();
-  for(int i=0; i<1000; i++)
-  {
-    Garage_IsClosed();
-    delay(1);
-  }
-  */
+  LEDS_SetColor(0,0,255,0);
+  delay(1000);
+  Garage_Close();
+  LEDS_SetColor(0,255,0,0);
+  delay(1000);
 }
