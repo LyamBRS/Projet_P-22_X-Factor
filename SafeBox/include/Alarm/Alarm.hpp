@@ -25,6 +25,7 @@
 #define ALARM_GYRO_Z_MIN
 
 #define ALARM_BUZZER_PIN 2
+
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -41,17 +42,6 @@
  * Failed to initialise the alarm.
  */
 bool Alarm_Init();
-
-/**
- * @brief
- * Sets the needed alarm state.
- *
- * @return true:
- * Successfully set alarm to specified mode
- * @return false:
- * Failed to set alarm to specified mode
- */
-bool Alarm_SetState(bool wantedState);
 
 /**
  * @brief
