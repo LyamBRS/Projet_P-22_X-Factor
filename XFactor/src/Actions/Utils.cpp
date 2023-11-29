@@ -23,6 +23,7 @@ void ExecutionUtils_ForceAStatusExchange()
 {
   while(SafeBox_GetStatus() == SafeBox_Status::CommunicationError)
   {
+    ResetSavedParameters();
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_COMMUNICATING);
     SafeBox_ExchangeStatus();
     delay(500);
@@ -175,4 +176,30 @@ bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS)
         return true;
     }
     return false;
+}
+
+/**
+ * @brief Function that checks
+ * if something unexpected happened in
+ * movement and returns status of the
+ * event that happened
+ * @param currentExecutionFunctionId
+ * The id of the current execution function.
+ * @return int:
+ * Value of the new execution function id to execute, 
+ * currentExecutionFunctionId if no changes
+ */
+int ExecutionUtils_ComputeMovementResults(int currentExecutionFunctionId, int movementStatus)
+{
+  switch (movementStatus)
+  {
+    case MOVEMENT_ERROR:
+      Debug_Error("Utils", "ExecutionUtils_ComputeMovementResults", "Movement failed");
+      return FUNCTION_ID_ERROR;
+    case ALARM_TRIGGERED:
+      Debug_Error("Utils", "ExecutionUtils_ComputeMovementResults", "Alarm has been triggered in movement");
+      return FUNCTION_ID_ALARM;
+    default:
+      return currentExecutionFunctionId;
+  }
 }

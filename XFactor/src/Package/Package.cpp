@@ -79,7 +79,7 @@ bool Package_Release()
     }*/
 
     if (Claws_SetGrabbers(100) == true){
-        pickup = false;
+        Package_SetStatus(false);
         return true;
     }
 
@@ -106,13 +106,6 @@ bool Package_PickUp()
 {
     Debug_Start("Package_PickUp");
     
-    if(!MoveFromVector(0, PACKAGE_BACK_MOVEMENT, true, DONT_CHECK_SENSORS, true, false))
-    {
-        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
-        Debug_End();
-        return false;
-    }
-    
     if(!Package_DeployClaw())
     {
         Debug_Error("Package", "Package_PickUp", "Failed to deploy the claw");
@@ -125,6 +118,7 @@ bool Package_PickUp()
         if (!pickup)
         {
             pickup = Claws_CloseUntilDetection();
+
             if (pickup)
             {
                 if(!Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT))
@@ -133,12 +127,21 @@ bool Package_PickUp()
                     Debug_End();
                     return false;
                 }
-                Debug_Error("Package", "Package_PickUp", "Successfully picked up the package");
+                Debug_Information("Package", "Package_PickUp", "Successfully picked up the package");
                 Debug_End();
+                Package_SetStatus(true);
                 return true;
             }
         }
         delay(500); //MAY NEED TO BE REMOVED when we advance
+    }
+
+    
+    if(!MoveFromVector(PICK_UP_PACKAGE_VECTOR))
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
+        Debug_End();
+        return false;
     }
 
     Debug_Error("Package", "Package_PickUp", "Failed to pick up the package");
@@ -163,10 +166,7 @@ bool Package_PickUp()
 
 bool Package_AlignWithSafeBox()
 {
-    // une longueur deja pres etablie, 90 a gauche, avance,
-    MoveFromVector(PI/2, 0, false, DONT_CHECK_SENSORS, true, false);
-
-    return false;
+    return MoveFromVector(ALIGN_WITH_SAFEBOX_VECTOR); // see if it works as intended
 }
 
 /**
@@ -355,8 +355,9 @@ unsigned short Package_GetDetectedDistance()
 bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
+    return true;
 
-    if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
+    /*if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
         return true;
     }
 
@@ -364,7 +365,7 @@ bool Package_SetStatus(bool newPackageStatus)
         return true;
     }
     package_setUp = false;
-    return false;
+    return false;*/
 }
 
 /**
@@ -380,10 +381,7 @@ bool Package_SetStatus(bool newPackageStatus)
 
 bool Package_GetStatus()
 {
-    if (package_setUp == true){
-        return true;
-    }
-    return false;
+    return package_setUp;
 }
 
 /**

@@ -15,6 +15,7 @@
 #include "LED/LED.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
+#include "Movements/Movements.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
@@ -126,3 +127,16 @@ int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attemp
  * The timer is still counting.
  */
 bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS);
+
+/**
+ * @brief Function that checks
+ * if something unexpected happened in
+ * movement and returns status of the
+ * event that happened
+ * @param currentExecutionFunctionId
+ * The id of the current execution function.
+ * @return int:
+ * Value of the new execution function id to execute, 
+ * currentExecutionFunctionId if no changes
+ */
+int ExecutionUtils_ComputeMovementResults(int currentExecutionFunctionId, int movementStatus);

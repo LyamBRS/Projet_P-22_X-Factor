@@ -68,7 +68,7 @@ bool Alarm_Init()
  */
 bool Alarm_VerifySensors()
 {
-    return Alarm_VerifyAccelerometer();// || Alarm_VerifyPackage();
+    return Alarm_VerifyAccelerometer() || Alarm_VerifyPackage();
 }
 
 /**
@@ -113,6 +113,7 @@ void Alarm_ResetThresholds()
  */
 bool Alarm_VerifyAccelerometer()
 {
+    static int alarmTriggerCounter = 0;
     //unsigned nbReadings = 5;
     //float sumX = 0.0f, sumY = 0.0f, sumZ = 0.0f;
     //float avgX = 0.0f, avgY = 0.0f, avgZ = 0.0f;
@@ -185,9 +186,14 @@ bool Alarm_VerifyAccelerometer()
         counter = 0;
         if (avgX > deltaThresholdX || avgY > deltaThresholdY)// || avgZ > deltaThresholdZ)
         {
-            return true;
+            alarmTriggerCounter++;
+            if (alarmTriggerCounter > 1)
+            {
+                return true;
+            }
+            return false;
         }
-        //Alarm_ResetThresholds();
+        alarmTriggerCounter = 0;
     }
 
     counter++;
@@ -244,7 +250,11 @@ bool Alarm_VerifyAccelerometer()
  */
 bool Alarm_VerifyPackage()
 {
-    return !Package_GetStatus();
+    if (Package_GetStatus())
+    {
+        return !Claws_GetSwitchStatus();
+    }
+    return false;
 }
 
 bool MoveStraightAndTest()

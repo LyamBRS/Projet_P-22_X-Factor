@@ -65,7 +65,7 @@ bool XFactor_SetNewStatus(XFactor_Status newStatus)
             return true;
 
         default:
-            CurrentXFactorStatus = XFactor_Status::Error;
+            CurrentXFactorStatus = XFactor_Status::CommunicationError;
             return false;
     }
 

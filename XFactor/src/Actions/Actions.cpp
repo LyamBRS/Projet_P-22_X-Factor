@@ -307,6 +307,7 @@ void Execute_WaitForDelivery()
  */
 void Execute_GettingOutOfGarage()
 {
+  int movementStatus;
   // - First execution handling.
   ExecutionUtils_HandleFirstExecution(XFactor_Status::LeavingSafeBox);
 
@@ -316,8 +317,8 @@ void Execute_GettingOutOfGarage()
 
   // - Perform status exchange with SafeBox
   SafeBox_ExchangeStatus();
-  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
-  if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_GETTING_OUT_OF_GARAGE);
+  if (checkFunctionId != FUNCTION_ID_GETTING_OUT_OF_GARAGE)
   {
     Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
@@ -328,16 +329,16 @@ void Execute_GettingOutOfGarage()
   // - Garage movement handling
   if (SafeBox_GetGarageState())
   {
-    if (MoveFromVector(STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false, DONT_CHECK_SENSORS, true, false))
+    movementStatus = MoveFromVector(GETTING_OUT_OF_GARAGE_VECTOR);
+    checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_GETTING_OUT_OF_GARAGE, movementStatus);
+
+    if (checkFunctionId != FUNCTION_ID_GETTING_OUT_OF_GARAGE)
     {
-      SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
+      SetNewExecutionFunction(checkFunctionId);
+      return;
     }
-    else
-    {
-      Debug_Error("Actions", "Execute_GettingOutOfGarage", "Failed to move from vector");
-      SetNewExecutionFunction(FUNCTION_ID_ERROR);
-      return;   
-    }
+
+    SetNewExecutionFunction(FUNCTION_ID_SEARCH_PREPARATIONS);
   }
   else
   {
@@ -386,8 +387,8 @@ void Execute_SearchPreparations()
 
   // - Perform status exchange with SafeBox
   SafeBox_ExchangeStatus();
-  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_WAIT_FOR_DELIVERY);
-  if (checkFunctionId != FUNCTION_ID_WAIT_FOR_DELIVERY)
+  int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_PREPARATIONS);
+  if (checkFunctionId != FUNCTION_ID_SEARCH_PREPARATIONS)
   {
     Debug_Warning("Actions", "Execute_SearchPreparations", "Changing execution function");
     SetNewExecutionFunction(checkFunctionId);
@@ -403,6 +404,7 @@ void Execute_SearchPreparations()
     {
       Debug_Warning("Actions", "Execute_SearchPreparations", "Alarm or unlocked detected.");
       SetNewExecutionFunction(checkFunctionId);
+      return;
     }
     else
     {
@@ -471,6 +473,9 @@ void Execute_SearchForPackage()
   /*int totalStrafes = (int)((DEMO_AREA_LENGTH_CM / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));
   int fullStrafes = (int)(((DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM) / DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM));*/
 
+  //searchPatternVectors[0].rotation_rad = TURN_90_RIGHT;
+  //searchPatternVectors[0].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_WIDTH_CM;
+
   searchPatternVectors[0].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[0].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
@@ -483,8 +488,8 @@ void Execute_SearchForPackage()
   searchPatternVectors[3].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[3].distance_cm = DEMO_AREA_LENGTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
 
-  searchPatternVectors[4].rotation_rad = TURN_90_RIGHT;
-  searchPatternVectors[4].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
+  /*searchPatternVectors[4].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[4].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;*/
 
   currentIndex = 5; //Number of vectors "hard coded" into the vector buffer for the search pattern
 
@@ -502,10 +507,18 @@ void Execute_SearchForPackage()
       break; // has reach end of populated vector buffer
     }
     
-    movementStatus = MoveFromVector(searchPatternVectors[i].rotation_rad, searchPatternVectors[i].distance_cm, true, CHECK_SENSORS, true, false);
+    movementStatus = MoveFromVector(SEARCH_PATTERN_VECTOR);
+    checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_SEARCH_FOR_PACKAGE, movementStatus);
+
+    if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+    
 
     // COMM ABTRACTION
-    /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+    checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
     if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
     {
@@ -519,38 +532,63 @@ void Execute_SearchForPackage()
     {
       SetNewExecutionFunction(checkFunctionId);
       return;
-    }*/
+    }
 
     switch (movementStatus)
     {
       case MOVEMENT_COMPLETED:
+        SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
         break;
       case OBJECT_LOCATED_FRONT:
-        MoveFromVector(STRAIGHT, Package_GetDetectedDistance() + (DISTANCE_SENSOR_DIFF_BETWEEN_SIDE_AND_FRONT_CM / 2), true, DONT_CHECK_SENSORS, true, false);
-        //Execute_ExamineFoundPackage();
+        movementStatus = MoveFromVector(GO_TO_DETECTED_OBJECT_FRONT_VECTOR);
+        checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_SEARCH_FOR_PACKAGE, movementStatus);
+
+        if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
+        {
+          SetNewExecutionFunction(checkFunctionId);
+          return;
+        }
+
         SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case OBJECT_LOCATED_LEFT:
-        MoveFromVector(TURN_90_LEFT - (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
-        //Execute_ExamineFoundPackage();
+        movementStatus = MoveFromVector(GO_TO_DETECTED_OBJECT_LEFT_VECTOR);
+        checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_SEARCH_FOR_PACKAGE, movementStatus);
+
+        if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
+        {
+          SetNewExecutionFunction(checkFunctionId);
+          return;
+        }
+
         SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
         return;
       case OBJECT_LOCATED_RIGHT:
-        MoveFromVector(TURN_90_RIGHT + (PI / 90), Package_GetDetectedDistance(), true, DONT_CHECK_SENSORS, true, false);
-        //Execute_ExamineFoundPackage();
+        movementStatus = MoveFromVector(GO_TO_DETECTED_OBJECT_RIGHT_VECTOR);
+        checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_SEARCH_FOR_PACKAGE, movementStatus);
+
+        if (checkFunctionId != FUNCTION_ID_SEARCH_FOR_PACKAGE)
+        {
+          SetNewExecutionFunction(checkFunctionId);
+          return;
+        }
+
         SetNewExecutionFunction(FUNCTION_ID_EXAMINE_FOUND_PACKAGE);
-        return;
-      case MOVEMENT_ERROR:
-        Debug_Error("Actions", "Execute_SearchForPackage", "Movement failed");
-        SetNewExecutionFunction(FUNCTION_ID_ERROR);
         return;
     }
   }
 
   //FOLLOW BOX
 
-  XFactor_SetNewStatus(XFactor_Status::NoPackageFound);
-  SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
+  if(!XFactor_SetNewStatus(XFactor_Status::NoPackageFound))
+  {
+    Debug_Error("Actions", "Execute_SearchForPackage", "Failed to set status");
+    SetNewExecutionFunction(FUNCTION_ID_ERROR);
+    return;
+  }
+
+  SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+  //SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
 /**
@@ -602,7 +640,7 @@ void Execute_ExamineFoundPackage()
 {
   // - VARIABLES - //
   int checkFunctionId = 0;
-  int moveStatus = 0;
+  int movementStatus;
 
   // - First execution handling.
   ExecutionUtils_HandleFirstExecution(XFactor_Status::ExaminatingAPackage);
@@ -613,55 +651,69 @@ void Execute_ExamineFoundPackage()
 
   for (;;) //change when im less retarded (ahahahahah)
   {
-    moveStatus = MoveFromVector(TURN_90_RIGHT, 0.0f, true, true, true, false);
+    movementStatus = MoveFromVector(EXAMINE_PACKAGE_LEFT_SWIPE_VECTOR);
+    checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, movementStatus);
 
-    switch (moveStatus)
+    if (checkFunctionId != FUNCTION_ID_EXAMINE_FOUND_PACKAGE)
     {
-      case MOVEMENT_COMPLETED:
-        break;
-      case OBJECT_LOCATED_FRONT:
-        if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
-        {
-          //Execute_PickUpPackage();
-          SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
-          return;
-        }
-        break;
-      case MOVEMENT_ERROR:
-        Debug_Error("Actions", "Execute_ExamineFoundPackage", "12764: Failed to execute mouvements");
-    default:
-      break;
+      SetNewExecutionFunction(checkFunctionId);
+      return;
     }
 
-    moveStatus = MoveFromVector(TURN_180, 0.0f, true, true, true, false);
-
-    switch (moveStatus)
+    if (movementStatus == OBJECT_LOCATED_FRONT)
     {
-      case MOVEMENT_COMPLETED:
-        break;
-      case OBJECT_LOCATED_FRONT:
-        if (MoveFromVector(STRAIGHT, Package_GetDetectedDistance(), true, false, true, true) == PACKAGE_FOUND)
-        {
-          //Execute_PickUpPackage();
-          SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
-          return;
-        }
-        break;
-      case MOVEMENT_ERROR:
-        Debug_Error("Actions", "Execute_ExamineFoundPackage", "12765: Failed to execute mouvements");
-    default:
-      break;
+      movementStatus = MoveFromVector(EXAMINE_PACKAGE_CLOSEUP_VECTOR);
+      checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, movementStatus);
+
+      if (checkFunctionId != FUNCTION_ID_EXAMINE_FOUND_PACKAGE)
+      {
+        SetNewExecutionFunction(checkFunctionId);
+        return;
+      }
+
+      if (movementStatus == PACKAGE_FOUND)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+        return;
+      }
+    }
+
+    movementStatus = MoveFromVector(EXAMINE_PACKAGE_WHOLE_SWIPE_VECTOR);
+    checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, movementStatus);
+
+    if (checkFunctionId != FUNCTION_ID_EXAMINE_FOUND_PACKAGE)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+
+    if (movementStatus == OBJECT_LOCATED_FRONT)
+    {
+      movementStatus = MoveFromVector(EXAMINE_PACKAGE_CLOSEUP_VECTOR);
+      checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, movementStatus);
+
+      if (checkFunctionId != FUNCTION_ID_EXAMINE_FOUND_PACKAGE)
+      {
+        SetNewExecutionFunction(checkFunctionId);
+        return;
+      }
+
+      if (movementStatus == PACKAGE_FOUND)
+      {
+        SetNewExecutionFunction(FUNCTION_ID_PICK_UP_PACKAGE);
+        return;
+      }
     }
   }
 
   // COM ABSTRACTION
-  /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_SEARCH_FOR_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
 
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_EXAMINE_FOUND_PACKAGE)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
-  }*/
+  }
 
   /*if (Package_Confirmed())
   {
@@ -698,13 +750,15 @@ void Execute_PickUpPackage()
   // - VARIABLES - //
   int pickUpAttempt = 1;
   int checkFunctionId = 0;
+  bool errorOccured = false;
 
   // - First execution handling.
   ExecutionUtils_HandleFirstExecution(XFactor_Status::PickingUpAPackage);
 
   // - Forces status exchange until a new one is received.
   ExecutionUtils_ForceAStatusExchange();
-  LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 128);
+  //LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
   // - Try to pick up the package
   //if(!Package_PickUp())
@@ -715,23 +769,30 @@ void Execute_PickUpPackage()
   // - Check if claw really picked up the package
   while(!Claws_GetSwitchStatus())
   {
+    /*while (1)
+    {
+      LEDS_SetColor(0, 128, 32, 32);
+    }*/
+
     if (pickUpAttempt >= MAX_PICKUP_ATTEMPTS)
     {
       // If we have time, undo the last vectors then redo ExamineFoundPackage
       Debug_Error("Actions", "Execute_PickUpPackage", "Max attempts reached.");
       SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      errorOccured = true;
       return;
     }
     pickUpAttempt++;
 
     checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PICK_UP_PACKAGE, MAX_COMMUNICATION_ATTEMPTS, true);
-    if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
+    if (checkFunctionId != FUNCTION_ID_PICK_UP_PACKAGE)
     {
       Debug_Warning("Actions", "Execute_PickUpPackage", "New execution function set prematurely");
       SetNewExecutionFunction(checkFunctionId);
+      errorOccured = true;
       return;
     }
-    
+
     if(!Package_PickUp())
     {
       Debug_Warning("Actions", "Execute_PickUpPackage", "Pick up attempt failed");      
@@ -742,6 +803,11 @@ void Execute_PickUpPackage()
   {
     Debug_Error("Actions", "Execute_PickUpPackage", "Failed to transport the package");
   }
+
+  /*if(errorOccured)
+  {
+    return
+  }*/
   SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
 }
 
@@ -771,6 +837,7 @@ void Execute_ReturnHome()
 {
   // - VARIABLES - //
   int checkFunctionId;
+  int movementStatus;
 
   // - First execution handling.
   ExecutionUtils_HandleFirstExecution(XFactor_Status::ReturningHome);
@@ -779,27 +846,46 @@ void Execute_ReturnHome()
   ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
-
   MovementVector returnVector = GetReturnVector();
+
   Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Rotation : " + String(returnVector.rotation_rad));
   Debug_Information("Actions", "Execute_ReturnHome", "Return Vector Distance : " + String(returnVector.distance_cm));
 
+  movementStatus = MoveFromVector(RETURN_HOME_VECTOR);
+  checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_RETURN_HOME, movementStatus);
 
-  if(!MoveFromVector(returnVector.rotation_rad, returnVector.distance_cm, false, false, true, false))
+  if (checkFunctionId != FUNCTION_ID_RETURN_HOME)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  movementStatus = MoveFromVector((PI / 2) -GetSavedRotation(), 0.0f, false, false, true, false, 0.4f);
+  checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_RETURN_HOME, movementStatus);
+
+  if (checkFunctionId != FUNCTION_ID_RETURN_HOME)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  /*if(!MoveFromVector(TURN_180, DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_WIDTH_CM - 15.0f, false, false, true, false, 0.4f))
   {
     Debug_Error("Actions", "Execute_ReturnHome", "Failed to move from vector");
     SetNewExecutionFunction(FUNCTION_ID_ERROR);
     return;
-  }
-  /*checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PREPARING_FOR_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  }*/
 
-  if (checkFunctionId == FUNCTION_ID_ALARM || checkFunctionId == FUNCTION_ID_ERROR || checkFunctionId == FUNCTION_ID_UNLOCKED)
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_RETURN_HOME, MAX_COMMUNICATION_ATTEMPTS, true);
+
+  if (checkFunctionId != FUNCTION_ID_RETURN_HOME)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
-  }*/
+  }
 
-  SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+  SetNewExecutionFunction(FUNCTION_ID_RETURN_INSIDE_GARAGE);
+  //SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
 }
 
 /**
@@ -844,14 +930,29 @@ void Execute_PreparingForDropOff()
     return;
   }
 
-  if (Package_AlignWithSafeBox())
+  if (!SafeBox_GetGarageState())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+    return;
+  }
+  else
+  {
+    if(!SafeBox_ChangeGarageState(false))
+    {
+      Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
+      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;
+    }
+  }
+  
+  /*if (Package_AlignWithSafeBox())
   {
     SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
   }
   else
   {
     Debug_Error("Actions", "Execute_PreparingForDropOff", "Failed to align with SafeBox");
-  }
+  }*/
 }
 
 /**
@@ -876,6 +977,10 @@ void Execute_PreparingForDropOff()
  */
 void Execute_PackageDropOff()
 {
+  static int step = 0;
+  int checkFunctionId;
+  int movementStatus;
+
   // - First execution handling.
   ExecutionUtils_HandleFirstExecution(XFactor_Status::DroppingOff);
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
@@ -883,7 +988,67 @@ void Execute_PackageDropOff()
   // - Forces status exchange until a new one is received. (IF ITS THE FIRST EXECUTION)
   ExecutionUtils_ForceAStatusExchange();
 
-  if (SafeBox_GetLidState())
+  checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_PACKAGE_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
+  if (checkFunctionId != FUNCTION_ID_PACKAGE_DROP_OFF)
+  {
+    SetNewExecutionFunction(checkFunctionId);
+    return;
+  }
+
+  switch (step)
+  {
+    case 0:
+      movementStatus = MoveFromVector(TURN_90_LEFT, 0.0f, false, DONT_CHECK_SENSORS, true, false, 0.2f);
+      checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_PACKAGE_DROP_OFF, movementStatus);
+
+      if (checkFunctionId != FUNCTION_ID_PACKAGE_DROP_OFF)
+      {
+        SetNewExecutionFunction(checkFunctionId);
+        return;
+      }
+
+      if (Package_Release())
+      {
+        step++;
+      }
+      else
+      {
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+      }
+      break;
+    case 1:
+      delay(500);
+      if (Package_StoreClaw())
+      {
+        step++;
+      }
+      else
+      {
+        SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+      }
+    case 2:
+      movementStatus = MoveFromVector(TURN_90_LEFT, -15.0f, false, DONT_CHECK_SENSORS, false, false, 0.2f);
+      checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_PACKAGE_DROP_OFF, movementStatus);
+
+      if (checkFunctionId != FUNCTION_ID_PACKAGE_DROP_OFF)
+      {
+        SetNewExecutionFunction(checkFunctionId);
+        return;
+      }
+      //MoveFromVector(TURN_90_LEFT, SAFEBOX_WIDTH_CM - ROBOT_LENGTH_CM - (ROBOT_WIDTH_CM / 2), false, DONT_CHECK_SENSORS, false, false, 0.2f);
+      //MoveFromVector(TURN_90_RIGHT, 0.0f, false, DONT_CHECK_SENSORS, false, false, 0.2f);
+      step++;
+    case 3:
+      SetNewExecutionFunction(FUNCTION_ID_CONFIRM_DROP_OFF);
+      step++;
+    case 4:
+      step = 0;
+    default:
+      break;
+  }
+  /*if (SafeBox_GetLidState())
   {
     if (Package_Release())
     {
@@ -902,7 +1067,7 @@ void Execute_PackageDropOff()
   else
   {
     SafeBox_ChangeLidState(true);
-  }
+  }*/
 }
 
 /**
@@ -934,7 +1099,6 @@ void Execute_ConfirmDropOff()
   ExecutionUtils_ForceAStatusExchange();
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
-
   checkFunctionId = ExecutionUtils_CommunicationCheck(FUNCTION_ID_CONFIRM_DROP_OFF, MAX_COMMUNICATION_ATTEMPTS, true);
   if (checkFunctionId != FUNCTION_ID_CONFIRM_DROP_OFF)
   {
@@ -942,15 +1106,17 @@ void Execute_ConfirmDropOff()
     return;
   }
 
-  if (SafeBox_CheckIfPackageDeposited())
+  SetNewExecutionFunction(FUNCTION_ID_END_OF_PROGRAM);
+
+  /*if (SafeBox_CheckIfPackageDeposited())
   {
-    // GO NEXT
     Debug_Warning("Actions", "Execute_ConfirmDropOff", "NOT CODED YET BRUV");
+    SetNewExecutionFunction(FUNCTION_ID_END_OF_PROGRAM);
   }
   else
   {
     SetNewExecutionFunction(FUNCTION_ID_ALARM);
-  }
+  }*/
 }
 
 /**
@@ -978,6 +1144,7 @@ void Execute_Alarm()
   // - VARIABLES - //
   static bool mustBeOn = false;
   XFactor_SetNewStatus(XFactor_Status::Alarm);
+  Stop();
 
   int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_ALARM);
   if (checkFunctionId != FUNCTION_ID_ALARM)
@@ -1031,6 +1198,7 @@ void Execute_Error()
 {
   Debug_Warning("Actions", "Execute_Error", "ERROR REACHED. DEBUG STOPPED");
   Debug_Stop();
+  Stop();
 
 
   // - VARIABLES - //
@@ -1080,18 +1248,43 @@ void Execute_ReturnInsideGarage()
 {
   int checkFunctionId;
   bool hasEnteredGarage = false;
+  int movementStatus;
   
   XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_RETURN_INSIDE_GARAGE);
 
-  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_RETURN_INSIDE_GARAGE)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
   }
 
-  if (SafeBox_GetGarageState() && !hasEnteredGarage)
+  if (SafeBox_GetGarageState())
+  {
+    movementStatus = MoveFromVector(GETTING_BACK_INTO_GARAGE_VECTOR);
+    checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_RETURN_INSIDE_GARAGE, movementStatus);
+
+    if (checkFunctionId != FUNCTION_ID_RETURN_INSIDE_GARAGE)
+    {
+      SetNewExecutionFunction(checkFunctionId);
+      return;
+    }
+
+    SetNewExecutionFunction(FUNCTION_ID_PREPARING_FOR_DROP_OFF);
+    return;
+  }
+  else
+  {
+    if(!SafeBox_ChangeGarageState(true))
+    {
+      Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
+      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;
+    }
+  }
+
+  /*if (SafeBox_GetGarageState() && !hasEnteredGarage)
   {
     // DRIVE INTO GARAGE
     hasEnteredGarage = true;
@@ -1111,7 +1304,7 @@ void Execute_ReturnInsideGarage()
   else
   {
     SafeBox_ChangeGarageState(false);
-  }
+  }*/
 }
 
 /**
@@ -1128,15 +1321,14 @@ void Execute_EndOfProgram()
 {
   int checkFunctionId;
 
+  LEDS_SetColor(LED_ID_STATUS_INDICATOR, 16, 32, 64);
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_END_OF_PROGRAM);
 
-  if (checkFunctionId == FUNCTION_ID_UNLOCKED || checkFunctionId == FUNCTION_ID_ERROR)
+  if (checkFunctionId != FUNCTION_ID_END_OF_PROGRAM)
   {
     SetNewExecutionFunction(checkFunctionId);
     return;
   }
-
-  SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
 }
 
 /**
@@ -1148,16 +1340,18 @@ void Execute_EndOfProgram()
  */
 void Execute_Unlocked()
 {
+  int checkFunctionId;
   XFactor_SetNewStatus(XFactor_Status::Unlocked);
 
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
   Stop();
+  
+  Package_Release();
+  Package_StoreClaw();
 
-  int checkFunctionId;
-
-  if (SafeBox_GetStatus() == SafeBox_Status::WaitingForDelivery)
+  if (SafeBox_GetStatus() == SafeBox_Status::Unlocked)
   {
-    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
+    SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
   }
   else
   {
