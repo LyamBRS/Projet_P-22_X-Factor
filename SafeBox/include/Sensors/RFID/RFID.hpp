@@ -16,10 +16,15 @@
 #include <Arduino.h>
 #include "Debug/Debug.hpp"
 #include "LED/LED.hpp"
+#include "Alarm/Alarm.hpp"
 
 // - DEFINES - //
+
+/// @brief The number stored inside of the RFID card as a chain of characters. Must be within "".
 #define RFID_VALID_CARD "4870485055685448534852481310"
+/// @brief Which serial UART port is used to receive data from the RFID sensor.
 #define RFID_SERIAL Serial2
+/// @brief Which pin of the ARDUINO is connected to TIR allowing detection of cards to occur.
 #define RFID_SENSOR_READING_PIN 12
 
 /**
@@ -28,7 +33,8 @@
  * make the RFID module function on SafeBox.
  * @return true:
  * Successfully initialised the RFID of SafeBox.
- * @return false
+ * @return false:
+ * Failed to initialise the RFID sensor.
  */
 bool RFID_Init();
 

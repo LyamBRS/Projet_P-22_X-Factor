@@ -15,14 +15,33 @@
 #include "Outputs/Motors/Servo/S3003.hpp"
 #include "Sensors/Distance/GP2D12.hpp"
 #include "Debug/Debug.hpp"
-#define ANGLE_OPEN 215
-#define ANGLE_CLOSED 75
 
+// - DEFINES - //
+/// @brief PWM value of the open servo motor when the garage is opened
+#define ANGLE_OPEN 75
+/// @brief PWM value of the closed servo moor when the garage is closed
+#define ANGLE_CLOSED 215
+
+/// @brief Distance sensor arduino pin where the echo (returned pulse) is read.
 #define GARAGE_ECHO_PIN 11
+/// @brief Distance sensor arduino pin where the trigger for the pulse is sent.
 #define GARAGE_TRIG_PIN 10
 
+/// @brief the maximum value for the door to be considered closed
 #define GARAGE_DISTANCE_VALUE_CLOSED 50
+/// @brief the minimum value for the door to be considered opened
 #define GARAGE_DISTANCE_VALUE_OPEN 90
+
+/**
+ * @brief 
+ * Returns wether the garage SHOULD be closed
+ * or not.
+ * @return true:
+ * Should be opened.
+ * @return false:
+ * Should be closed.
+ */
+bool Garage_GetSupposedWantedStatus();
 
 /**
  * @brief

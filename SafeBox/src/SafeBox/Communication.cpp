@@ -362,7 +362,7 @@ bool SafeBox_ReplyStatus()
         Debug_Error("Communication", "SafeBox_ReplyStatus", "Status TX failed");
         return false;
     }
-    Debug_Information("Communication", "SafeBox_ReplyStatus","Success");
+    //Debug_Information("Communication", "SafeBox_ReplyStatus","Success");
     return true;
 }
 

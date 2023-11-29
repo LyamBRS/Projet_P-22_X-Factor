@@ -16,6 +16,43 @@
 
 /**
  * @brief
+ * This function ensures that the door is read as
+ * closed. If its not the case after X amount of
+ * attempts, the alarm needs to be executed
+ * because the door is NOT supposed to be open.
+ * @return true:
+ * We good, no alarms mate
+ * @return false:
+ * Euuh... Why is the door not closed? 
+ */
+bool ExecutionUtils_CheckIfGarageIsClosed()
+{
+    static int checkingCounter = 0;
+
+    if(!Garage_GetSupposedWantedStatus())
+    {
+        if(!Garage_IsClosed())
+        {
+            checkingCounter++;
+
+            if(checkingCounter > EXECUTIONUTILS_CLOCKS_TILL_GARAGE_ALARM)
+            {
+                checkingCounter = 0;
+                Debug_Warning("Utils", "ExecutionUtils_CheckIfGarageIsClosed", "Door has not been closed for long enough");
+                return false;
+            }
+        }
+    }
+    else
+    {
+        //Debug_Warning("Utils", "ExecutionUtils_CheckIfGarageIsClosed", "Bypassing door checks");
+        checkingCounter = 0;
+    }
+    return true;
+}
+
+/**
+ * @brief
  * This function allows you to create a simple
  * blinking statement in your Execution functions
  * Especially useful for the Alarm and Error.
@@ -94,7 +131,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
     // - BASIC GLOBAL STATUS - //
     if(currentXFactorStatus == XFactor_Status::Alarm)
     {
-        Debug_Warning("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing alarm.");
+        //Debug_Warning("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing alarm.");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
     }
@@ -602,7 +639,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
 
                 case(XFactor_Status::WaitingForDelivery):
                     Debug_Error("Utils", "704", "XFactor should'nt be in WaitingForDelivery. Correcting.");
-                    // SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_RETRIEVAL);
+                    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):

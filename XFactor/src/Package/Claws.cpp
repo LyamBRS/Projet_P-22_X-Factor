@@ -116,20 +116,36 @@ bool Claws_SetGrabbers(unsigned char pourcent)
  */
 bool Claws_SetHeight(unsigned char pourcent)
 {
-    float angle = (float)(pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100);
-    angle+=CLAWS_HEIGHT_MIN;
-    Debug_Information("","", String(pourcent));
+    static float oldAngle = CLAWS_HEIGHT_MIN;
 
-    if(angle>=CLAWS_HEIGHT_MIN && angle<=CLAWS_HEIGHT_MAX)
-    {
-        S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
-        return true;
-    }
-    else
+    float wantedAngle = (float)(pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100);
+    wantedAngle+=CLAWS_HEIGHT_MIN;
+    Debug_Information("","", String(wantedAngle) + " " + String(oldAngle));
+    
+    if(!(wantedAngle>=CLAWS_HEIGHT_MIN && wantedAngle<=CLAWS_HEIGHT_MAX))
     {
         Debug_Error("Claws", "Claws_SetHeight", "Angle outside boundaries");
         return false;
     }
+
+    S3003_SetPosition(CLAWS_PINS_HEIGHT, wantedAngle);
+    return true;
+
+    float ratio = wantedAngle - oldAngle;
+    if (ratio == 0)
+    {
+        return true;
+    }
+    ratio = ratio/39;
+
+    for (int i = 0; i < 40; i++)
+    {
+        oldAngle = oldAngle + ratio;
+        S3003_SetPosition(CLAWS_PINS_HEIGHT, oldAngle);
+        delay(50);
+    }
+    oldAngle = wantedAngle;
+    return true;
 }
 
 /**

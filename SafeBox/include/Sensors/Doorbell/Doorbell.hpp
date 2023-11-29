@@ -19,6 +19,8 @@
 #define DOORBELL_AMBIENT_NOISE_PIN A0
 /// @brief Arduino analog pin that reads the whistle noises around the detector
 #define DOORBELL_WHISLE_NOISE_PIN A1
+/// @brief The pin that is read to force a doorbell status in case it cannot wor.
+#define DOORBELL_SWITCH_BYPASS_PIN 6
 
 /**
  * @brief

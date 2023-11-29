@@ -482,7 +482,7 @@ int Execute_Turning(float targetRadians)
 
         if (checkForSensors)
         {
-            /*if(distanceSensorCounter == 0)
+            if(distanceSensorCounter == 0)
             {
                 if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
                 {
@@ -490,7 +490,7 @@ int Execute_Turning(float targetRadians)
                     break;
                 } 
                 //distanceSensorCounter += 1;
-            }*/
+            }
             /*else if(distanceSensorCounter == 1)
             {
                 if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
@@ -603,18 +603,9 @@ int Execute_Moving(float targetDistance, float targetRadians)
             //Debug_Information("","",String(rightPulse-leftPulse));
         }
 
-        if (checkAlarmEnabled)
-        {
-            if (completionRatio <= 0.85f && Alarm_VerifySensors())
-            {
-                Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
-                return ALARM_TRIGGERED;
-            }
-        }
-
         if (checkForSensors)
         {
-            /*if(distanceSensorCounter == 0)
+            if(distanceSensorCounter == 0)
             {
                 if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
                 {
@@ -622,7 +613,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
                     break;
                 } 
                 //distanceSensorCounter += 1;
-            }*/
+            }
             /*else if(distanceSensorCounter == 1)
             {
                 if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
@@ -642,13 +633,22 @@ int Execute_Moving(float targetDistance, float targetRadians)
                 distanceSensorCounter = 0;
             }*/
         }
-
         if (examineModeEnabled)
         {
             if(Package_Confirmed())
             {
                 Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_PACKAGE_DETECTED");
                 status = PACKAGE_FOUND;
+                break;
+            }
+        }
+
+        if (checkAlarmEnabled)
+        {
+            if (completionRatio <= 0.85f && Alarm_VerifySensors())
+            {
+                Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
+                status = ALARM_TRIGGERED;
                 break;
             }
         }

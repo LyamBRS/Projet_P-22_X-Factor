@@ -32,6 +32,7 @@ bool Doorbell_Init()
     Debug_Start("Doorbell_Init");
     pinMode(DOORBELL_AMBIENT_NOISE_PIN, INPUT);
     pinMode(DOORBELL_WHISLE_NOISE_PIN, INPUT);
+    pinMode(DOORBELL_SWITCH_BYPASS_PIN, INPUT);
     Debug_End();
     return true;
 }
@@ -58,6 +59,13 @@ bool Doorbell_GetState()
         Debug_Information("Doorbell", "Doorbell_GetState", "DETECTED");
         Debug_End();
         return true;
+    }
+
+    if(digitalRead(DOORBELL_SWITCH_BYPASS_PIN))
+    {
+       Debug_Information("Doorbell", "Doorbell_GetState", "BYPASS_DETECTED");
+        Debug_End();
+        return true;      
     }
 
     Debug_End();

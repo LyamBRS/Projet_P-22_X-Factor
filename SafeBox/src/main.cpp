@@ -22,19 +22,4 @@ void setup()
 void loop()
 {
   Execute_CurrentFunction();
-
-  /*
-  Garage_Close();
-  for(int i=0; i<1000; i++)
-  {
-    Garage_IsClosed(); 
-    delay(1);
-  }
-  Garage_Open();
-  for(int i=0; i<1000; i++)
-  {
-    Garage_IsClosed();
-    delay(1);
-  }
-  */
 }

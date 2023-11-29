@@ -24,6 +24,8 @@
 #define ALARM_GYRO_Z_MAX
 #define ALARM_GYRO_Z_MIN
 
+#define ALARM_BUZZER_PIN 2
+
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
