@@ -79,7 +79,7 @@ bool Package_Release()
     }*/
 
     if (Claws_SetGrabbers(100) == true){
-        pickup = false;
+        Package_SetStatus(false);
         return true;
     }
 
@@ -127,8 +127,9 @@ bool Package_PickUp()
                     Debug_End();
                     return false;
                 }
-                Debug_Error("Package", "Package_PickUp", "Successfully picked up the package");
+                Debug_Information("Package", "Package_PickUp", "Successfully picked up the package");
                 Debug_End();
+                Package_SetStatus(true);
                 return true;
             }
         }
@@ -230,7 +231,6 @@ bool Package_DeployClaw()
 
 bool Package_Transport()
 {
-    return true;
     return Claws_SetHeight(PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT);
 }
 
@@ -355,8 +355,9 @@ unsigned short Package_GetDetectedDistance()
 bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
+    return true;
 
-    if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
+    /*if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
         return true;
     }
 
@@ -364,7 +365,7 @@ bool Package_SetStatus(bool newPackageStatus)
         return true;
     }
     package_setUp = false;
-    return false;
+    return false;*/
 }
 
 /**
@@ -380,10 +381,7 @@ bool Package_SetStatus(bool newPackageStatus)
 
 bool Package_GetStatus()
 {
-    if (package_setUp == true){
-        return true;
-    }
-    return false;
+    return package_setUp;
 }
 
 /**

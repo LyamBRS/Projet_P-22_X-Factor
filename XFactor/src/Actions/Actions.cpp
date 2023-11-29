@@ -930,7 +930,21 @@ void Execute_PreparingForDropOff()
     return;
   }
 
-  SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+  if (!SafeBox_GetGarageState())
+  {
+    SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
+    return;
+  }
+  else
+  {
+    if(!SafeBox_ChangeGarageState(false))
+    {
+      Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
+      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      return;
+    }
+  }
+  
   /*if (Package_AlignWithSafeBox())
   {
     SetNewExecutionFunction(FUNCTION_ID_PACKAGE_DROP_OFF);
