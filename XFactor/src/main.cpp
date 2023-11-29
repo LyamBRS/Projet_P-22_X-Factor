@@ -23,6 +23,32 @@ void setup()
 
 void loop()
 {
+  /*bool hasPackage = false;
+  for (;;)
+  {
+    switch (MoveFromVector(TURN_90_RIGHT, 100.0f, false, CHECK_SENSORS, true, false, 0.4f))
+    {
+      case ALARM_TRIGGERED:
+        for (;;)
+        {
+          LEDS_SetColor(LED_ID_STATUS_INDICATOR, 0, 64, 64);
+          Stop();
+        }
+        break;
+      case OBJECT_LOCATED_FRONT:
+        if (!hasPackage)
+        {
+          MoveFromVector(GO_TO_DETECTED_OBJECT_FRONT_VECTOR);
+          if (Package_PickUp())
+          {
+            hasPackage = true;
+          }
+        }
+      default:
+        break;
+    }
+  }*/
+
   //GetReturnVector();
   //delay(10000);
   //Debug_Information("main", "loop", "Bumper : " + String(Claws_GetSwitchStatus()));
@@ -46,6 +72,7 @@ void loop()
   //Alarm_VerifySensors();
   //GROVE_GetColor();
   //delay(1000);
+
   Execute_CurrentFunction();
   
   /*LEDS_SetColor(0, 0,0,255);
