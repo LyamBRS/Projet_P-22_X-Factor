@@ -18,7 +18,7 @@
 
 // - DEFINES - //
 /// @brief Switch between DEBUG_ENABLED and DEBUG_DISABLED to toggle on or off the debug prints
-#define DEBUG_DISABLED
+#define DEBUG_ENABLED
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
 #define DEBUG_STACK_TRACE_DISABLED

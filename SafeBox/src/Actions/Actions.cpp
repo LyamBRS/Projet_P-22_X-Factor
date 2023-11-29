@@ -246,6 +246,12 @@ void Execute_WaitForDelivery()
         return;
     }
 
+    if(!ExecutionUtils_HandleArmedUnlocking())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "New execution function set");
+        return;
+    }
+
     if(!Garage_Close())
     {
         Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to close garage door");
@@ -267,12 +273,6 @@ void Execute_WaitForDelivery()
     {
         Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
-        return;
-    }
-
-    if(!ExecutionUtils_HandleArmedUnlocking())
-    {
-        Debug_Error("Actions", "Execute_WaitForDelivery", "New execution function set");
         return;
     }
 
@@ -304,7 +304,7 @@ void Execute_StartOfDelivery()
 
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
-        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        Debug_Warning("Actions", "Execute_StartOfDelivery", "GARAGE IS NOT CLOSED");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
     }
@@ -338,7 +338,7 @@ void Execute_WaitForRetrieval()
 
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
-        Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
+        Debug_Warning("Actions", "Execute_WaitForRetrieval", "GARAGE IS NOT CLOSED");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
     }

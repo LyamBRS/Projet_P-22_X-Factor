@@ -65,8 +65,11 @@ bool Garage_Open()
     Debug_Start("Garage_Open");
     servo2.write(ANGLE_OPEN);
     servo3.write(ANGLE_OPEN);
+    if(!supposedGarageStatus)
+    {
+        Debug_Information("Garage", "Garage_Open", "Garage should no longer check to see if its closed");
+    }
     supposedGarageStatus = true;
-    Debug_Information("Garage", "Garage_Open", "Garage should no longer check to see if its closed");
     Debug_End();
     return true;
 }
@@ -85,8 +88,12 @@ bool Garage_Close()
     Debug_Start("Garage_Close");
     servo2.write(ANGLE_CLOSED);
     servo3.write(ANGLE_CLOSED);
+
+    if(supposedGarageStatus)
+    {
+        Debug_Information("Garage", "Garage_Close", "Garage should now check to see if its closed");
+    }
     supposedGarageStatus = false;
-    Debug_Information("Garage", "Garage_Close", "Garage should now check to see if its closed");
     Debug_End();
     return true;
 }
@@ -139,7 +146,7 @@ bool Garage_IsClosed()
 {
     Debug_Start("Garage_IsClosed");
     unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
-    //Debug_Warning("Garage", "Garage_IsClosed", String(doorDistance));
+    Debug_Warning("Garage", "Garage_IsClosed", String(doorDistance));
     if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
     {
         Debug_End();

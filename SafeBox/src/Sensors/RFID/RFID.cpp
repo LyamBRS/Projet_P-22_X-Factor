@@ -51,6 +51,12 @@ bool RFID_Init()
 int RFID_HandleCard()
 {
   // - VARIABLES - //
+  //static unsigned short previousMillis = millis();
+  //unsigned short currentMillis = millis();
+
+  //Debug_Information("RFID", "RFID_HandleCard", "Tir pin: " + String(digitalRead(RFID_SENSOR_READING_PIN)));
+  //previousMillis = currentMillis;
+
   const String VALID_CARD_NUMBER(RFID_VALID_CARD);
   String receivedCard = "NO_CARDS_FOUND";
 
