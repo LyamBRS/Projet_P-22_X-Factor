@@ -23,6 +23,25 @@ bool currentPackageCheckState = false;
 
 /**
  * @brief 
+ * Resets the global parameters
+ * that are used in communication
+ * @param answer 
+ * @return true:
+ * The parameters have been reset
+ * @return false:
+ * A problem has occurred.
+ */
+bool ResetSavedParameters()
+{
+    currentLidState = false;
+    currentGarageState = false;
+    currentDoorBellState = false;
+    currentPackageCheckState = false;
+    return true;
+}
+
+/**
+ * @brief 
  * This function's purpose is to put an unknown
  * answer into another function's parsing to see
  * if it would work.

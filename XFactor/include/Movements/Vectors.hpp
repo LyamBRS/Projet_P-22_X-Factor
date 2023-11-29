@@ -14,6 +14,7 @@
 #include "Movements/Positions.hpp"
 #include "Movements/VectorDefines.hpp"
 #include "Movements/Distances.hpp"
+#include "Sensors/Distance/GP2D12.hpp"
 #include "Debug/Debug.hpp"
 #include "math.h"
 

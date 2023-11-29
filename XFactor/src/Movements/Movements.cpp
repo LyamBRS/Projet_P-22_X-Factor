@@ -22,6 +22,8 @@ int32_t previousRightPulse = 0;
 int32_t previousLeftPulse  = 0;
 double completionRatio = 0.0;
 
+float gMaxSpeed = SPEED_MAX;
+
 float rightMovement = 0.0f;
 //float leftMovement = 0.0f;
 float rotationMovement = 0.0f;
@@ -67,12 +69,13 @@ int distanceSensorCounter = 0;
  * or the vector cannot be saved in the buffer for X
  * reason.
  */
-int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors, bool checkAlarm, bool examineMode)
+int MoveFromVector(float radians, float distance, bool saveVector, bool checkSensors, bool checkAlarm, bool examineMode, float maxSpeed)
 {
     Debug_Start("MoveFromVector");
     checkForSensors = checkSensors;
     checkAlarmEnabled = checkAlarm;
     examineModeEnabled = examineMode;
+    gMaxSpeed = maxSpeed;
 
     rightMovement    = 0;
     rotationMovement = 0;
@@ -176,7 +179,7 @@ bool BacktraceSomeVectors(int AmountOfVectorsToBacktrace)
     for(int i = 0; i<AmountOfVectorsToBacktrace; i++){
         MovementVector backtraceVector = GetLastOppositeVector();
         Debug_Information("Movements.cpp", "BacktraceSomeVectors", "Rotation : " + String(backtraceVector.rotation_rad,2) + " Distance : " + String(backtraceVector.distance_cm, 2));
-        MoveFromVector(backtraceVector.rotation_rad, backtraceVector.distance_cm, false, DONT_CHECK_SENSORS, true, false);
+        MoveFromVector(BACKTRACE_VECTOR);
         RemoveLastVector();
     }
     Debug_End();
@@ -303,7 +306,12 @@ float Accelerate(float completionRatio, float maximumSpeed)
     double neededSpeed = 0;
     if ((completionRatio >= 0) && completionRatio <= 100)
     {
-        if (maximumSpeed == SPEED_MAX)
+        neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
+        //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
+        if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
+        return neededSpeed;
+        
+        /*if (maximumSpeed == SPEED_MAX)
         {
             neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
 
@@ -318,7 +326,7 @@ float Accelerate(float completionRatio, float maximumSpeed)
             //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
             if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
             return neededSpeed;
-        }
+        }*/
     }
     else 
     {
@@ -452,7 +460,7 @@ int Execute_Turning(float targetRadians)
             absoluteOfRightPulse = abs(rightPulse);
             completionRatio = ((float)absoluteOfRightPulse)/targetTicks;
 
-            currentSpeed = Accelerate(completionRatio, SPEED_MAX_TURN);
+            currentSpeed = Accelerate(completionRatio, gMaxSpeed / 2);
 
             speedLeft = PID(PID_MOVEMENT, (leftPulse-previousLeftPulse), (rightPulse-previousRightPulse), currentSpeed);
 
@@ -465,31 +473,25 @@ int Execute_Turning(float targetRadians)
     
         if (checkAlarmEnabled)
         {
-            /*if (Alarm_VerifySensors())
+            if (Alarm_VerifySensors())
             {
                 Debug_Information("Movements.cpp", "Execute_Turning", "STATUS_ALARM_TRIGGERED");
-                status = ALARM_TRIGGERED;
-                break;
-            }*/
+                return ALARM_TRIGGERED;
+            }
         }
 
         if (checkForSensors)
         {
-            if(distanceSensorCounter == 0)
+            /*if(distanceSensorCounter == 0)
             {
-                /*if(Package_Confirmed())
-                {
-                    status = PACKAGE_FOUND;
-                    break;
-                }*/
                 if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
                 {
                     status = OBJECT_LOCATED_FRONT;
                     break;
                 } 
-                distanceSensorCounter += 1;
-            }
-            else if(distanceSensorCounter == 1)
+                //distanceSensorCounter += 1;
+            }*/
+            /*else if(distanceSensorCounter == 1)
             {
                 if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
                 {
@@ -506,7 +508,7 @@ int Execute_Turning(float targetRadians)
                     break;
                 } 
                 distanceSensorCounter = 0;
-            }
+            }*/
         }
 
         if (examineModeEnabled)
@@ -585,7 +587,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
             absoluteOfRightPulse = abs(rightPulse);
             completionRatio = ((float)absoluteOfRightPulse)/targetTicks;
 
-            currentSpeed = Accelerate(completionRatio, SPEED_MAX);
+            currentSpeed = Accelerate(completionRatio, gMaxSpeed);
 
             speedLeft = PID(PID_MOVEMENT,
                             leftPulse-previousLeftPulse, 
@@ -603,26 +605,25 @@ int Execute_Moving(float targetDistance, float targetRadians)
 
         if (checkAlarmEnabled)
         {
-            /*if (completionRatio <= 0.85f && Alarm_VerifySensors())
+            if (completionRatio <= 0.85f && Alarm_VerifySensors())
             {
                 Debug_Information("Movements.cpp", "Execute_Moving", "STATUS_ALARM_TRIGGERED");
-                status = ALARM_TRIGGERED;
-                break;
-            }*/
+                return ALARM_TRIGGERED;
+            }
         }
 
         if (checkForSensors)
         {
-            if(distanceSensorCounter == 0)
+            /*if(distanceSensorCounter == 0)
             {
                 if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
                 {
                     status =  OBJECT_LOCATED_FRONT;
                     break;
                 } 
-                distanceSensorCounter += 1;
-            }
-            else if(distanceSensorCounter == 1)
+                //distanceSensorCounter += 1;
+            }*/
+            /*else if(distanceSensorCounter == 1)
             {
                 if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
                 {
@@ -639,7 +640,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
                     break;
                 } 
                 distanceSensorCounter = 0;
-            }
+            }*/
         }
 
         if (examineModeEnabled)
@@ -654,6 +655,11 @@ int Execute_Moving(float targetDistance, float targetRadians)
     }
     Debug_Information("Movements", "Execute_Moving", "Exited while loop");
     rightMovement = EncoderToCentimeters(abs((float)ENCODER_Read(RIGHT)));
+
+    if (targetDistance < 0)
+    {
+        rightMovement = EncoderToCentimeters((float)ENCODER_Read(RIGHT));
+    }
 
     if(!Stop())
     {

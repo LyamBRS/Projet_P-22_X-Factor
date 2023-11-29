@@ -54,6 +54,18 @@
 // #pragma region [Command_Requests]
 
 /**
+ * @brief 
+ * Resets the global parameters
+ * that are used in communication
+ * @param answer 
+ * @return true:
+ * The parameters have been reset
+ * @return false:
+ * A problem has occurred.
+ */
+bool ResetSavedParameters();
+
+/**
  * @brief Asks SafeBox to change its package lid
  * status. Depending on the specified parameter,
  * the lid will either unlock and open or close
