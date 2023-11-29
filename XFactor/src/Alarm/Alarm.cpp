@@ -193,7 +193,7 @@ bool Alarm_VerifyAccelerometer()
             }
             return false;
         }
-        //Alarm_ResetThresholds();
+        alarmTriggerCounter = 0;
     }
 
     counter++;
