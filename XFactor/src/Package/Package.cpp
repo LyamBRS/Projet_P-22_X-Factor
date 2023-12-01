@@ -261,15 +261,15 @@ bool Package_Confirmed()
     unsigned long eepromColour = Package_GetColorFromEEPROM();
 
     // Get low and high value thresholds from the colour in the eeprom
-    int lowRed   = Colour_GetRed(eepromColour)-30;
-    int lowGreen = Colour_GetGreen(eepromColour)-30;
-    int lowBlue  = Colour_GetBlue(eepromColour)-30;
-    int lowClear = Colour_GetClear(eepromColour)-30;
+    int lowRed   = Colour_GetRed(eepromColour)-PACKAGE_COLOUR_THRESHOLD;
+    int lowGreen = Colour_GetGreen(eepromColour)-PACKAGE_COLOUR_THRESHOLD;
+    int lowBlue  = Colour_GetBlue(eepromColour)-PACKAGE_COLOUR_THRESHOLD;
+    int lowClear = Colour_GetClear(eepromColour)-PACKAGE_COLOUR_THRESHOLD;
 
-    int highRed   = Colour_GetRed(eepromColour)+30;
-    int highGreen = Colour_GetGreen(eepromColour)+30;
-    int highBlue  = Colour_GetBlue(eepromColour)+30;
-    int highClear = Colour_GetClear(eepromColour)+30;
+    int highRed   = Colour_GetRed(eepromColour)+PACKAGE_COLOUR_THRESHOLD;
+    int highGreen = Colour_GetGreen(eepromColour)+PACKAGE_COLOUR_THRESHOLD;
+    int highBlue  = Colour_GetBlue(eepromColour)+PACKAGE_COLOUR_THRESHOLD;
+    int highClear = Colour_GetClear(eepromColour)+PACKAGE_COLOUR_THRESHOLD;
 
     Debug_Warning("-", "HIGH RED:", String(highRed));
 

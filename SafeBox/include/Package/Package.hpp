@@ -15,6 +15,9 @@
 // - INCLUDES - //
 #include "Debug/Debug.hpp"
 
+/// @brief How much game should there be between low and high threshold
+#define PACKAGE_COLOUR_THRESHOLD 10
+
 /**
  * @brief
  * Initialisation function that initialises the
