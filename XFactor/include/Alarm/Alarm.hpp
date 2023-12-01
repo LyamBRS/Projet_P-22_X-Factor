@@ -19,11 +19,13 @@
 
 #define ACCELEROMETER_NB_CHECKING 1 // Number of accelerometer detection trials
 
-#define THRESHOLD_OFFSET_X 0.35f
-#define THRESHOLD_OFFSET_Y 0.35f
+#define THRESHOLD_OFFSET_X 0.25f
+#define THRESHOLD_OFFSET_Y 0.25f
 #define THRESHOLD_OFFSET_Z 0.20f
 
 #define THRESHOLD_VERIFY_ALARM_COUNTER 5
+
+#define ACCELEROMETER_BYPASS_PIN 48
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]

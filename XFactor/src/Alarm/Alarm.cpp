@@ -41,6 +41,8 @@ bool Alarm_Init()
         return false;
     }
 
+    pinMode(ACCELEROMETER_BYPASS_PIN, INPUT);
+
     counter = 0;
     
     avgX = 0.0f;
@@ -165,6 +167,11 @@ bool Alarm_VerifyAccelerometer()
     valueX += Accelerometer_GetX();
     valueY += Accelerometer_GetY();
     valueZ += Accelerometer_GetZ();
+
+    if (digitalRead(ACCELEROMETER_BYPASS_PIN))
+    {
+        return false;
+    }
     //Debug_Information("Alarm.cpp", "Alarm_VerifyAccel...", "Counter : " + String(counter) + " Value total : " + String(valueZ));
 
     if (counter >= THRESHOLD_VERIFY_ALARM_COUNTER)
@@ -184,10 +191,10 @@ bool Alarm_VerifyAccelerometer()
         valueZ = 0.0f;
 
         counter = 0;
-        if (avgX > deltaThresholdX || avgY > deltaThresholdY)// || avgZ > deltaThresholdZ)
+        if (avgX > deltaThresholdX || avgY > deltaThresholdY || avgX < -deltaThresholdX || avgY < -deltaThresholdY)// || avgZ > deltaThresholdZ)
         {
             alarmTriggerCounter++;
-            if (alarmTriggerCounter > 1)
+            if (alarmTriggerCounter > 7)
             {
                 return true;
             }

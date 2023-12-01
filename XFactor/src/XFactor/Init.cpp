@@ -69,7 +69,7 @@ void XFactor_Init()
                 float multiplierR = 0;
                 float multiplierG = 0;
                 float multiplierB = 0;
-                while(AX_IsLowBat())
+                while(!AX_IsLowBat())
                 {
                     if(currentPeak > 3.14)
                     {
@@ -93,7 +93,7 @@ void XFactor_Init()
                         cycleCounter++;
                         if(cycleCounter > 5)
                         {
-                            break;
+                            //break;
                         }
                     }
 
