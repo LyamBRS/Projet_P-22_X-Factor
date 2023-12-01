@@ -37,22 +37,22 @@ unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
     unsigned long temporaryLargeValue = 0;
 
     //lowest value is the clear value, it thus does not need to be shifted.
-    resultedColor = resultedColor + (unsigned long) clear;
+    resultedColor = resultedColor + (unsigned long)(clear);
 
     //third value is the blue value; it needs to be shifted by 8 bits, We thus need to use a new type to hold
 
-    temporaryLargeValue = (unsigned long) blue;
+    temporaryLargeValue = (unsigned long)(blue);
     temporaryLargeValue = temporaryLargeValue << 8;
     resultedColor = resultedColor + temporaryLargeValue;
 
     //second value is the green value, it needs to be shifted by 16 bits.
-    temporaryLargeValue = (unsigned long) green;
+    temporaryLargeValue = (unsigned long)(green);
     temporaryLargeValue = temporaryLargeValue << 16;
     resultedColor = resultedColor + temporaryLargeValue;
 
     //first value is the red value; it needs to be shifted by 24 bits.
 
-    temporaryLargeValue = (unsigned long) red;
+    temporaryLargeValue = (unsigned long)(red);
     temporaryLargeValue = temporaryLargeValue << 24;
     resultedColor = resultedColor + temporaryLargeValue;
 
