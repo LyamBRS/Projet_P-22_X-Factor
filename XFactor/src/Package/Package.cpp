@@ -357,14 +357,14 @@ int Package_Detected(int capteur, float relativeRotation_rad, float movementDist
                 break;
         }
 
-        //return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+        return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
-        if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+        /*if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
         {
             Debug_Information("Package", "Package_Detected", "Something detected");
             return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad, movementDistance_cm);
         }
-        return false;
+        return false;*/
     }
 }
 
