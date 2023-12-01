@@ -22,4 +22,7 @@ void setup()
 void loop()
 {
   Execute_CurrentFunction();
+  Garage_ShowDebugLight();
+
+  //Debug_Information("-", "-", String(Lid_IsClosed()));
 }

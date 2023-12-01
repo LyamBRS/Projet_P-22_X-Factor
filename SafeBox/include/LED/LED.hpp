@@ -15,6 +15,7 @@
 
 // - INCLUDE - //
 #include "Outputs/LEDs/WS2812/WS2812.hpp" //// The LED used by SafeBox is a WS2812.
+#include "Debug/Debug.hpp"
 
 //#pragma region [LED_COLORS]
 /// @brief RGB color that the LED will have when SafeBox is offline.
@@ -35,6 +36,8 @@
 #define LED_COLOR_ALARM 255,0,0
 /// @brief RGB color that the LED will have when SafeBox is waiting for a delivery.
 #define LED_COLOR_WAITFORDELIVERY 64,0,64
+/// @brief RGB color that the LED will have when SafeBox is waiting for the user to put their RFID card to save it.
+#define LED_COLOR_NEW_CARD_SAVED 128,32,32
 //#pragma endregion
 
 //#pragma region [XFACTOR_LED_NUMBERS]

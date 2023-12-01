@@ -12,7 +12,19 @@
 // - INCLUDE - //
 #include "Outputs/LEDs/WS2812/WS2812.hpp"
 
-Adafruit_NeoPixel pixels;
+/**
+ * @bug
+ * Used to be defined in @ref WS2812_Init
+ * However, for some reason, this caused issues
+ * at random in the code where an
+ * pixels.setPixelColors would cause the void
+ * loop to stop executing. I suspect its due to
+ * the library using assembly to generate the PWM
+ * for neopixels and the fact that the objecy was
+ * created in later in the program during
+ * initialisation causes issues like that.
+ */
+Adafruit_NeoPixel pixels(1, 13, NEO_GRB + NEO_KHZ800);
 
 /**
  * @brief
@@ -31,9 +43,11 @@ Adafruit_NeoPixel pixels;
  */
 bool WS2812_Init(int pinNumber)
 {
-    pixels = Adafruit_NeoPixel(1, pinNumber, NEO_GRB + NEO_KHZ800);
+    Debug_Start("WS2812_Init");
+    pixels.setPin(pinNumber);
     pixels.begin();
     pixels.clear();
+    Debug_End();
     return true;
 }
 
@@ -66,15 +80,28 @@ bool WS2812_Init(int pinNumber)
  */
 bool WS2812_SetStaticColors(int pinNumber, int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
 {
-    // Checking if the 300 microseconds of down time has been acheived or not.
-    if(not pixels.canShow())
+    Debug_Start("WS2812_SetStaticColors");
+
+    static uint32_t oldColor = 0;
+    uint32_t wantedColor = pixels.Color(red, green, blue);
+
+    if(oldColor != wantedColor)
     {
-        // Cannot change the color right now.
-        return false;
+        oldColor = wantedColor;
+        // Checking if the 300 microseconds of down time has been acheived or not.
+        if(!pixels.canShow())
+        {
+            // Cannot change the color right now.
+            Debug_Error("WS2812", "WS2812_SetStaticColors", "Cannot set data at the moment");
+            Debug_End();
+            return false;
+        }
+        Debug_Information("WS2812", "WS2812_SetStaticColors", "Changing LED colors...");
+        pixels.setPixelColor(LEDNumber, wantedColor);
+        pixels.show();
+        Debug_End();
+        return true;
     }
-
-    pixels.setPixelColor(LEDNumber, pixels.Color(red, green, blue));
-    pixels.show();
-
-    return true;
+    Debug_End();
+    return false;
 }

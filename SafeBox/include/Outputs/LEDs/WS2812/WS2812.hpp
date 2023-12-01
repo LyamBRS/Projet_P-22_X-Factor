@@ -14,6 +14,8 @@
 
 // - INCLUDE - //
 #include <Adafruit_NeoPixel.h>
+#include "Debug/Debug.hpp"
+#include "Communication/Bluetooth.hpp"
 
 /**
  * @brief

@@ -11,6 +11,7 @@
  */
 
 #pragma once
+#include "Debug/Debug.hpp"
 
 //#pragma region [ENUM]
 

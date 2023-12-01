@@ -21,7 +21,7 @@
 #define DEBUG_ENABLED
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
-#define DEBUG_STACK_TRACE_DISABLED
+#define DEBUG_STACK_TRACE_ENABLED
 /// @brief Which serial port is used for debugging the program.
 #define DEBUG_SERIAL Serial
 /// @brief Debug port speed.

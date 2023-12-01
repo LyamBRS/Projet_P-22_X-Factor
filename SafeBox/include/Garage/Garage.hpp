@@ -32,6 +32,8 @@
 /// @brief the minimum value for the door to be considered opened
 #define GARAGE_DISTANCE_VALUE_OPEN 90
 
+#define GARAGE_IS_CLOSED_DEBUG_PIN 5
+
 /**
  * @brief 
  * Returns wether the garage SHOULD be closed
@@ -102,3 +104,10 @@ bool Garage_XFactorInside();
  * XFactor is either inside or the door is closed.
  */
 bool Garage_IsClosed();
+
+/**
+ * @brief Enables the debug light.
+ * Is on if its closed and off
+ * if its open.
+ */
+void Garage_ShowDebugLight();

@@ -45,6 +45,17 @@ bool Alarm_Init();
 
 /**
  * @brief
+ * Sets the needed alarm state.
+ *
+ * @return true:
+ * Successfully set alarm to specified mode
+ * @return false:
+ * Failed to set alarm to specified mode
+ */
+bool Alarm_SetState(bool wantedState);
+
+/**
+ * @brief
  * Verifies all the sensors of SafeBox that can
  * be utilized to trigger an alarm.
  *

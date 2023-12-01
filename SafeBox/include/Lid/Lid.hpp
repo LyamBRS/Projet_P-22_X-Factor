@@ -16,6 +16,8 @@
 #include "Debug/Debug.hpp"
 #define PACKAGE_DOOR_LOCKED 0
 #define PACKAGE_DOOR_UNLOCKED 95
+
+#define LID_CLOSED_SWITCH_PIN 4
 /**
  * @brief
  * Function that initialises the servo motors and
@@ -75,3 +77,14 @@ bool Lid_Unlock();
  * Failed to unlock the lid.
  */
 bool Lid_Lock();
+
+/**
+ * @brief 
+ * Returns true if the lid is really closed or
+ * not.
+ * @return true:
+ * It is locked.
+ * @return false:
+ * It isnt locked.
+ */
+bool Lid_IsClosed();

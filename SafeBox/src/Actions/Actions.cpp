@@ -45,6 +45,10 @@ void Execute_CurrentFunction()
             Execute_Alarm();
             break;
 
+        case(FUNCTION_ID_SAVE_NEW_CARD):
+            Execute_SaveNewEEPROMCard();
+            break;
+
         case(FUNCTION_ID_ERROR):
             Execute_Error();
             break;
@@ -129,6 +133,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_WAIT_AFTER_XFACTOR):
         case(FUNCTION_ID_WAIT_FOR_RETRIEVAL):
         case(FUNCTION_ID_WAIT_FOR_RETURN):
+        case(FUNCTION_ID_SAVE_NEW_CARD):
             // The specified function is indeed a valid function ID.
             currentFunctionID = functionID;
             return true;
@@ -158,6 +163,70 @@ unsigned char GetCurrentExecutionFunction()
 
 /**
  * @brief
+ * Attemps to save a new card in the EEPROM
+ * until it fails or succeed. If it fails, it
+ * will return to the unlocked state.
+ */
+void Execute_SaveNewEEPROMCard()
+{
+    // - VARIABLES - //
+    static bool flipLed = false;
+    String readCard = "";
+
+    SafeBox_CheckAndExecuteMessage();
+
+    // - LED HANDLING - //
+    if(ExecutionUtils_LedBlinker(1000))
+    {
+        flipLed = !flipLed;
+        if(flipLed)
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32,16,64);
+        }
+        else
+        {
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32,64,16);
+        }
+    }
+
+    readCard = RFID_GetCardNumber();
+    if(readCard.compareTo(RFID_NO_CARDS_READ) != 0)
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "A card was found");
+        if(!RFID_StoreCardInEEPROM(readCard))
+        {
+            Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to use EEPROM");
+            SetNewExecutionFunction(FUNCTION_ID_ERROR);
+            return;
+        }
+        else
+        {
+            /// @brief Too lazy to make a function for this. Especially cuz this is surplus and wasnt planned in the project.
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, 255,32,32);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
+        }
+    }
+}
+
+
+/**
+ * @brief
  * Action function executed once at the
  * start of the program. This function's
  * purpose is to make SafeBox wait
@@ -179,6 +248,7 @@ unsigned char GetCurrentExecutionFunction()
  */
 void Execute_WaitAfterXFactor()
 {
+    Debug_Start("Execute_WaitAfterXFactor");
     static float currentRadian = 0;
     float currentRatio = 0;
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor);
@@ -189,22 +259,36 @@ void Execute_WaitAfterXFactor()
         currentRadian = 0;
     }
     currentRatio = sin(currentRadian);
+    Debug_Information("Actions", "Execute_WaitAfterXFactor", "Handling LED");
     if(!LEDS_SetColor(LED_ID_STATUS_INDICATOR, (unsigned char)(32.0f*currentRatio), (unsigned char)(32.0f*currentRatio), 0))
     {
         Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set WS2812");
+        Debug_End();
         return;
     }
 
+    Debug_Information("Actions", "Execute_WaitAfterXFactor", "Checking if user wants to save a new card");
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Information("Actions", "Execute_WaitAfterXFactor", "User wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_SAVE_NEW_CARD);
+        Debug_End();
+        return; 
+    }
+
+    Debug_Information("Actions", "Execute_WaitAfterXFactor", "Checking if messages needs to be executed");
     if(SafeBox_CheckAndExecuteMessage())
     {
         Debug_Information("Actions", "Execute_WaitAfterXFactor", "XFactor detected");
         SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
         BT_ClearAllMessages();
+        Debug_End();
         return;
     }
 
     // - Allows the user to bypass the waiting for XFactor
-    if(RFID_HandleCard() == 1 && Doorbell_GetState())
+    Debug_Information("Actions", "Execute_WaitAfterXFactor", "Checking waiting bypass");
+    if(Doorbell_GetState() && (RFID_HandleCard() == 1))
     {
         Debug_Information("Actions", "Execute_WaitAfterXFactor", "Going to unlocked");
         if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
@@ -212,10 +296,12 @@ void Execute_WaitAfterXFactor()
             Debug_Error("Actions", "Execute_WaitAfterXFactor", "Failed to set new execution function");
             SetNewExecutionFunction(FUNCTION_ID_ERROR);
         }
+        Debug_End();
         return;
     }
 
     ExecutionUtils_HandleReceivedXFactorStatus();
+    Debug_End();
 }
 
 /**
@@ -237,6 +323,13 @@ void Execute_WaitForDelivery()
     {
         Debug_Information("Actions", "Execute_WaitForDelivery", "Start of wait for delivery");
         SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery);
+    }
+
+    if(!Lid_IsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "LID IS NO LONGER CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;       
     }
 
     if(!SafeBox_SetNewStatus(SafeBox_Status::WaitingForDelivery))
@@ -264,6 +357,13 @@ void Execute_WaitForDelivery()
         Debug_Error("Actions", "Execute_WaitForDelivery", "Failed to lock lid door");
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
         return;
+    }
+
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Someone wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return; 
     }
 
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_WAITFORDELIVERY);
@@ -302,6 +402,20 @@ void Execute_StartOfDelivery()
         XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
     }
 
+    if(!Lid_IsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "LID IS NO LONGER CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;       
+    }
+
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Someone wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return; 
+    }
+
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
         Debug_Warning("Actions", "Execute_StartOfDelivery", "GARAGE IS NOT CLOSED");
@@ -336,6 +450,20 @@ void Execute_WaitForRetrieval()
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForRetrieval);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Someone wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return; 
+    }
+
+    if(!Lid_IsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "LID IS NO LONGER CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;       
+    }
+
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
         Debug_Warning("Actions", "Execute_WaitForRetrieval", "GARAGE IS NOT CLOSED");
@@ -366,6 +494,20 @@ void Execute_WaitForReturn()
     SafeBox_SetNewStatus(SafeBox_Status::WaitingForReturn);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Someone wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return; 
+    }
+
+    if(!Lid_IsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "LID IS NO LONGER CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;       
+    }
+
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
         Debug_Warning("Actions", "Execute_WaitForDelivery", "GARAGE IS NOT CLOSED");
@@ -392,6 +534,20 @@ void Execute_DropOff()
 {
     SafeBox_SetNewStatus(SafeBox_Status::DroppingOff);
     LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
+
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Error("Actions", "Execute_WaitForDelivery", "Someone wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return; 
+    }
+
+    if(!Lid_IsClosed())
+    {
+        Debug_Warning("Actions", "Execute_WaitForDelivery", "LID IS NO LONGER CLOSED");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return;       
+    }
 
     if(!ExecutionUtils_CheckIfGarageIsClosed())
     {
@@ -433,6 +589,13 @@ void Execute_Unlocked()
         return;
     }
 
+    if(RFID_WantsToSaveNewCard())
+    {
+        Debug_Information("Actions", "Execute_Unlocked", "User wants to save a new card");
+        SetNewExecutionFunction(FUNCTION_ID_SAVE_NEW_CARD);
+        return; 
+    }
+
     if(!Lid_Unlock())
     {
         Debug_Error("Actions", "Execute_Unlocked", "Failed to unlock lid door");
@@ -453,6 +616,29 @@ void Execute_Unlocked()
 
     if(RFID_HandleCard() == 1)
     {
+        if(!Lid_IsClosed())
+        {
+            Debug_Information("Actions", "Execute_Unlocked", "Lid is not completely closed");
+            /// @brief Too lazy to make a function for this. Especially cuz this is surplus and wasnt planned in the project.
+            LEDS_SetColor(LED_ID_STATUS_INDICATOR, 255,16,16);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            delay(40);
+            Alarm_SetState(true);
+            delay(40);
+            Alarm_SetState(false);
+            return;
+        }
+
         Debug_Information("Actions", "Execute_Unlocked", "Going to Wait for delivery");
         if(!SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY))
         {

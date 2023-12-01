@@ -25,7 +25,6 @@
 bool Lid_Init()
 {
     Debug_Start("Lid_Init");
-    //Debug_Warning("Lid", "Lid_Open", "BYPASSED");
     Debug_End();
     return true;
 }
@@ -102,4 +101,18 @@ bool Lid_Lock()
     servo1.write(PACKAGE_DOOR_LOCKED);
     Debug_End();
     return true;
+}
+
+/**
+ * @brief 
+ * Returns true if the lid is really closed or
+ * not.
+ * @return true:
+ * It is locked.
+ * @return false:
+ * It isnt locked.
+ */
+bool Lid_IsClosed()
+{
+    return digitalRead(LID_CLOSED_SWITCH_PIN);
 }

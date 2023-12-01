@@ -65,6 +65,15 @@ void SafeBox_Init()
                             if(Lid_Init()){
                                 if(Doorbell_Init()){
                                     if(RFID_Init()){
+
+                                        if(SafeBox_EEPROMStatusShouldStartAlarm())
+                                        {
+                                            Debug_Information("Init", "SafeBox_Init", "Alarm started due to EEPROM values");
+                                            SetNewExecutionFunction(FUNCTION_ID_ALARM);
+                                            Debug_End();
+                                            return;
+                                        }
+
                                         if(SafeBox_SetNewStatus(SafeBox_Status::WaitingForXFactor)){
                                             if(SetNewExecutionFunction(FUNCTION_ID_WAIT_AFTER_XFACTOR)){
                                                 // Function is successful.

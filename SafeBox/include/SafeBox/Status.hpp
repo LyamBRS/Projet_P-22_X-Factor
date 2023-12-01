@@ -13,6 +13,8 @@
 #pragma once
 
 //#pragma region [ENUM]
+#include "Debug/Debug.hpp"
+#include <EEPROM.h>
 
 /**
  * @brief Enumeration of all the possible status
@@ -97,4 +99,53 @@ bool SafeBox_SetNewStatus(SafeBox_Status newStatus);
  */
 SafeBox_Status SafeBox_GetStatus();
 
+
+/**
+ * @brief 
+ * Converts the enum to an int.
+ * Used in the EEPROM functions
+ * @param status 
+ * @return int 
+ */
+uint8_t SafeBox_IntToStatus(SafeBox_Status status);
+
+/**
+ * @brief 
+ * Converts the int to a status.
+ * Used in the EEPROM functions
+ * @param status 
+ * @return int 
+ */
+SafeBox_Status SafeBox_StatusToInt(uint8_t status);
+
+/**
+ * @brief 
+ * Saves the status of SafeBox in the EEPROM.
+ * Automatically uses the current status of
+ * SafeBox so no input parameter is needed.
+ * @return true:
+ * Successfully stored the status in the eeprom
+ * @return false:
+ * Failed to store the status in the eeprom.
+ */
+bool SafeBox_SaveStatusInEEPROM();
+
+/**
+ * @brief returns the status saved in the EEPROM.
+ * This is useful is SafeBox looses power.
+ * @return SafeBox_Status 
+ */
+SafeBox_Status SafeBox_GetEEPROMStatus();
+
+/**
+ * @brief Function that returns true if the alarm
+ * needs to be activated depending on the status
+ * that is found in the Arduino's EEPROM.
+ * 
+ * @return true:
+ * Should start the alarm
+ * @return false:
+ * Should not start the alarm.
+ */
+bool SafeBox_EEPROMStatusShouldStartAlarm();
 //#pragma endregion

@@ -30,6 +30,7 @@
 #define FUNCTION_ID_ALARM 12
 #define FUNCTION_ID_ERROR 13
 #define FUNCTION_ID_END_OF_PROGRAM 15
+#define FUNCTION_ID_SAVE_NEW_CARD 16
 
 //#pragma endregion
 
@@ -107,6 +108,14 @@ unsigned char GetCurrentExecutionFunction();
  * command.
  */
 void Execute_WaitAfterXFactor();
+
+/**
+ * @brief
+ * Attemps to save a new card in the EEPROM
+ * until it fails or succeed. If it fails, it
+ * will return to the unlocked state.
+ */
+void Execute_SaveNewEEPROMCard();
 
 /**
  * @brief

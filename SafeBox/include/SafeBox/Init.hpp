@@ -14,7 +14,6 @@
 // - INCLUDES - //
 #include "SafeBox/Status.hpp"
 
-#include "LED/LED.hpp"
 #include "Actions/Actions.hpp"
 #include "Communication/Bluetooth.hpp"
 #include "Alarm/Alarm.hpp"
@@ -22,6 +21,7 @@
 #include "Lid/Lid.hpp"
 #include "Garage/Garage.hpp"
 #include "Debug/Debug.hpp"
+#include "LED/LED.hpp"
 
 /**
  * @brief

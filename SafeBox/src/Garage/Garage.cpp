@@ -16,6 +16,9 @@
  * @brief 
  * Global local variable used to keep track of
  * what the garage is supposed to be.
+ * This is useful to bypass the IsClosed and the
+ * potential alarm triggers if the door stays
+ * open.
  */
 volatile bool supposedGarageStatus = false;
 
@@ -46,7 +49,7 @@ bool Garage_Init()
         Debug_End();
         return false;
     }
-
+    pinMode(GARAGE_IS_CLOSED_DEBUG_PIN, OUTPUT);
     Debug_End();
     return true;
 }
@@ -149,16 +152,32 @@ bool Garage_IsClosed()
     Debug_Warning("Garage", "Garage_IsClosed", String(doorDistance));
     if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
     {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, HIGH);
         Debug_End();
         return true;
     }
     else
     {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, LOW);
         Debug_End();
         return false;       
     }
+}
 
-    //Debug_Warning("Garage", "Garage_XFactorInside", String(GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN)));
-    //Debug_End();
-    //return false;
+/**
+ * @brief Enables the debug light.
+ * Is on if its closed and off
+ * if its open.
+ */
+void Garage_ShowDebugLight()
+{
+    unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
+    if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, HIGH);
+    }
+    else
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, LOW);   
+    }
 }
