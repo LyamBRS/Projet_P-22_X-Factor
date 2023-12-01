@@ -11,6 +11,7 @@
  */
 
 #pragma once
+#include "Debug/Debug.hpp"
 
 //#pragma region [ENUM]
 
@@ -84,6 +85,8 @@ enum class XFactor_Status {
 
     /// @brief Status used when XFactor awaits for SafeBox to reply to its communications
     WaitingAfterSafeBox = 17,
+
+    Unlocked = 18,
 
     /// @brief Safebox is in maintenance mode
     Maintenance = 50,

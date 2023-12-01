@@ -21,6 +21,7 @@
 #include "Package/Package.hpp"
 #include "Debug/Debug.hpp"
 #include "Communication/Bluetooth.hpp"
+#include "math.h"
 
 /**
  * @brief

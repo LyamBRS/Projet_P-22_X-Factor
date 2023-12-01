@@ -82,6 +82,7 @@ bool SaveNewVector()
         {
             vectorBuffer[vectorBufferIndex].rotation_rad = GetSavedRotation();
             vectorBuffer[vectorBufferIndex].distance_cm = GetSavedDistance();
+            Debug_Information("Vectors.cpp","SaveNewVector", "Distance : " + String(GetSavedDistance()) + " Rotation : " + String(GetSavedRotation()));
             return true;
         }
     }
@@ -157,10 +158,58 @@ bool RemoveLastVector()
  */
 MovementVector GetReturnVector()
 {
-    float positionX_cm = 0.0f;
+    /*float posX = DEMO_AREA_LENGTH_CM - (ROBOT_LENGTH_CM + SAFEBOX_LENGTH_CM);
+    float posY = 0.0f;
+
+    ResetVectors();
+    
+    vectorBuffer[0].rotation_rad = PI / 2; // RIGHT
+    vectorBuffer[0].distance_cm = 40.0f;
+
+    posY += vectorBuffer[0].distance_cm;
+
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos X 0 : " + String(posX));
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos Y 0 : " + String(posY));
+
+    vectorBuffer[1].rotation_rad =  -(PI / 2); // LEFT
+    vectorBuffer[1].distance_cm = DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM - 40.0f - ROBOT_LENGTH_CM - ROBOT_WIDTH_CM;*/
+
+    /*posX -= vectorBuffer[1].distance_cm;
+
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos X 1 : " + String(posX));
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos Y 1 : " + String(posY));
+
+    vectorBuffer[2].rotation_rad = PI / 2;
+    vectorBuffer[2].distance_cm = DEMO_AREA_WIDTH_CM - 40.0f * 2 - ROBOT_WIDTH_CM;
+
+    posY += vectorBuffer[2].distance_cm;
+
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos X 2 : " + String(posX));
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos Y 2 : " + String(posY));
+
+    vectorBuffer[3].rotation_rad = PI / 2;
+    vectorBuffer[3].distance_cm = DEMO_AREA_LENGTH_CM - 40.0f * 2 - ROBOT_WIDTH_CM;
+
+    posX += vectorBuffer[3].distance_cm;
+
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos X 3 : " + String(posX));
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos Y 3 : " + String(posY));
+
+    vectorBuffer[4].rotation_rad = PI / 2;
+    vectorBuffer[4].distance_cm = DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM - 40.0f * 2 - ROBOT_WIDTH_CM;
+
+    posY -= vectorBuffer[4].distance_cm;
+
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos X : " + String(posX));
+    Debug_Information("Vectors", "GetReturnVector", "Expected pos Y : " + String(posY));*/
+
+    /*vectorBuffer[5].rotation_rad = PI / 2;
+    vectorBuffer[5].distance_cm = SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;*/
+
+    float positionX_cm = DEMO_AREA_LENGTH_CM - (ROBOT_LENGTH_CM + SAFEBOX_LENGTH_CM);
     float positionY_cm = 0.0f;
 
-    float absoluteRotation = 3.1415f; // PI (FACING LEFT) REPLACE FOR GOOD DEFINE
+    float absoluteRotation = (float)PI;
     MovementVector returnVector;
 
     for (int vectorBufferIndex = 0; vectorBufferIndex < VECTOR_BUFFER_SIZE; vectorBufferIndex++)
@@ -168,23 +217,43 @@ MovementVector GetReturnVector()
         if (!(vectorBuffer[vectorBufferIndex].distance_cm == emptyMovementVector.distance_cm 
         && vectorBuffer[vectorBufferIndex].rotation_rad == emptyMovementVector.rotation_rad))
         {
-            absoluteRotation += vectorBuffer[vectorBufferIndex].rotation_rad;
+            absoluteRotation -= vectorBuffer[vectorBufferIndex].rotation_rad;
             positionX_cm += vectorBuffer[vectorBufferIndex].distance_cm * cos(absoluteRotation);
             positionY_cm += vectorBuffer[vectorBufferIndex].distance_cm * sin(absoluteRotation);
+
+            Debug_Information("Vectors", "GetReturnVector", "Rotation " + String(vectorBufferIndex) + " : " + String(absoluteRotation));
+            Debug_Information("Vectors", "GetReturnVector", "Rotation Vector " + String(vectorBufferIndex) + " : " + String((float)atan2(positionY_cm,positionX_cm)));
+            Debug_Information("Vectors", "GetReturnVector", "Position " + String(vectorBufferIndex) + " : " + String(positionX_cm));
+            Debug_Information("Vectors", "GetReturnVector", "Position " + String(vectorBufferIndex) + " : " + String(positionY_cm));
         }
         else
         {
             if (vectorBufferIndex == 0)
             {
-                Debug_Error("Vectors.cpp", "GetReturnVector", "Vector buffer is empty; the robot should not move");
+                Debug_Warning("Vectors.cpp", "GetReturnVector", "Vector buffer is empty; the robot should not move");
                 return emptyMovementVector;
             }
             break;
         }
     }
     
-    returnVector.rotation_rad = (float)atan(positionY_cm/positionX_cm);
+    positionX_cm -= (DEMO_AREA_LENGTH_CM - (SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM));
+    //returnVector.rotation_rad = absoluteRotation - (float)atan2(positionY_cm,-positionX_cm);
+    returnVector.rotation_rad = absoluteRotation - (float)atan2(positionY_cm, positionX_cm);
+
+    Debug_Information("Vectors", "GetReturnVector", "Position X : " + String(positionX_cm));
+    Debug_Information("Vectors", "GetReturnVector", "Position Y : " + String(positionY_cm));
+
+    Debug_Information("Vectors", "GetReturnVector", "Rotation : " + String(returnVector.rotation_rad));
+
     returnVector.distance_cm = (float)sqrt(square(positionX_cm) + square(positionY_cm));
+
+    Debug_Information("Vectors", "GetReturnVector", "Robot rotation : " + String(absoluteRotation));
+
+    Debug_Information("Vectors", "GetReturnVector", "Distance Opposite : " + String(GetOppositeVector(returnVector).distance_cm));
+
+    Debug_Information("Vectors", "GetReturnVector", "Rotation Opposite : " + String(GetOppositeVector(returnVector).rotation_rad));
+
     return GetOppositeVector(returnVector);
 }
 

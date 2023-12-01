@@ -17,9 +17,6 @@
  * Function that initialises the whistle detector
  * or doorbell reader used by SafeBox.
  *
- * @param doorbellPin
- * The pin that is used to read the whistle status
- * from.
  * @return true:
  * Successfully initialised the doorbell used by
  * SafeBox. (Whistle detector)
@@ -27,9 +24,14 @@
  * Failed to initialised the doorbell used on
  * SafeBox.
  */
-bool Doorbell_Init(int doorbellPin)
+bool Doorbell_Init()
 {
-    return false;
+    Debug_Start("Doorbell_Init");
+    pinMode(DOORBELL_AMBIENT_NOISE_PIN, INPUT);
+    pinMode(DOORBELL_WHISLE_NOISE_PIN, INPUT);
+    pinMode(DOORBELL_SWITCH_BYPASS_PIN, INPUT);
+    Debug_End();
+    return true;
 }
 
 /**
@@ -43,5 +45,26 @@ bool Doorbell_Init(int doorbellPin)
  */
 bool Doorbell_GetState()
 {
+    Debug_Start("Doorbell_GetState");
+    bool doorbellDetected = true;
+    int ambiantNoisesLevel = analogRead(DOORBELL_AMBIENT_NOISE_PIN);
+    int whistleNoisesLevel = analogRead(DOORBELL_WHISLE_NOISE_PIN);
+    
+    doorbellDetected = (ambiantNoisesLevel < whistleNoisesLevel);
+    if(doorbellDetected)
+    {
+        Debug_Information("Doorbell", "Doorbell_GetState", "DETECTED");
+        Debug_End();
+        return true;
+    }
+
+    if(digitalRead(DOORBELL_SWITCH_BYPASS_PIN))
+    {
+       Debug_Information("Doorbell", "Doorbell_GetState", "BYPASS_DETECTED");
+        Debug_End();
+        return true;      
+    }
+
+    Debug_End();
     return false;
 }

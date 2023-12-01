@@ -55,7 +55,7 @@ unsigned long GROVE_GetColor()
 
     tcs.setInterrupt(false);      // turn on LED
 
-    delay(60);  // takes 50ms to read
+    //delay(60);  // takes 50ms to read
 
     tcs.getRawData(&red, &green, &blue, &clear);
 
@@ -81,12 +81,18 @@ unsigned long GROVE_GetColor()
     bleu =  (int) (((float)blue/1024)*255);
     clair = (int) (((float)clear/1024)*255);*/
 
-    Serial.print("C:\t"); Serial.print(clear);
-    Serial.print("\tR:\t"); Serial.print(red);
-    Serial.print("\tG:\t"); Serial.print(green);
-    Serial.print("\tB:\n"); Serial.println(blue);
+    //Serial.print("C:\t"); Serial.print(clear);
+    //Serial.print("\tR:\t"); Serial.print(red);
+    //Serial.print("\tG:\t"); Serial.print(green);
+    //Serial.print("\tB:\n"); Serial.println(blue);
 
-    return Colour_GetHexFromRGBC(red, green, blue, clear);
+    Debug_Information("GROVE", "GROVE_GetColor", "Red : " + String(red));
+    Debug_Information("GROVE", "GROVE_GetColor", "Green : " + String(green));
+    Debug_Information("GROVE", "GROVE_GetColor", "Blue : " + String(blue));
+    Debug_Information("GROVE", "GROVE_GetColor", "Clear : " + String(clear));
+    
+    return (unsigned long)red;
+    //return Colour_GetHexFromRGBC(red, green, blue, clear);
 
 }
 

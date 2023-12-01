@@ -12,8 +12,10 @@
 #pragma once
 
 // - INCLUDE - //
+#include "LED/LED.hpp"
 #include "SafeBox/Communication.hpp"
 #include "XFactor/Status.hpp"
+#include "Movements/Movements.hpp"
 
 //#pragma region [FUNCTION_IDS]
 
@@ -36,6 +38,32 @@
 #define FUNCTION_ID_UNLOCKED 16
 
 //#pragma endregion
+
+/**
+ * @brief 
+ * Function which blocks the program until a
+ * successful status exchange occurs with
+ * SafeBox. This function will execute until
+ * the status received isnt CommunicationError
+ */
+void ExecutionUtils_ForceAStatusExchange();
+
+/**
+ * @brief
+ * This function handles the first time that a
+ * state gets executed. Its goal is to set the
+ * status of XFactor to the corresponding,
+ * specified status, and erase the status that
+ * is currently saved for SafeBox. This prevents
+ * the program from automatically changing the
+ * execution function back to an unwanted
+ * execution function automatically.
+ * 
+ * @param wantedStatus
+ * The status that XFactor should hold while in
+ * this current state.
+ */
+void ExecutionUtils_HandleFirstExecution(XFactor_Status wantedStatus);
 
 /**
  * @brief Function that checks
@@ -82,3 +110,33 @@ bool ExecutionUtils_CommunicationCheck(int attempts);
  * currentExecutionFunctionId if no changes
  */
 int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attempts, bool isArmed);
+
+/**
+ * @brief
+ * This function allows you to create a simple
+ * blinking statement in your Execution functions
+ * Especially useful for the Alarm and Error.
+ * @param blinkingPeriodMS
+ * How long should the timer wait before it needs
+ * to return the end of period so that you can
+ * make your LED blink?
+ * @return true:
+ * The timer has reached the end. You must make
+ * the LED blink.
+ * @return false:
+ * The timer is still counting.
+ */
+bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS);
+
+/**
+ * @brief Function that checks
+ * if something unexpected happened in
+ * movement and returns status of the
+ * event that happened
+ * @param currentExecutionFunctionId
+ * The id of the current execution function.
+ * @return int:
+ * Value of the new execution function id to execute, 
+ * currentExecutionFunctionId if no changes
+ */
+int ExecutionUtils_ComputeMovementResults(int currentExecutionFunctionId, int movementStatus);

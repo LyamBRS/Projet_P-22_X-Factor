@@ -9,7 +9,16 @@
  * 
  */
 #pragma once
+#include <Arduino.h>
+#include <Servo.h>
 
+#define SERVO_RFID_PIN 7
+#define SERVO_PORTE_HAUT_PIN 8
+#define SERVO_PORTE_BAS_PIN 9
+
+extern Servo servo1;
+extern Servo servo2;
+extern Servo servo3; 
 /**
  * @brief Initialisation function of a single
  * servo motor based on a given arduino pin
@@ -17,7 +26,7 @@
  * @param servoMotorPin 
  * Arduino pin number
  */
-void S3003_Init(int servoMotorPin);
+void S3003_Init();
 
 /**
  * @brief Simple function that must put the right
@@ -27,7 +36,7 @@ void S3003_Init(int servoMotorPin);
  * position.
  * @param WantedPosition 
  */
-void S3003_SetPosition(int servoMotorPin, float WantedPosition);
+void S3003_SetPosition(int wantedPosition);
 
 // I suggest making more functions. You could make one that makes the big number from the smaller number for example.
 // The functions you make should start with GROVE_. variables as inputs should be lower camelCase.

@@ -59,6 +59,7 @@ bool SafeBox_SetNewStatus(SafeBox_Status newStatus)
         default:
             // Invalid status
             SafeBoxSavedStatus = SafeBox_Status::Error;
+            Debug_Information("Status", "SafeBox_SetNewStatus", "UNKNOWN SAFEBOX STATUS");
             return false;
     }
     // SHOULD NEVER REACH HERE

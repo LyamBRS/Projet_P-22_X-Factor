@@ -18,9 +18,23 @@
 #include "Sensors/Colour/GROVE.hpp"
 #include "Movements/Movements.hpp"
 #include "Colour/Colour.hpp"
+#include "Sensors/Distance/GP2D12.hpp"
 
 // #pragma region [DEFINES]
+<<<<<<< HEAD
 #define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 30
+=======
+#define PACKAGE_CLAW_GRABBER_POSITION_TRANSPORT 0
+#define PACKAGE_CLAW_HEIGHT_POSITION_TRANSPORT 70
+#define PACKAGE_BACK_MOVEMENT -10.0f
+
+#define NOTHING_DETECTED 0
+#define PACKAGE_DETECTED 1
+#define SAFEBOX_DETECTED 2
+#define OUT_OF_BOUNDS_DETECTED 3
+
+#define DETECTION_READ_OFFSET_MULTIPLIER 1.25f
+>>>>>>> f69c7cb46ce7d603d8cd103e9ffb0e46660795d9
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -138,10 +152,8 @@ bool Package_Transport();
 /**
  * @brief
  * Complex function that analyses XFactor's
- * related sensors to find potential packages
- * that may be around the robot as it moves. This
- * Function can also be used to verify that a
- * package is still inside of the claw.
+ * color sensor to verify is the object examined
+ * is indeed the package it needs to pick up.
  *
  * Packages are identified using color sensors.
  * @return true:
@@ -150,7 +162,41 @@ bool Package_Transport();
  * No packages are detected anywhere near or
  * inside the robot.
  */
-bool Package_Detected();
+bool Package_Confirmed();
+
+/**
+ * @brief
+ * Complex function that analyses XFactor's
+ * distance sensors with the goal of locating
+ * the package. It reads all of the distance
+ * sensors and compares them to a threshold.
+ * 
+ * @param capteur
+ * This is used to read from the right sensor 
+ * so other functions know what to return 
+ * depending on which sensor triggered.
+ *
+ * Packages are identified using color sensors.
+ * @return PACKAGE_DETECTED:
+ * A package was detected near the robot.
+ * @return NOTHING_DETECTED:
+ * No packages are detected anywhere near or
+ * inside the robot.
+ * @return BOX_DETECTED
+ * SafeBox has been detected near the robot
+ */
+int Package_Detected(int sensor, float relativeRotation_rad, float distance_cm);
+
+/**
+ * @brief
+ * Getter for the detected distance
+ * of the last distance detector
+ * that measured the distance
+ *
+ * @return unsigned short :
+ * distance in centimeters
+ */
+unsigned short Package_GetDetectedDistance();
 
 /**
  * @brief
@@ -188,6 +234,21 @@ bool Package_SetStatus(bool newPackageStatus);
  * XFactor shouldn't be carrying a package.
  */
 bool Package_GetStatus();
+
+/**
+ * @brief
+ * Return if the detected package is
+ * in fact SafeBox
+ *
+ * @return SAFEBOX_DETECTED:
+ * Safebox is detected
+ * @return PACKAGE_DETECTED:
+ * What was detected is not SafeBox.
+ * @return OUT_OF_BOUNDS_DETECTED:
+ * What was detected is not within the demonstration area.
+ */
+
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad, float distance_cm);
 // #pragma endregion
 
 

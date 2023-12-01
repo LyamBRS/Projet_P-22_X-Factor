@@ -21,13 +21,14 @@
 #define DEBUG_ENABLED
 #define DEBUG_INFORMATION_ENABLED
 #define DEBUG_WARNING_ENABLED
-#define DEBUG_STACK_TRACE_ENABLED
+#define DEBUG_STACK_TRACE_DISABLED
 /// @brief Which serial port is used for debugging the program.
 #define DEBUG_SERIAL Serial
 /// @brief Debug port speed.
 #define DEBUG_BAUD_RATE 115200
 
 #define MAX_INDENTATION_LEVEL 10
+
 
 // - FUNCTIONS - //
 
@@ -74,6 +75,13 @@ void Debug_Stop();
  * @ref Debug_Stop is called.
  */
 void Debug_Resume();
+
+/**
+ * @brief 
+ * Continuously prints the last error that was
+ * printed. This works even if debug has stopped.
+ */
+void Debug_PrintLastError();
 
 /**
  * @brief Makes the code shift right the further

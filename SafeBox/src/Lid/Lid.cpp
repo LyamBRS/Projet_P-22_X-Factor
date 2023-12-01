@@ -24,7 +24,9 @@
  */
 bool Lid_Init()
 {
-    return false;
+    Debug_Start("Lid_Init");
+    Debug_End();
+    return true;
 }
 
 /**
@@ -39,6 +41,9 @@ bool Lid_Init()
  */
 bool Lid_Open()
 {
+    Debug_Start("Lid_Open");
+    Debug_Warning("Lid", "Lid_Open", "BYPASSED");
+    Debug_End();
     return false;
 }
 
@@ -54,6 +59,9 @@ bool Lid_Open()
  */
 bool Lid_Close()
 {
+    Debug_Start("Lid_Close");
+    Debug_Warning("Lid", "Lid_Close", "BYPASSED");
+    Debug_End();
     return false;
 }
 
@@ -69,7 +77,11 @@ bool Lid_Close()
  */
 bool Lid_Unlock()
 {
-    return false;
+    Debug_Start("Lid_Unlock");
+    servo1.attach(SERVO_RFID_PIN); 
+    servo1.write(PACKAGE_DOOR_UNLOCKED);
+    Debug_End();
+    return true;
 }
 
 /**
@@ -84,5 +96,23 @@ bool Lid_Unlock()
  */
 bool Lid_Lock()
 {
-    return false;
+    Debug_Start("Lid_Lock");
+    servo1.attach(SERVO_RFID_PIN); 
+    servo1.write(PACKAGE_DOOR_LOCKED);
+    Debug_End();
+    return true;
+}
+
+/**
+ * @brief 
+ * Returns true if the lid is really closed or
+ * not.
+ * @return true:
+ * It is locked.
+ * @return false:
+ * It isnt locked.
+ */
+bool Lid_IsClosed()
+{
+    return digitalRead(LID_CLOSED_SWITCH_PIN);
 }

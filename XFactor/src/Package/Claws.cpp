@@ -36,8 +36,11 @@ bool deploymentStatus = CLAWS_STATUS_STORED;
 bool Claws_Init()
 {
     Debug_Start("Claws_Init");
+    pinMode(CLAWS_PINS_SWITCH, INPUT);
     S3003_Init(CLAWS_PINS_HEIGHT);
     S3003_Init(CLAWS_PINS_GRABBER);
+    //S3003_SetPosition(CLAWS_PINS_HEIGHT, CLAWS_HEIGHT_MIN);
+    //S3003_SetPosition(CLAWS_PINS_GRABBER, CLAWS_GRABBERS_MAX);
     Debug_End();
     return true;
 }
@@ -55,8 +58,7 @@ bool Claws_Init()
  */
 bool Claws_GetSwitchStatus()
 {
-    //NEEDS TO BE CHANGED FOR READ PIN FOR THE CLAW
-    if(ROBUS_IsBumper(CLAWS_PINS_SWITCH)) return true;
+    if(digitalRead(CLAWS_PINS_SWITCH)) return true;
     else return false;
 }
 
@@ -80,20 +82,13 @@ bool Claws_GetSwitchStatus()
  */
 bool Claws_SetGrabbers(unsigned char pourcent)
 {
-    uint8_t angle = pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100;
+    float angle = (float)(pourcent*(CLAWS_GRABBERS_MAX-CLAWS_GRABBERS_MIN)/100);
     angle+=CLAWS_GRABBERS_MIN;
 
-    if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX){
-        if(deploymentStatus)
-        {
-            S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
-            return true;
-        }
-        else
-        {
-            Debug_Error("Claws", "Claws_SetGrabbers", "Claw is not deployed");
-            return false;
-        }
+    if(angle<=CLAWS_GRABBERS_MIN && angle >=CLAWS_GRABBERS_MAX)
+    {
+        S3003_SetPosition(CLAWS_PINS_GRABBER, angle);
+        return true;
     }
     else
     {
@@ -121,27 +116,36 @@ bool Claws_SetGrabbers(unsigned char pourcent)
  */
 bool Claws_SetHeight(unsigned char pourcent)
 {
-    uint8_t angle = pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100;
-    angle+=CLAWS_HEIGHT_MIN;
+    static float oldAngle = CLAWS_HEIGHT_MIN;
 
-    if(angle>=CLAWS_HEIGHT_MIN && angle<=CLAWS_HEIGHT_MAX)
-    {
-        if(deploymentStatus)
-        {
-            S3003_SetPosition(CLAWS_PINS_HEIGHT, angle);
-            return true;
-        }
-        else
-        {
-            Debug_Error("Claws", "Claws_SetHeight", "Claw is not deployed.");
-            return false;
-        }
-    }
-    else
+    float wantedAngle = (float)(pourcent*(CLAWS_HEIGHT_MAX-CLAWS_HEIGHT_MIN)/100);
+    wantedAngle+=CLAWS_HEIGHT_MIN;
+    Debug_Information("","", String(wantedAngle) + " " + String(oldAngle));
+    
+    if(!(wantedAngle>=CLAWS_HEIGHT_MIN && wantedAngle<=CLAWS_HEIGHT_MAX))
     {
         Debug_Error("Claws", "Claws_SetHeight", "Angle outside boundaries");
         return false;
     }
+
+    S3003_SetPosition(CLAWS_PINS_HEIGHT, wantedAngle);
+    return true;
+
+    float ratio = wantedAngle - oldAngle;
+    if (ratio == 0)
+    {
+        return true;
+    }
+    ratio = ratio/39;
+
+    for (int i = 0; i < 40; i++)
+    {
+        oldAngle = oldAngle + ratio;
+        S3003_SetPosition(CLAWS_PINS_HEIGHT, oldAngle);
+        delay(50);
+    }
+    oldAngle = wantedAngle;
+    return true;
 }
 
 /**
@@ -173,15 +177,15 @@ bool Claws_SetDeployment(bool deployment)
         if(deployment == CLAWS_STATUS_DEPLOYED)
         {
             deploymentStatus = CLAWS_STATUS_DEPLOYED;
-            if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
-            {
-                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
-                return false;
-            }
-
             if(!Claws_SetGrabbers(CLAWS_GRABBERS_DEPLOYED))
             {
                 Debug_Error("Claws", "Claws_SetDeployment", "Failed to set grabbers as CLAWS_GRABBERS_DEPLOYED");
+                return false;
+            }
+
+            if(!Claws_SetHeight(CLAWS_HEIGHT_DEPLOYED))
+            {
+                Debug_Error("Claws", "Claws_SetDeployment", "Failed to set height as CLAWS_HEIGHT_DEPLOYED");
                 return false;
             }
             return true;
@@ -289,7 +293,7 @@ bool Claws_CloseUntilDetection()
             }
             previousInterval_ms = millis();
         }
-        return true;
+        //return true;
     }
 
     //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME

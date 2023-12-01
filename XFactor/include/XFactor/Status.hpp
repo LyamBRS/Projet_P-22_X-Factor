@@ -92,7 +92,9 @@ enum class XFactor_Status {
     Error = 51,
 
     /// @brief SafeBox has sounded the alarm and won't stop until the user disarms it.
-    Alarm = 255
+    Alarm = 255,
+    
+    Unlocked = 18
 };
 
 /**

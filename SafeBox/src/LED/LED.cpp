@@ -52,6 +52,8 @@ bool LEDS_Init()
  */
 bool LEDS_SetColor(int LEDNumber, unsigned char red, unsigned char green, unsigned char blue)
 {
+    Debug_Start("LEDS_SetColor");
     WS2812_SetStaticColors(LED_WS2812_ARDUINO_PIN, LEDNumber, red, green, blue);
+    Debug_End();
     return true;
 }

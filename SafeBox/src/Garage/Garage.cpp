@@ -13,6 +13,16 @@
 #include "Garage/Garage.hpp"
 
 /**
+ * @brief 
+ * Global local variable used to keep track of
+ * what the garage is supposed to be.
+ * This is useful to bypass the IsClosed and the
+ * potential alarm triggers if the door stays
+ * open.
+ */
+volatile bool supposedGarageStatus = false;
+
+/**
  * @brief
  * Initialises the garage of SafeBox.
  * Initialises the servo motors and sensors used
@@ -24,7 +34,24 @@
  */
 bool Garage_Init()
 {
-    return false;
+    Debug_Start("Garage_Init");
+    GP2D12_Init(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
+    S3003_Init();
+
+    // This delay is there to ensure that Arduino
+    // has enough time to configure the pins used
+    // This should take micro seconds, but its
+    // good enough
+    delay(10);
+    if(GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN) == 0)
+    {
+        Debug_Error("Garage", "Garage_Init", "Distance sensor returned 0");
+        Debug_End();
+        return false;
+    }
+    pinMode(GARAGE_IS_CLOSED_DEBUG_PIN, OUTPUT);
+    Debug_End();
+    return true;
 }
 
 /**
@@ -38,7 +65,16 @@ bool Garage_Init()
  */
 bool Garage_Open()
 {
-    return false;
+    Debug_Start("Garage_Open");
+    servo2.write(ANGLE_OPEN);
+    servo3.write(ANGLE_OPEN);
+    if(!supposedGarageStatus)
+    {
+        Debug_Information("Garage", "Garage_Open", "Garage should no longer check to see if its closed");
+    }
+    supposedGarageStatus = true;
+    Debug_End();
+    return true;
 }
 
 /**
@@ -52,7 +88,17 @@ bool Garage_Open()
  */
 bool Garage_Close()
 {
-    return false;
+    Debug_Start("Garage_Close");
+    servo2.write(ANGLE_CLOSED);
+    servo3.write(ANGLE_CLOSED);
+
+    if(supposedGarageStatus)
+    {
+        Debug_Information("Garage", "Garage_Close", "Garage should now check to see if its closed");
+    }
+    supposedGarageStatus = false;
+    Debug_End();
+    return true;
 }
 
 /**
@@ -68,7 +114,24 @@ bool Garage_Close()
  */
 bool Garage_XFactorInside()
 {
+    Debug_Start("Garage_XFactorInside");
+    Debug_Warning("Garage", "Garage_XFactorInside", "BYPASSED");
+    Debug_End();
     return false;
+}
+
+/**
+ * @brief 
+ * Returns wether the garage SHOULD be closed
+ * or not.
+ * @return true:
+ * Should be opened.
+ * @return false:
+ * Should be closed.
+ */
+bool Garage_GetSupposedWantedStatus()
+{
+    return supposedGarageStatus;
 }
 
 /**
@@ -84,5 +147,37 @@ bool Garage_XFactorInside()
  */
 bool Garage_IsClosed()
 {
-    return false;
+    Debug_Start("Garage_IsClosed");
+    unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
+    Debug_Warning("Garage", "Garage_IsClosed", String(doorDistance));
+    if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, HIGH);
+        Debug_End();
+        return true;
+    }
+    else
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, LOW);
+        Debug_End();
+        return false;       
+    }
+}
+
+/**
+ * @brief Enables the debug light.
+ * Is on if its closed and off
+ * if its open.
+ */
+void Garage_ShowDebugLight()
+{
+    unsigned short doorDistance = GP2D12_Read(GARAGE_TRIG_PIN, GARAGE_ECHO_PIN);
+    if(doorDistance < GARAGE_DISTANCE_VALUE_CLOSED)
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, HIGH);
+    }
+    else
+    {
+        digitalWrite(GARAGE_IS_CLOSED_DEBUG_PIN, LOW);   
+    }
 }

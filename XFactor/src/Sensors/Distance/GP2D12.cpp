@@ -13,10 +13,14 @@
 /**
  * @brief Sets base values
  *
- * @param pinNumber
- * pin to set (between 0 and 3) (J9-J12)
+ * @param trigPin, echoPin
+ * pin to set trigger pin & echo pin numbers
  */
-void GP2D12_Init(int pinNumber);
+void GP2D12_Init(int trigPin, int echoPin)
+{
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
+}
 
 /**
  * @brief Reads the IR sensor at specified pin
@@ -26,4 +30,24 @@ void GP2D12_Init(int pinNumber);
  * @return unsigned short
  * raw data (16 bits)
  */
-unsigned short GP2D12_Read(int pinNumber);
+unsigned short GP2D12_Read(int trigPin, int echoPin)
+{
+    // - VARIABLES - //
+    long duration = 0;
+    unsigned short cm = 0;
+    
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    
+    //duration = pulseIn(echoPin, HIGH);
+    duration = pulseIn(echoPin, HIGH, (unsigned long)TIMEOUT_DISTANCE_MEASURE_US);
+    //cm = (duration*.0343)/2;
+    if (duration != 0)
+    {
+        return duration*.017;
+    }
+    return 300.0f; // HAS TIMED OUT
+}

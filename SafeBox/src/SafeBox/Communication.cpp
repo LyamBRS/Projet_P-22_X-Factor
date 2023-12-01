@@ -57,7 +57,6 @@ bool SafeBox_CheckAndExecuteMessage()
 
     if(latestMessage == BT_NO_MESSAGE)
     {
-        Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "BT_MessagesAvailable failure");
         return false;
     }
 
@@ -74,6 +73,24 @@ bool SafeBox_CheckAndExecuteMessage()
         if(SafeBox_ChangeLidState(false)) {return true;}
         Debug_Error("Communication", "SafeBox_CheckAndExecuteMessage", "Failed to execute ChangeLidState");
         return false;
+    }
+
+    if(latestMessage.endsWith(COMMAND_GARAGE_GET))
+    {
+        if(Garage_IsClosed())
+        {
+            if(BT_SendString(ANSWER_GARAGE_CLOSED)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed to TX ANSWER_GARAGE_CLOSED");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
+        }
+        else
+        {
+            if(BT_SendString(ANSWER_GARAGE_OPEN)) return true;
+            Debug_Error("Communication", "SafeBox_ChangeLidState", "Failed to TX ANSWER_GARAGE_OPEN");
+            SafeBox_SetNewStatus(SafeBox_Status::CommunicationError);
+            return false;
+        } 
     }
 
     if(latestMessage.endsWith(COMMAND_GARAGE_OPEN))
@@ -221,7 +238,7 @@ bool SafeBox_ChangeGarageState(bool wantedState)
     }
     else
     {
-        if(Lid_Close())
+        if(Garage_Close())
         {
             if(BT_SendString(ANSWER_GARAGE_SUCCESS)) return true;
             Debug_Error("Communication", "SafeBox_ChangeGarageState", "Failed RX garage close success");
@@ -286,8 +303,10 @@ bool SafeBox_SaveReceivedXFactorStatus(String command)
     if(command.endsWith("SFAP"))    {XFactor_SetNewStatus(XFactor_Status::SearchingForAPackage);        return true;}
     if(command.endsWith("WFD"))     {XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);          return true;}
     if(command.endsWith("WASB"))    {XFactor_SetNewStatus(XFactor_Status::WaitingAfterSafeBox);         return true;}
+    if(command.endsWith("U"))       {XFactor_SetNewStatus(XFactor_Status::Unlocked);                    return true;}
 
     Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", "Unknown XFactor status");
+    Debug_Error("Communication", "SafeBox_SaveReceivedXFactorStatus", command);
     return false;
 }
 
@@ -343,7 +362,7 @@ bool SafeBox_ReplyStatus()
         Debug_Error("Communication", "SafeBox_ReplyStatus", "Status TX failed");
         return false;
     }
-    Debug_Information("Communication", "SafeBox_ReplyStatus","Success");
+    //Debug_Information("Communication", "SafeBox_ReplyStatus","Success");
     return true;
 }
 

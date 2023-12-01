@@ -4,6 +4,7 @@
     "RFID",
     "SAFEBOX"
   ],
+<<<<<<< HEAD
   "files.associations": {
     "__bit_reference": "cpp",
     "__hash_table": "cpp",
@@ -17,12 +18,24 @@
     "vector": "cpp",
     "hashtable": "cpp"
   },
+<<<<<<< HEAD
+=======
+>>>>>>> 766c331f54915cb7b6634c18d37473700e31f2de
+=======
+<<<<<<< HEAD
+  "C_Cpp_Runner.msvcBatchPath": "",
+=======
+>>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
+>>>>>>> bb99ffb061eb506fe4158e3463c5c02440245f9c
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
   "C_Cpp_Runner.debuggerPath": "gdb",
   "C_Cpp_Runner.cStandard": "",
   "C_Cpp_Runner.cppStandard": "",
+<<<<<<< HEAD
+=======
   "C_Cpp_Runner.msvcBatchPath": "",
+>>>>>>> 7ed4be029aa6e61ff7d09f6e2752c11225500633
   "C_Cpp_Runner.useMsvc": false,
   "C_Cpp_Runner.warnings": [
     "-Wall",

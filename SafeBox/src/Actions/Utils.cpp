@@ -16,6 +16,43 @@
 
 /**
  * @brief
+ * This function ensures that the door is read as
+ * closed. If its not the case after X amount of
+ * attempts, the alarm needs to be executed
+ * because the door is NOT supposed to be open.
+ * @return true:
+ * We good, no alarms mate
+ * @return false:
+ * Euuh... Why is the door not closed? 
+ */
+bool ExecutionUtils_CheckIfGarageIsClosed()
+{
+    static int checkingCounter = 0;
+
+    if(!Garage_GetSupposedWantedStatus())
+    {
+        if(!Garage_IsClosed())
+        {
+            checkingCounter++;
+
+            if(checkingCounter > EXECUTIONUTILS_CLOCKS_TILL_GARAGE_ALARM)
+            {
+                checkingCounter = 0;
+                Debug_Warning("Utils", "ExecutionUtils_CheckIfGarageIsClosed", "Door has not been closed for long enough");
+                return false;
+            }
+        }
+    }
+    else
+    {
+        //Debug_Warning("Utils", "ExecutionUtils_CheckIfGarageIsClosed", "Bypassing door checks");
+        checkingCounter = 0;
+    }
+    return true;
+}
+
+/**
+ * @brief
  * This function allows you to create a simple
  * blinking statement in your Execution functions
  * Especially useful for the Alarm and Error.
@@ -50,28 +87,32 @@ bool ExecutionUtils_LedBlinker(unsigned long blinkingPeriodMS)
  * This function's sole purpose is to handle the
  * RFID card reader in each execution function
  * where SafeBox can be unlocked when its armed.
+ * 
+ * true: Keep going
+ * False: stop. New function set.
  */
-void ExecutionUtils_HandleArmedUnlocking()
+bool ExecutionUtils_HandleArmedUnlocking()
 {
-    if(RFID_CheckIfCardIsThere())
+    int result = RFID_HandleCard();
+
+    if(result == 1)
     {
-        if(RFID_HandleCard())
+        Debug_Information("Utils", "ExecutionUtils_HandleArmedUnlocking", "Valid card detected");
+        if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
         {
-            if(!SetNewExecutionFunction(FUNCTION_ID_UNLOCKED))
-            {
-                Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Failed to set UNLOCKED execution function");
-                SetNewExecutionFunction(FUNCTION_ID_ALARM);
-            }
-            return;
-        }
-        else
-        {
-            Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Incorrect card.");
+            Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Failed to set UNLOCKED execution function");
             SetNewExecutionFunction(FUNCTION_ID_ALARM);
-            return;
+            return false;
         }
+        return false;
     }
-    return;
+    if(result == -1)
+    {
+        Debug_Error("Utils", "ExecutionUtils_HandleArmedUnlocking", "Incorrect card.");
+        SetNewExecutionFunction(FUNCTION_ID_ALARM);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -90,6 +131,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
     // - BASIC GLOBAL STATUS - //
     if(currentXFactorStatus == XFactor_Status::Alarm)
     {
+        //Debug_Warning("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing alarm.");
         SetNewExecutionFunction(FUNCTION_ID_ALARM);
         return;
     }
@@ -98,6 +140,12 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
     {
         Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor has an ongoing error.");
         SetNewExecutionFunction(FUNCTION_ID_ERROR);
+        return;
+    }
+
+    if(currentXFactorStatus == XFactor_Status::Unlocked)
+    {
+        //SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
         return;
     }
 
@@ -121,7 +169,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                 break;
             }
 
-            Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor status doesnt match expected status");
+            //Debug_Error("Utils", "ExecutionUtils_HandleReceivedXFactorStatus", "XFactor status doesnt match expected status");
             break;
 
         case(FUNCTION_ID_ERROR):
@@ -219,7 +267,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Information("Utils", "100", "Good status received");
+                    //Debug_Information("Utils", "100", "Good status received");
                     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
                     break;
 
@@ -317,7 +365,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Information("Utils", "101", "Good status received");
+                    //Debug_Information("Utils", "101", "Good status received");
                     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
                     break;
 
@@ -411,11 +459,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingForDelivery):
-                    Debug_Error("Utils", "102", "Good status");
+                    //Debug_Error("Utils", "102", "Good status");
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "702", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
+                    //Debug_Error("Utils", "702", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
                     break;
 
                 default:
@@ -497,7 +545,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "703", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
+                    //Debug_Error("Utils", "703", "XFactor should'nt be in WaitingAfterSafeBox. Correcting.");
                     break;
 
                 default:
@@ -520,12 +568,12 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ConfirmingDropOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
                 case(XFactor_Status::DroppingOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
@@ -570,7 +618,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PreparingForDropOff):
-                    Debug_Information("Utils", "104", "Good Status");
+                    //Debug_Information("Utils", "104", "Good Status");
                     // SetNewExecutionFunction(FUNCTION_ID_DROP_OFF);
                     break;
 
@@ -591,11 +639,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
 
                 case(XFactor_Status::WaitingForDelivery):
                     Debug_Error("Utils", "704", "XFactor should'nt be in WaitingForDelivery. Correcting.");
-                    // SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_RETRIEVAL);
+                    SetNewExecutionFunction(FUNCTION_ID_WAIT_FOR_DELIVERY);
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "704", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "704", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -633,11 +681,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ExaminatingAPackage):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::LeavingSafeBox):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::Maintenance):
@@ -656,11 +704,11 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PackageExaminationFailed):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::PackagePickUpFailed):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::PreparingForDropOff):
@@ -669,7 +717,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::PreparingForTheSearch):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::ReturningHome):
@@ -678,7 +726,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::SearchingForAPackage):
-                    Debug_Information("Utils", "105", "Good status");
+                    //Debug_Information("Utils", "105", "Good status");
                     break;
 
                 case(XFactor_Status::WaitingForDelivery):
@@ -687,7 +735,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "705", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "705", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -701,7 +749,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
             switch(currentXFactorStatus)
             {
                 case(XFactor_Status::CalculatingRouteHome):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::CommunicationError):
@@ -719,7 +767,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::EnteringSafeBox):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::ExaminatingAPackage):
@@ -738,7 +786,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::NoPackageFound):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::PackageDropOffFailed):
@@ -767,7 +815,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::ReturningHome):
-                    Debug_Information("Utils", "106", "Good Status");
+                    //Debug_Information("Utils", "106", "Good Status");
                     break;
 
                 case(XFactor_Status::SearchingForAPackage):
@@ -781,7 +829,7 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
                     break;
 
                 case(XFactor_Status::WaitingAfterSafeBox):
-                    Debug_Error("Utils", "706", "XFactor should'nt be in WaitingAfterSafeBox.");
+                    //Debug_Error("Utils", "706", "XFactor should'nt be in WaitingAfterSafeBox.");
                     break;
 
                 default:
@@ -799,4 +847,5 @@ void ExecutionUtils_HandleReceivedXFactorStatus()
             SetNewExecutionFunction(FUNCTION_ID_ERROR);
             return;
     }
+    //delay(1000);
 }

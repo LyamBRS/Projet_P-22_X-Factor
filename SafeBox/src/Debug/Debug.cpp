@@ -17,13 +17,15 @@
 // - LOCAL GLOBAL - //
 volatile int _indentationLevel = 0;
 
+String IHopeThisWorks = "";
+
 /**
  * @brief Used to keep track of wether debug
  * functions should be debugging or not.
  * This is handled by @ref Debug_Stop and
  * @Debug_Resume
  */
-bool debuggingStatus = true;
+volatile bool debuggingStatus = true;
 
 /**
  * @brief Initialises the debug functions used
@@ -52,15 +54,20 @@ bool Debug_Init()
  */
 void Debug_Start(String nameOfTheFunction)
 {
-    #ifdef DEBUG_INFORMATION_ENABLED
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            DEBUG_SERIAL.print("[     ]: ");
-            DEBUG_SERIAL.print(GetIndentation());
-            DEBUG_SERIAL.print("[");
-            DEBUG_SERIAL.print(nameOfTheFunction);
-            DEBUG_SERIAL.println("]:");
-            DEBUG_SERIAL.flush();
-            if(_indentationLevel < MAX_INDENTATION_LEVEL) _indentationLevel++;
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                if(DEBUG_SERIAL.availableForWrite() && debuggingStatus)
+                {
+                    DEBUG_SERIAL.print("[     ]: ");
+                    DEBUG_SERIAL.print(GetIndentation());
+                    DEBUG_SERIAL.print("[");
+                    DEBUG_SERIAL.print(nameOfTheFunction);
+                    DEBUG_SERIAL.println("]:");
+                    DEBUG_SERIAL.flush();
+                    if(_indentationLevel < MAX_INDENTATION_LEVEL) _indentationLevel++;
+                }
+            #endif
         #endif
     #endif
 }
@@ -71,13 +78,18 @@ void Debug_Start(String nameOfTheFunction)
  */
 void Debug_End()
 {
-    #ifdef DEBUG_INFORMATION_ENABLED
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            if(_indentationLevel > 0) _indentationLevel--;
-            DEBUG_SERIAL.print("[     ]: ");
-            DEBUG_SERIAL.print(GetIndentation());
-            DEBUG_SERIAL.println("[END]");
-            DEBUG_SERIAL.flush();
+    #ifdef DEBUG_ENABLED
+        #ifdef DEBUG_INFORMATION_ENABLED
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                if(DEBUG_SERIAL.availableForWrite() && debuggingStatus)
+                {
+                    if(_indentationLevel > 0) _indentationLevel--;
+                    DEBUG_SERIAL.print("[     ]: ");
+                    DEBUG_SERIAL.print(GetIndentation());
+                    DEBUG_SERIAL.println("[END]");
+                    DEBUG_SERIAL.flush();
+                }
+            #endif
         #endif
     #endif
 }
@@ -90,18 +102,21 @@ void Debug_End()
 void Debug_Stop()
 {
     #ifdef DEBUG_ENABLED
-        debuggingStatus = false;
         if(debuggingStatus)
         {
-        DEBUG_SERIAL.print("[STOPS]: ");
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            DEBUG_SERIAL.print(GetIndentation());
-        #endif
+            if(DEBUG_SERIAL.availableForWrite())
+            {
+                DEBUG_SERIAL.print("[STOPS]: ");
+                #ifdef DEBUG_STACK_TRACE_ENABLED
+                    DEBUG_SERIAL.print(GetIndentation());
+                #endif
 
-        DEBUG_SERIAL.print("[DEBUG STOPPED]");
-        DEBUG_SERIAL.print("\n\r");
-        DEBUG_SERIAL.flush();
+                DEBUG_SERIAL.print("[DEBUG STOPPED]");
+                DEBUG_SERIAL.print("\n\r");
+                DEBUG_SERIAL.flush();
+            }
         }
+        debuggingStatus = false;
     #endif
 }
 
@@ -114,14 +129,35 @@ void Debug_Resume()
 {
     #ifdef DEBUG_ENABLED
         debuggingStatus = true;
-        DEBUG_SERIAL.print("[RESUM]: ");
-        #ifdef DEBUG_STACK_TRACE_ENABLED
-            DEBUG_SERIAL.print(GetIndentation());
-        #endif
+        if(DEBUG_SERIAL.availableForWrite())
+        {
+            DEBUG_SERIAL.print("[RESUM]: ");
+            #ifdef DEBUG_STACK_TRACE_ENABLED
+                DEBUG_SERIAL.print(GetIndentation());
+            #endif
 
-        DEBUG_SERIAL.print("[DEBUG RESUMED]");
-        DEBUG_SERIAL.print("\n\r");
-        DEBUG_SERIAL.flush();
+            DEBUG_SERIAL.print("[DEBUG RESUMED]");
+            DEBUG_SERIAL.print("\n\r");
+            DEBUG_SERIAL.flush();
+        }
+    #endif
+}
+
+/**
+ * @brief 
+ * Continuously prints the last error that was
+ * printed. This works even if debug has stopped.
+ */
+void Debug_PrintLastError()
+{
+    #ifdef DEBUG_ENABLED
+        if(DEBUG_SERIAL.availableForWrite())
+        {
+            DEBUG_SERIAL.print("[LAST ERROR]: ");
+            DEBUG_SERIAL.print(IHopeThisWorks);
+            DEBUG_SERIAL.print("\n\r");
+            DEBUG_SERIAL.flush();
+        }
     #endif
 }
 
@@ -167,19 +203,23 @@ void Debug_Error(String fileName, String functionName, String errorMessage)
     #ifdef DEBUG_ENABLED
         if(debuggingStatus)
         {
-            DEBUG_SERIAL.print("[ERROR]: ");
-            #ifdef DEBUG_STACK_TRACE_ENABLED
-                DEBUG_SERIAL.print(GetIndentation());
-            #else
-                DEBUG_SERIAL.print(fileName);
-                DEBUG_SERIAL.print(": ");
-                DEBUG_SERIAL.print(functionName);
-                DEBUG_SERIAL.print(": ");
-            #endif
+            if(DEBUG_SERIAL.availableForWrite())
+            {
+                IHopeThisWorks = errorMessage;
+                DEBUG_SERIAL.print("[ERROR]: ");
+                #ifdef DEBUG_STACK_TRACE_ENABLED
+                    DEBUG_SERIAL.print(GetIndentation());
+                #else
+                    DEBUG_SERIAL.print(fileName);
+                    DEBUG_SERIAL.print(": ");
+                    DEBUG_SERIAL.print(functionName);
+                    DEBUG_SERIAL.print(": ");
+                #endif
 
-            DEBUG_SERIAL.print(errorMessage);
-            DEBUG_SERIAL.print("\n\r");
-            DEBUG_SERIAL.flush();
+                DEBUG_SERIAL.print(errorMessage);
+                DEBUG_SERIAL.print("\n\r");
+                DEBUG_SERIAL.flush();
+            }
         }
     #endif
 }
@@ -199,19 +239,22 @@ void Debug_Warning(String fileName, String functionName, String warningMessage)
         #ifdef DEBUG_WARNING_ENABLED
             if(debuggingStatus)
             {
-                DEBUG_SERIAL.print("[WARNS]: ");
-                #ifdef DEBUG_STACK_TRACE_ENABLED
-                    DEBUG_SERIAL.print(GetIndentation());
-                #elif
-                    DEBUG_SERIAL.print(fileName);
-                    DEBUG_SERIAL.print(": ");
-                    DEBUG_SERIAL.print(functionName);
-                    DEBUG_SERIAL.print(": ");
-                #endif
+                if(DEBUG_SERIAL.availableForWrite())
+                {
+                    DEBUG_SERIAL.print("[WARNS]: ");
+                    #ifdef DEBUG_STACK_TRACE_ENABLED
+                        DEBUG_SERIAL.print(GetIndentation());
+                    #else
+                        DEBUG_SERIAL.print(fileName);
+                        DEBUG_SERIAL.print(": ");
+                        DEBUG_SERIAL.print(functionName);
+                        DEBUG_SERIAL.print(": ");
+                    #endif
 
-                DEBUG_SERIAL.print(warningMessage);
-                DEBUG_SERIAL.print("\n\r");
-                DEBUG_SERIAL.flush();
+                    DEBUG_SERIAL.print(warningMessage);
+                    DEBUG_SERIAL.print("\n\r");
+                    DEBUG_SERIAL.flush();
+                }
             }
         #endif
     #endif
@@ -233,19 +276,22 @@ void Debug_Information(String fileName, String functionName, String informationM
         #ifdef DEBUG_INFORMATION_ENABLED
             if(debuggingStatus)
             {
-                DEBUG_SERIAL.print("[INFOS]: ");
-                #ifdef DEBUG_STACK_TRACE_ENABLED
-                    DEBUG_SERIAL.print(GetIndentation());
-                #else
-                    DEBUG_SERIAL.print(fileName);
-                    DEBUG_SERIAL.print(": ");
-                    DEBUG_SERIAL.print(functionName);
-                    DEBUG_SERIAL.print(": ");
-                #endif
+                if(DEBUG_SERIAL.availableForWrite())
+                {
+                    DEBUG_SERIAL.print("[INFOS]: ");
+                    #ifdef DEBUG_STACK_TRACE_ENABLED
+                        DEBUG_SERIAL.print(GetIndentation());
+                    #else
+                        DEBUG_SERIAL.print(fileName);
+                        DEBUG_SERIAL.print(": ");
+                        DEBUG_SERIAL.print(functionName);
+                        DEBUG_SERIAL.print(": ");
+                    #endif
 
-                DEBUG_SERIAL.print(informationMessage);
-                DEBUG_SERIAL.print("\n\r");
-                DEBUG_SERIAL.flush();
+                    DEBUG_SERIAL.print(informationMessage);
+                    DEBUG_SERIAL.print("\n\r");
+                    DEBUG_SERIAL.flush();
+                }
             }
         #endif
     #endif

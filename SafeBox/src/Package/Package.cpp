@@ -25,7 +25,10 @@
  */
 bool Package_Init()
 {
-    return false;
+    Debug_Start("Package_Init");
+    Debug_Warning("Package", "Package_Init", "BYPASSED");
+    Debug_End();
+    return true;
 }
 
 /**

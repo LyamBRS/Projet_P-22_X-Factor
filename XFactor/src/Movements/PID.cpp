@@ -66,7 +66,9 @@ float PID(float proportional, float integral, float derivative, float currentVal
     previousValue = currentValue;
 
     //if (PID == ovf) return 0.0f;
-
+    //Debug_Information("PID", "PID", "Speed : " + String(PID));
+    if (PID > SPEED_MAX + 0.05f) PID = SPEED_MAX + 0.05f;
+    if (PID < -SPEED_MAX - 0.05f) PID = -SPEED_MAX - 0.05f;
     return PID;
 }
 
