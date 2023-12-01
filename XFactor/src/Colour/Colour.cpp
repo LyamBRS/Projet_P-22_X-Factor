@@ -103,24 +103,28 @@ bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsign
     if(!(lowRed <= currentRed && maxRed >= currentRed))
     {
         // The value is not within the red threshold.
+        Debug_Error("-", "-", "Red does not match: " + String(lowRed) + " " + String(currentRed) + " " + String(maxRed));
         return false;
     }
 
     if(!(lowGreen <= currentGreen && maxGreen >= currentGreen))
     {
         // The value is not within the green threshold.
+        Debug_Error("-", "-", "Green does not match: " + String(lowGreen) + " " + String(currentGreen) + " " + String(maxGreen));
         return false;
     }
 
     if(!(lowBlue <= currentBlue && maxBlue >= currentBlue))
     {
         // The value is not within the blue threshold.
+        Debug_Error("-", "-", "blue does not match by: " + String(currentBlue - lowBlue));
         return false;
     }
 
     if(!(lowClear <= currentClear && maxClear >= currentClear))
     {
         // The value is not within the clear threshold.
+        Debug_Error("-", "-", "clear does not match by: " + String(currentClear - lowClear));
         return false;
     }
 

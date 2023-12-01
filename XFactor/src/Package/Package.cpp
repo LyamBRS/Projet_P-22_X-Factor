@@ -271,6 +271,8 @@ bool Package_Confirmed()
     int highBlue  = Colour_GetBlue(eepromColour)+30;
     int highClear = Colour_GetClear(eepromColour)+30;
 
+    Debug_Warning("-", "HIGH RED:", String(highRed));
+
     if(lowRed<0)        lowRed = 0;
     if(lowRed>255)      lowRed = 255;
 
@@ -294,9 +296,12 @@ bool Package_Confirmed()
 
     if(highClear<0)      highClear = 0;
     if(highClear>255)    highClear = 255;
-
+    Debug_Warning("-", "HIGH RED:", String(highRed));
     unsigned short LowThreshold = Colour_GetHexFromRGBC(lowRed, lowGreen, lowBlue, lowClear);
     unsigned short HighThreshold =  Colour_GetHexFromRGBC(highRed, highGreen, highBlue, highClear);
+
+    Debug_Warning("-", "HIGH THRESHOLD:", String(HighThreshold));
+    Debug_Warning("-", "LOW THRESHOLD:", String(LowThreshold));
 
     currentColour = GROVE_GetColor();
 
@@ -558,9 +563,9 @@ bool Package_SaveCurrentColorInEEPROM()
     color = GROVE_GetColor();
 
     unsigned char red = Colour_GetRed(color);
-    unsigned char green = Colour_GetRed(color);
-    unsigned char blue = Colour_GetRed(color);
-    unsigned char clear = Colour_GetRed(color);
+    unsigned char green = Colour_GetGreen(color);
+    unsigned char blue = Colour_GetBlue(color);
+    unsigned char clear = Colour_GetClear(color);
 
     EEPROM.write(1, red);
     EEPROM.write(2, green);

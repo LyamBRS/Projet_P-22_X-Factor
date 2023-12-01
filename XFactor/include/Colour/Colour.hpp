@@ -12,7 +12,8 @@
 #pragma once
 
 // - INCLUDES - //
-
+#include "Arduino.h"
+#include "Debug/Debug.hpp"
 // - DEFINES - //
 
 // - FUNCTIONS - //
