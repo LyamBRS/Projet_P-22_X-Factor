@@ -520,7 +520,7 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
         return OUT_OF_BOUNDS_DETECTED;
     }
 
-    if (positionDetectedX_cm > DEMO_AREA_LENGTH_CM || positionDetectedX_cm < 0)
+    if (-positionDetectedX_cm > DEMO_AREA_LENGTH_CM || positionDetectedX_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
         //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
