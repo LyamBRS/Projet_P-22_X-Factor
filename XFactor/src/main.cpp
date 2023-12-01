@@ -49,6 +49,8 @@ void loop()
     }
   }*/
 
+  //MoveFromVector(TURN_180, 100.0f, true, false, false, false, 0.4f);
+  //delay(2000);
   //GetReturnVector();
   //delay(10000);
   //Debug_Information("main", "loop", "Bumper : " + String(Claws_GetSwitchStatus()));
@@ -59,7 +61,17 @@ void loop()
   //Execute_PickUpPackage();
   //GetReturnVector();
   //delay(10000);
-  /*Execute_SearchForPackage();
+
+  //GROVE_GetColor();
+  //delay(250);
+  /*for (int i = 0; i < 1000; i++)
+  {
+    MoveFromVector(TURN_180 * i, 50.0f, true, false, false, false, 0.4f);
+    delay(2000);
+  }*/
+  
+  /*ResetPositions();
+  Execute_SearchForPackage();
   delay(500);
   Execute_ReturnHome();
   delay(500);*/
@@ -68,10 +80,6 @@ void loop()
   Debug_Information("main", "loop", "Distance Left : " + String(GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER)));
   Debug_Information("main", "loop", "Distance Right : " + String(GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER)));
   delay(1000);*/
-  //Debug_Information("main", "loop","Color : "+ String(GROVE_GetColor()));
-  //Alarm_VerifySensors();
-  //GROVE_GetColor();
-  //delay(1000);
 
   Execute_CurrentFunction();
   

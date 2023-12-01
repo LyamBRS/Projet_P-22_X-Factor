@@ -461,7 +461,7 @@ void Execute_SearchForPackage()
   ExecutionUtils_HandleFirstExecution(XFactor_Status::SearchingForAPackage);
 
   // - Forces status exchange until a new one is received.
-  ExecutionUtils_ForceAStatusExchange();
+  //ExecutionUtils_ForceAStatusExchange(); // UNCOMMENT LATER IMPORTANT
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
   
   MovementVector searchPatternVectors[VECTOR_BUFFER_SIZE];
@@ -485,13 +485,14 @@ void Execute_SearchForPackage()
   searchPatternVectors[0].distance_cm = DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
   searchPatternVectors[1].rotation_rad = TURN_90_LEFT;
+  //searchPatternVectors[1].distance_cm = 40.0f;
   searchPatternVectors[1].distance_cm = DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_LENGTH_CM - ROBOT_WIDTH_CM;
 
   searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
 
   searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
-  searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM * 2;
+  searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
 
   searchPatternVectors[3].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[3].distance_cm = DEMO_AREA_LENGTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
@@ -868,14 +869,16 @@ void Execute_ReturnHome()
     return;
   }
 
-  if (returnVector.distance_cm * cos(returnVector.rotation_rad) < 0)
+  movementStatus = MoveFromVector((-PI / 2) - GetSavedPosition().rotation_rad, 0.0f, false, false, true, false, 0.4f);
+
+  /*if (returnVector.distance_cm * cos(returnVector.rotation_rad) < DEMO_AREA_LENGTH_CM - (SAFEBOX_LENGTH_CM - ROBOT_LENGTH_CM))
   {
     movementStatus = MoveFromVector((PI / 2) - GetSavedRotation(), 0.0f, false, false, true, false, 0.4f);
   }
   else
   {
     movementStatus = MoveFromVector((PI / 2) + GetSavedRotation(), 0.0f, false, false, true, false, 0.4f);
-  }
+  }*/
   
   //movementStatus = MoveFromVector((PI / 2) - GetSavedRotation(), 0.0f, false, false, true, false, 0.4f);
   checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_RETURN_HOME, movementStatus);

@@ -29,6 +29,8 @@
 #define PACKAGE_DETECTED 1
 #define SAFEBOX_DETECTED 2
 #define OUT_OF_BOUNDS_DETECTED 3
+
+#define DETECTION_READ_OFFSET_MULTIPLIER 1.25f
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -179,7 +181,7 @@ bool Package_Confirmed();
  * @return BOX_DETECTED
  * SafeBox has been detected near the robot
  */
-int Package_Detected(int sensor, float relativeRotation_rad);
+int Package_Detected(int sensor, float relativeRotation_rad, float distance_cm);
 
 /**
  * @brief
@@ -242,7 +244,7 @@ bool Package_GetStatus();
  * What was detected is not within the demonstration area.
  */
 
-int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad);
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad, float distance_cm);
 // #pragma endregion
 
 

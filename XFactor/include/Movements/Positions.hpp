@@ -16,6 +16,17 @@
 #include "Movements/VectorDefines.hpp"
 #include "Movements/Vectors.hpp"
 
+#define POSITION_OFFSET_FRONT_SENSOR 22.0f
+#define POSITION_OFFSET_LEFT_SENSOR 14.0f
+#define POSITION_OFFSET_RIGHT_SENSOR 14.0f
+
+typedef struct RobotPosition
+{
+    float positionX_cm;
+    float positionY_cm;
+    float rotation_rad;
+};
+
 /**
  * @brief Updates the total rotation of the robot
  * from a new rotation. This function needs to be
@@ -107,4 +118,4 @@ float GetSavedDistance();
  * Vector needed to go from start position
  * to the current position
  */
-MovementVector GetSavedPosition();
+RobotPosition GetSavedPosition();

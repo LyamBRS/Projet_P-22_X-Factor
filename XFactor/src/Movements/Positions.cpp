@@ -14,9 +14,16 @@
 // - INCLUDES - //
 #include "Movements/Positions.hpp"
 
+RobotPosition position;
+
+// start variables (no init)
+float positionX_cm = DEMO_AREA_LENGTH_CM - (ROBOT_LENGTH_CM + SAFEBOX_LENGTH_CM);
+float positionY_cm = 0.0f;
+float absoluteRotation_rad = PI;
+
 float currentRelativeRotation_rad = 0;
 float currentDistance_cm = 0;
-MovementVector robotPosition; // Vector representing start to current point.
+//MovementVector robotPosition; // Vector representing start to current point.
 
 /**
  * @brief Updates the total rotation of the robot
@@ -36,6 +43,7 @@ MovementVector robotPosition; // Vector representing start to current point.
  */
 bool UpdateSavedRotation(float newRelativeRotation_rad)
 {
+  absoluteRotation_rad -= newRelativeRotation_rad;
   currentRelativeRotation_rad = newRelativeRotation_rad;
   return true;
 }
@@ -67,10 +75,23 @@ bool UpdateSavedDistance(float distanceMade_cm)
  * The position was updated successfully.
  * @return false:
  * The position failed to be updated.
+ * @attention
+ * This needs to be called AFTER the two other position updates functions.
  */
 bool UpdateSavedPosition()
 {
-  robotPosition = GetOppositeVector(GetReturnVector());
+  Debug_Information("Positions", "UpdateSavecPosition", "Position X PRE : " + String(position.positionX_cm));
+  Debug_Information("Positions", "UpdateSavecPosition", "Position Y PRE : " + String(position.positionY_cm));
+  Debug_Information("Positions", "UpdateSavecPosition", "Rotation PRE : " + String(position.rotation_rad));
+
+  position.positionX_cm += cos(absoluteRotation_rad) * currentDistance_cm;
+  position.positionY_cm += sin(absoluteRotation_rad) * currentDistance_cm;
+  position.rotation_rad += currentRelativeRotation_rad;
+
+  Debug_Information("Positions", "UpdateSavecPosition", "Position X POST : " + String(position.positionX_cm));
+  Debug_Information("Positions", "UpdateSavecPosition", "Position Y POST : " + String(position.positionY_cm));
+  Debug_Information("Positions", "UpdateSavecPosition", "Rotation POST : " + String(position.rotation_rad));
+  //robotPosition = GetOppositeVector(GetReturnVector());
   return true;
 }
 
@@ -94,8 +115,11 @@ bool ResetPositions()
 {
   currentRelativeRotation_rad = 0;
   currentDistance_cm = 0;
-  robotPosition.rotation_rad = 0.0f;
-  robotPosition.distance_cm = 0.0f;
+
+  position.positionX_cm = DEMO_AREA_LENGTH_CM - (ROBOT_LENGTH_CM + SAFEBOX_LENGTH_CM);
+  position.positionY_cm = ROBOT_WIDTH_CM / 2;
+  position.rotation_rad = PI;
+  //robotPosition.distance_cm = 0.0f;
   return true;
 }
 
@@ -134,7 +158,7 @@ float GetSavedDistance()
  * Vector needed to go from start position
  * to the current position
  */
-MovementVector GetSavedPosition()
+RobotPosition GetSavedPosition()
 {
-  return robotPosition;
+  return position;
 }

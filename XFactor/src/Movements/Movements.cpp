@@ -84,6 +84,15 @@ int MoveFromVector(float radians, float distance, bool saveVector, bool checkSen
     int moveStatus = MOVEMENT_COMPLETED;
     int status = MOVEMENT_COMPLETED;
 
+    if (radians > PI)
+    {
+        radians = radians - 2 * PI;
+    }
+    else if (radians < -PI)
+    {
+        radians = radians + 2 * PI;
+    }
+
     if(!ResetMovements())
     {
         Debug_Error("Movements", "MoveFromVector", "Failed to reset movements");
@@ -374,7 +383,7 @@ bool ResetMovements()
 {
     if (ResetAllEncoders()){
         if (ResetPID()){
-            ResetPositions();
+            //ResetPositions();
             return true;
         }
         else Debug_Error("Movements", "ResetMovements", "Failed to reset PID");
@@ -484,7 +493,7 @@ int Execute_Turning(float targetRadians)
         {
             if(distanceSensorCounter == 0)
             {
-                if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(FRONT_SENSOR, targetRadians, 0.0f) == PACKAGE_DETECTED)
                 {
                     status = OBJECT_LOCATED_FRONT;
                     break;
@@ -493,7 +502,7 @@ int Execute_Turning(float targetRadians)
             }
             /*else if(distanceSensorCounter == 1)
             {
-                if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(LEFT_SENSOR, targetRadians, 0.0f) == 1)
                 {
                     status = OBJECT_LOCATED_LEFT;
                     break;
@@ -502,7 +511,7 @@ int Execute_Turning(float targetRadians)
             }
             else if(distanceSensorCounter == 2)
             {
-                if (Package_Detected(RIGHT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(RIGHT_SENSOR, targetRadians, 0.0f) == 1)
                 {
                     status = OBJECT_LOCATED_RIGHT;
                     break;
@@ -607,7 +616,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
         {
             if(distanceSensorCounter == 0)
             {
-                if (Package_Detected(FRONT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(FRONT_SENSOR, targetRadians, completionRatio * targetDistance) == 1)
                 {
                     status =  OBJECT_LOCATED_FRONT;
                     break;
@@ -616,7 +625,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
             }
             /*else if(distanceSensorCounter == 1)
             {
-                if (Package_Detected(LEFT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(LEFT_SENSOR, targetRadians, completionRatio * targetDistance) == 1)
                 {
                     status = OBJECT_LOCATED_LEFT;
                     break;
@@ -625,7 +634,7 @@ int Execute_Moving(float targetDistance, float targetRadians)
             }
             else if(distanceSensorCounter == 2)
             {
-                if (Package_Detected(RIGHT_SENSOR, targetRadians) == 1)
+                if (Package_Detected(RIGHT_SENSOR, targetRadians, completionRatio * targetDistance) == 1)
                 {
                     status = OBJECT_LOCATED_RIGHT;
                     break;

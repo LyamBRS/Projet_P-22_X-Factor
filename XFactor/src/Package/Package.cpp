@@ -105,13 +105,6 @@ bool Package_Release()
 bool Package_PickUp()
 {
     Debug_Start("Package_PickUp");
-    
-    if(!MoveFromVector(PICK_UP_PACKAGE_VECTOR))
-    {
-        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
-        Debug_End();
-        return false;
-    }
 
     if(!Package_DeployClaw())
     {
@@ -146,6 +139,13 @@ bool Package_PickUp()
             }
         }
         delay(500); //MAY NEED TO BE REMOVED when we advance
+    }
+
+    if(!MoveFromVector(PICK_UP_PACKAGE_VECTOR))
+    {
+        Debug_Error("Package", "Package_PickUp", "Failed to move from vector");
+        Debug_End();
+        return false;
     }
 
     Debug_Error("Package", "Package_PickUp", "Failed to pick up the package");
@@ -288,7 +288,7 @@ bool Package_Confirmed()
  * @return BOX_DETECTED
  * SafeBox has been detected near the robot
  */
-int Package_Detected(int capteur, float relativeRotation_rad)
+int Package_Detected(int capteur, float relativeRotation_rad, float movementDistance_cm)
 {
     if (Claws_GetSwitchStatus())
     {
@@ -312,8 +312,15 @@ int Package_Detected(int capteur, float relativeRotation_rad)
         }
         //Debug_Information("Package.cpp", "Package_Detected", "Sensor : " + String(capteur));
         //Debug_Information("Package.cpp", "Package_Detected", "Distance : " + String(distanceDetected_cm));
+
         return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
+        if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
+        {
+            Debug_Information("Package", "Package_Detected", "Something detected");
+            return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad, movementDistance_cm);
+        }
+        return false;
         //return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad);
     }
 }
@@ -402,10 +409,15 @@ bool Package_GetStatus()
  * What was detected is not within the demonstration area.
  */
 
-int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad)
+int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad, float distance_cm)
 {
-    MovementVector position = GetSavedPosition();
-    position.rotation_rad += relativeRotation_rad;
+    RobotPosition position = GetSavedPosition();
+    float positionDetectedX_cm;
+    float positionDetectedY_cm;
+    float positionOffset_cm;
+
+    //relativeRotation_rad = -relativeRotation_rad;
+    //position.rotation_rad += relativeRotation_rad;
     /*MovementVector position;
     position.distance_cm = 100.0f;
     position.rotation_rad = PI/4;
@@ -417,45 +429,63 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     switch (sensorId)
     {
         case FRONT_SENSOR:
+            positionOffset_cm = POSITION_OFFSET_FRONT_SENSOR;
             break;
         case LEFT_SENSOR:
-            position.rotation_rad += TURN_90_LEFT;
+            positionOffset_cm = POSITION_OFFSET_LEFT_SENSOR;
+            relativeRotation_rad += TURN_90_LEFT;
             break;
         case RIGHT_SENSOR:
-            position.rotation_rad += TURN_90_RIGHT;
+            positionOffset_cm = POSITION_OFFSET_RIGHT_SENSOR;
+            relativeRotation_rad += TURN_90_RIGHT;
             break;
         default:
             break;
     }
 
-    float cosPosition = cos(position.rotation_rad);
-    float sinPosition = sin(position.rotation_rad);
+    float rotationMovementX = cos(position.rotation_rad + relativeRotation_rad);
+    float rotationMovementY = sin(position.rotation_rad + relativeRotation_rad);
 
-    float positionX = cosPosition * position.distance_cm;
-    float positionY = sinPosition * position.distance_cm;
+    float distanceDetectedX_cm = rotationMovementX * distanceDetected_cm * DETECTION_READ_OFFSET_MULTIPLIER;
+    float distanceDetectedY_cm = rotationMovementY * distanceDetected_cm * DETECTION_READ_OFFSET_MULTIPLIER;
 
-    float distanceDetectedX_cm = -cos(relativeRotation_rad) * distanceDetected_cm;
-    float distanceDetectedY_cm = sin(relativeRotation_rad) * distanceDetected_cm;
+    float movementDistanceX_cm = rotationMovementX * distance_cm;
+    float movementDistanceY_cm = rotationMovementY * distance_cm;
 
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(positionX));
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionY : " + String(positionY));
+    positionDetectedX_cm = position.positionX_cm + movementDistanceX_cm + distanceDetectedX_cm + rotationMovementX * positionOffset_cm;
+    positionDetectedY_cm = position.positionY_cm + movementDistanceY_cm + distanceDetectedY_cm + rotationMovementY * positionOffset_cm;
 
-    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance X : " + String(distanceDetectedX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance Y : " + String(distanceDetectedY_cm));
+    /*Debug_Information("Package", "Package_SafeBoxDetected", "COS : " + String(rotationMovementX));
+    Debug_Information("Package", "Package_SafeBoxDetected", "SIN : " + String(rotationMovementY));
 
-    if (positionY + distanceDetectedY_cm > DEMO_AREA_WIDTH_CM || positionY + distanceDetectedY_cm < 0)
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(position.positionX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionY : " + String(position.positionY_cm));
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "Current distance X : " + String(movementDistanceX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "Current distance Y : " + String(movementDistanceY_cm));
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "Distance detected X : " + String(distanceDetectedX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "Distance detected Y : " + String(distanceDetectedY_cm));
+
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedX : " + String(positionDetectedX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedY : " + String(positionDetectedY_cm));*/
+
+    if (positionDetectedY_cm > DEMO_AREA_WIDTH_CM || positionDetectedY_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds Y");
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
+        //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
 
-    if (positionX + distanceDetectedX_cm > DEMO_AREA_LENGTH_CM || positionX + distanceDetectedX_cm < 0)
+    if (positionDetectedX_cm > DEMO_AREA_LENGTH_CM || positionDetectedX_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
+        //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
+
+    /*Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance X : " + String(distanceDetectedX_cm));
+    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance Y : " + String(distanceDetectedY_cm));*/
 
     /*if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM)
     {
@@ -467,11 +497,12 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
         Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected X");
     }*/
 
-    if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM && abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
+    /*if (positionDetectedX_cm > DEMO_AREA_LENGTH_CM - SAFEBOX_WIDTH_CM && positionDetectedY_cm < DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM)
     {
-        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected");
-        LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
+        //Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected");
+        //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
         return SAFEBOX_DETECTED;
-    }
+    }*/
+    //Debug_Information("Package", "Package_SafeBoxDetected", "Package detected");
     return PACKAGE_DETECTED;
 }
