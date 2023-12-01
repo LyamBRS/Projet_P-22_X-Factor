@@ -658,6 +658,7 @@ void Execute_ExamineFoundPackage()
       }
     }
 
+
     movementStatus = MoveFromVector(EXAMINE_PACKAGE_WHOLE_SWIPE_VECTOR);
     checkFunctionId = ExecutionUtils_ComputeMovementResults(FUNCTION_ID_EXAMINE_FOUND_PACKAGE, movementStatus);
 
