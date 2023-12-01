@@ -488,8 +488,11 @@ void Execute_SearchForPackage()
   //searchPatternVectors[1].distance_cm = 40.0f;
   searchPatternVectors[1].distance_cm = DEMO_AREA_LENGTH_CM - SAFEBOX_LENGTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM - ROBOT_LENGTH_CM - ROBOT_WIDTH_CM;
 
-  searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
-  searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;
+  searchPatternVectors[2].rotation_rad = TURN_90_LEFT;
+  searchPatternVectors[2].distance_cm = 40.0f;
+
+  /*searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
+  searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;*/
 
   searchPatternVectors[2].rotation_rad = TURN_90_RIGHT;
   searchPatternVectors[2].distance_cm = DEMO_AREA_WIDTH_CM - DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM * 2 - ROBOT_WIDTH_CM;

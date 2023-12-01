@@ -70,18 +70,18 @@ void loop()
     delay(2000);
   }*/
   
-  /*ResetPositions();
+  ResetPositions();
   Execute_SearchForPackage();
   delay(500);
   Execute_ReturnHome();
-  delay(500);*/
+  delay(500);
 
   /*Debug_Information("main", "loop", "Distance Front : " + String(GP2D12_Read(FRONT_SENSOR_TRIG_PIN_NUMBER, FRONT_SENSOR_ECHO_PIN_NUMBER)));
   Debug_Information("main", "loop", "Distance Left : " + String(GP2D12_Read(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER)));
   Debug_Information("main", "loop", "Distance Right : " + String(GP2D12_Read(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER)));
   delay(1000);*/
 
-  Execute_CurrentFunction();
+  //Execute_CurrentFunction();
   
   /*LEDS_SetColor(0, 0,0,255);
   if (ROBUS_IsBumper(3)){
