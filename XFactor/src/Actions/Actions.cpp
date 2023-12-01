@@ -1153,7 +1153,6 @@ void Execute_Error()
 void Execute_ReturnInsideGarage()
 {
   int checkFunctionId;
-  bool hasEnteredGarage = false;
   int movementStatus;
   
   XFactor_SetNewStatus(XFactor_Status::EnteringSafeBox);
@@ -1191,32 +1190,9 @@ void Execute_ReturnInsideGarage()
     if(!SafeBox_ChangeGarageState(true))
     {
       Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
-      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
       return;
     }
   }
-
-  /*if (SafeBox_GetGarageState() && !hasEnteredGarage)
-  {
-    // DRIVE INTO GARAGE
-    hasEnteredGarage = true;
-    return;
-  }
-  else
-  {
-    SafeBox_ChangeGarageState(true);
-    return;
-  }
-
-  if (!SafeBox_GetGarageState())
-  {
-    // Go place package
-    // Return to initial position
-  }
-  else
-  {
-    SafeBox_ChangeGarageState(false);
-  }*/
 }
 
 /**
@@ -1270,10 +1246,6 @@ void Execute_Unlocked()
   if (SafeBox_GetStatus() == SafeBox_Status::Unlocked)
   {
     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
-  }
-  else
-  {
-    //Debug_Warning("Action.cpp","Execute_Unlocked","AAAAAAAAAAAAAA");
   }
 
   checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_UNLOCKED);
