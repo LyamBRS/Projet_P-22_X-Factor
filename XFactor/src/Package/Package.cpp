@@ -36,6 +36,8 @@ bool Package_Init()
     GP2D12_Init(LEFT_SENSOR_TRIG_PIN_NUMBER, LEFT_SENSOR_ECHO_PIN_NUMBER);
     GP2D12_Init(RIGHT_SENSOR_TRIG_PIN_NUMBER, RIGHT_SENSOR_ECHO_PIN_NUMBER);
     
+    pinMode(PACKAGE_CALIBRATE_COLOUR_PIN, INPUT);
+
     if(GROVE_Init())
     {
         if(Claws_Init())
@@ -256,14 +258,54 @@ bool Package_Transport()
 bool Package_Confirmed()
 {
     unsigned long currentColour = 0;
+    unsigned long eepromColour = Package_GetColorFromEEPROM();
+
+
+    // Get low and high value thresholds from the colour in the eeprom
+    int lowRed   = Colour_GetRed(eepromColour)-30;
+    int lowGreen = Colour_GetGreen(eepromColour)-30;
+    int lowBlue  = Colour_GetBlue(eepromColour)-30;
+    int lowClear = Colour_GetClear(eepromColour)-30;
+
+    int highRed   = Colour_GetRed(eepromColour)+30;
+    int highGreen = Colour_GetGreen(eepromColour)+30;
+    int highBlue  = Colour_GetBlue(eepromColour)+30;
+    int highClear = Colour_GetClear(eepromColour)+30;
+
+    if(lowRed<0)        lowRed = 0;
+    if(lowRed>255)      lowRed = 255;
+
+    if(lowGreen<0)      lowGreen = 0;
+    if(lowGreen>255)    lowGreen = 255;
+
+    if(lowBlue<0)       lowBlue = 0;
+    if(lowBlue>255)     lowBlue = 255;
+
+    if(lowClear<0)      lowClear = 0;
+    if(lowClear>255)    lowClear = 255;
+
+    if(highRed<0)        highRed = 0;
+    if(highRed>255)      highRed = 255;
+
+    if(highGreen<0)      highGreen = 0;
+    if(highGreen>255)    highGreen = 255;
+
+    if(highBlue<0)       highBlue = 0;
+    if(highBlue>255)     highBlue = 255;
+
+    if(highClear<0)      highClear = 0;
+    if(highClear>255)    highClear = 255;
+
+    unsigned short LowThreshold = Colour_GetHexFromRGBC(lowRed, lowGreen, lowBlue, lowClear);
+    unsigned short HighThreshold =  Colour_GetHexFromRGBC(highRed, highGreen, highBlue, highClear);
 
     currentColour = GROVE_GetColor();
 
     if (currentColour < 23) return true;
-    /*if(Colour_Threshold(0x15000000, currentColour, 0xFFFFFFFF))
+    if(Colour_Threshold(LowThreshold, currentColour, HighThreshold))
     {
         return true;
-    }*/
+    }
 
     return false;
 }

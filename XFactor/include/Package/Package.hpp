@@ -31,6 +31,8 @@
 #define OUT_OF_BOUNDS_DETECTED 3
 
 #define DETECTION_READ_OFFSET_MULTIPLIER 1.25f
+
+#define PACKAGE_CALIBRATE_COLOUR_PIN 48
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
