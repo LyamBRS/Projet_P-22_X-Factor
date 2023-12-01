@@ -102,6 +102,7 @@ String GetMessage(int millisecondsTimeOut)
                     }
                 }
             }
+            delay(10);
         }
     }
 

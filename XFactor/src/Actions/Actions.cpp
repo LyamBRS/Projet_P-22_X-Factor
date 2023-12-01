@@ -739,7 +739,7 @@ void Execute_PickUpPackage()
     {
       // If we have time, undo the last vectors then redo ExamineFoundPackage
       Debug_Error("Actions", "Execute_PickUpPackage", "Max attempts reached.");
-      SetNewExecutionFunction(FUNCTION_ID_ERROR);
+      SetNewExecutionFunction(FUNCTION_ID_RETURN_HOME);
       errorOccured = true;
       return;
     }
