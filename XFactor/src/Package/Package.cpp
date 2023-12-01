@@ -293,8 +293,9 @@ bool Package_Confirmed()
     if(highClear<0)      highClear = 0;
     if(highClear>255)    highClear = 255;
     Debug_Warning("-", "HIGH RED:", String(highRed));
-    unsigned short LowThreshold = Colour_GetHexFromRGBC(lowRed, lowGreen, lowBlue, lowClear);
-    unsigned short HighThreshold =  Colour_GetHexFromRGBC(highRed, highGreen, highBlue, highClear);
+
+    unsigned long LowThreshold = Colour_GetHexFromRGBC(lowRed, lowGreen, lowBlue, lowClear);
+    unsigned long HighThreshold =  Colour_GetHexFromRGBC(highRed, highGreen, highBlue, highClear);
 
     Debug_Warning("-", "HIGH THRESHOLD:", String(HighThreshold));
     Debug_Warning("-", "LOW THRESHOLD:", String(LowThreshold));
