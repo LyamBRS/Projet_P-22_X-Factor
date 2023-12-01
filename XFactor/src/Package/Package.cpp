@@ -12,6 +12,7 @@
 
 // - INCLUDES - //
 #include "Package/Package.hpp"
+#include <EEPROM.h>
 
 
 bool package_setUp = false;
@@ -506,3 +507,34 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     //Debug_Information("Package", "Package_SafeBoxDetected", "Package detected");
     return PACKAGE_DETECTED;
 }
+
+
+bool Package_SaveCurrentColorInEEPROM()
+{
+    unsigned long color = 0;
+    color = GROVE_GetColor();
+
+    unsigned char red = Colour_GetRed(color);
+    unsigned char green = Colour_GetRed(color);
+    unsigned char blue = Colour_GetRed(color);
+    unsigned char clear = Colour_GetRed(color);
+
+    EEPROM.write(1, red);
+    EEPROM.write(2, green);
+    EEPROM.write(3, blue);
+    EEPROM.write(4, clear);
+
+    return true;
+}
+
+unsigned long Package_GetColorFromEEPROM()
+{
+    unsigned char red   = EEPROM.read(1);
+    unsigned char green = EEPROM.read(2);
+    unsigned char blue  = EEPROM.read(3);
+    unsigned char clear = EEPROM.read(4);
+
+    unsigned long colour = Colour_GetHexFromRGBC(red, green, blue, clear);
+    return colour;
+}
+

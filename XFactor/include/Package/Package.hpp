@@ -245,6 +245,10 @@ bool Package_GetStatus();
  */
 
 int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad, float distance_cm);
+
+bool Package_SaveCurrentColorInEEPROM();
+
+unsigned long Package_GetColorFromEEPROM();
 // #pragma endregion
 
 
