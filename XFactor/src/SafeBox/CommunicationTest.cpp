@@ -37,8 +37,6 @@ void TestGoodCommunications()
             Debug_Information("TEST", "SafeBox_ChangeLidState", "Testing Lid open");
             if(SafeBox_ChangeLidState(true))
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_ChangeLidState", "OPEN SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -50,8 +48,6 @@ void TestGoodCommunications()
         case(1):
             if(SafeBox_ChangeLidState(false))
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_ChangeLidState", "CLOSE SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -63,8 +59,6 @@ void TestGoodCommunications()
         case(2):
             if(SafeBox_ChangeGarageState(true))
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_ChangeGarageState", "OPEN SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -76,8 +70,6 @@ void TestGoodCommunications()
         case(3):
             if(SafeBox_ChangeGarageState(false))
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_ChangeGarageState", "CLOSE SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -89,8 +81,6 @@ void TestGoodCommunications()
         case(4):
             if(SafeBox_GetDoorBellStatus())
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_GetDoorBellStatus", "SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -102,8 +92,6 @@ void TestGoodCommunications()
         case(5):
             if(SafeBox_CheckIfPackageDeposited())
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_CheckIfPackageDeposited", "SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -116,8 +104,6 @@ void TestGoodCommunications()
             XFactor_SetNewStatus(XFactor_Status::WaitingForDelivery);
             if(SafeBox_ExchangeStatus())
             {
-                // delay(100);
-                // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
                 Debug_Information("TEST", "SafeBox_ExchangeStatus", "SUCCESS");
                 currentTest++;
                 Debug_End();
@@ -129,15 +115,12 @@ void TestGoodCommunications()
 
     if(currentTest == 7)
     {
-        // delay(100);
-        // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_DISARMED);
         Debug_Information("TEST", "RESULT", "SUCCESS");
         Debug_End();
         delay(5000);
         return;
     }
-    // delay(100);
-    // LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ALARM);
+
     delay(5000);
     Debug_End();
 }

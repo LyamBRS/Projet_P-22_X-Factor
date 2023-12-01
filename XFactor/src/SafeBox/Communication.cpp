@@ -409,9 +409,6 @@ bool SafeBox_GetGarageState()
  */
 int SafeBox_GetPackagesDeposited()
 {
-    // Cant be asked, won't use it.
-    // But yk, its there if somehow
-    // we end up using it.
     return -1;
 }
 

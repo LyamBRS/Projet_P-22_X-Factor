@@ -39,8 +39,6 @@ bool Claws_Init()
     pinMode(CLAWS_PINS_SWITCH, INPUT);
     S3003_Init(CLAWS_PINS_HEIGHT);
     S3003_Init(CLAWS_PINS_GRABBER);
-    //S3003_SetPosition(CLAWS_PINS_HEIGHT, CLAWS_HEIGHT_MIN);
-    //S3003_SetPosition(CLAWS_PINS_GRABBER, CLAWS_GRABBERS_MAX);
     Debug_End();
     return true;
 }
@@ -293,7 +291,6 @@ bool Claws_CloseUntilDetection()
             }
             previousInterval_ms = millis();
         }
-        //return true;
     }
 
     //NECESSARY FOR DEBOUNCE ; WILL BE REPLACED IF WE HAVE TIME

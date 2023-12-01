@@ -137,7 +137,7 @@ bool Package_PickUp()
                 continue;
             }
         }
-        delay(500); //MAY NEED TO BE REMOVED when we advance
+        delay(500);
     }
 
     if(!MoveFromVector(PICK_UP_PACKAGE_VECTOR))
@@ -169,7 +169,7 @@ bool Package_PickUp()
 
 bool Package_AlignWithSafeBox()
 {
-    return MoveFromVector(ALIGN_WITH_SAFEBOX_VECTOR); // see if it works as intended
+    return MoveFromVector(ALIGN_WITH_SAFEBOX_VECTOR);
 }
 
 /**
@@ -478,32 +478,15 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     positionDetectedX_cm = position.positionX_cm + movementDistanceX_cm + distanceDetectedX_cm + rotationMovementX * positionOffset_cm;
     positionDetectedY_cm = position.positionY_cm + movementDistanceY_cm + distanceDetectedY_cm + rotationMovementY * positionOffset_cm;
 
-    Debug_Information("Package", "Package_SafeBoxDetected", "COS : " + String(rotationMovementX));
-    Debug_Information("Package", "Package_SafeBoxDetected", "SIN : " + String(rotationMovementY));
-
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(position.positionX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionY : " + String(position.positionY_cm));
-
-    Debug_Information("Package", "Package_SafeBoxDetected", "Current distance X : " + String(movementDistanceX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "Current distance Y : " + String(movementDistanceY_cm));
-
-    Debug_Information("Package", "Package_SafeBoxDetected", "Distance detected X : " + String(distanceDetectedX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "Distance detected Y : " + String(distanceDetectedY_cm));
-
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedX : " + String(positionDetectedX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedY : " + String(positionDetectedY_cm));
-
     if (positionDetectedY_cm > DEMO_AREA_WIDTH_CM || positionDetectedY_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds Y");
-        //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
 
     if (-positionDetectedX_cm > DEMO_AREA_LENGTH_CM || positionDetectedX_cm < 0)
     {
         Debug_Information("Package", "Package_SafeBoxDetected", "Out of bounds X");
-        //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
 
@@ -513,7 +496,6 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
         //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 128, 32, 0); // Blue
         return SAFEBOX_DETECTED;
     }*/
-    //Debug_Information("Package", "Package_SafeBoxDetected", "Package detected");
     return PACKAGE_DETECTED;
 }
 

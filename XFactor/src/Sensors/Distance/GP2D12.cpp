@@ -42,9 +42,7 @@ unsigned short GP2D12_Read(int trigPin, int echoPin)
     delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
     
-    //duration = pulseIn(echoPin, HIGH);
     duration = pulseIn(echoPin, HIGH, (unsigned long)TIMEOUT_DISTANCE_MEASURE_US);
-    //cm = (duration*.0343)/2;
     if (duration != 0)
     {
         return duration*.017;

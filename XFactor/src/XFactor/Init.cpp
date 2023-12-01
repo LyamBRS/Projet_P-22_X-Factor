@@ -23,7 +23,6 @@
  */
 void XFactor_Init()
 {
-    //Alarm_Init();
 
     BoardInit();
 

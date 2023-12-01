@@ -25,7 +25,6 @@ double completionRatio = 0.0;
 float gMaxSpeed = SPEED_MAX;
 
 float rightMovement = 0.0f;
-//float leftMovement = 0.0f;
 float rotationMovement = 0.0f;
 
 int direction = 0;
@@ -316,26 +315,8 @@ float Accelerate(float completionRatio, float maximumSpeed)
     if ((completionRatio >= 0) && completionRatio <= 100)
     {
         neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
-        //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
         if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
         return neededSpeed;
-        
-        /*if (maximumSpeed == SPEED_MAX)
-        {
-            neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
-
-            //Parabola with a peak above maximum speed so it flattens out and we accelerate/deaccelerate faster.
-            //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
-            if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
-            return neededSpeed;
-        }
-        else if (maximumSpeed == SPEED_MAX_TURN)
-        {
-            neededSpeed = (pow(sin(completionRatio * 3.14),2) * maximumSpeed)+0.1;
-            //neededSpeed = ACCELERATION_CONSTANT*square(completionRatio-0.5)+(maximumSpeed*1.25);
-            if(neededSpeed>maximumSpeed) neededSpeed = maximumSpeed;
-            return neededSpeed;
-        }*/
     }
     else 
     {
@@ -362,7 +343,6 @@ bool Stop()
     else
     {
         Debug_Error("Movements", "Stop", "Failed to reset encoders");
-        //return false;
         return true;
     }
 }
@@ -383,7 +363,6 @@ bool ResetMovements()
 {
     if (ResetAllEncoders()){
         if (ResetPID()){
-            //ResetPositions();
             return true;
         }
         else Debug_Error("Movements", "ResetMovements", "Failed to reset PID");
@@ -580,8 +559,6 @@ int Execute_Moving(float targetDistance, float targetRadians)
 
     targetTicks = targetTicks*CONSTANT_RATIO_STRAIGHT;
 
-    //Debug_Information("Movement.cpp","Execute_Moving","Target Tick : " + String(targetTicks) + " | Distance : " + String(direction));
-
     int status = MOVEMENT_COMPLETED;
 
     SetMotorSpeed(LEFT, (float)direction*currentSpeed);
@@ -609,7 +586,6 @@ int Execute_Moving(float targetDistance, float targetRadians)
             previousLeftPulse  = leftPulse;
             previousRightPulse = rightPulse;
             previousInterval_ms = millis();
-            //Debug_Information("","",String(rightPulse-leftPulse));
         }
 
         if (checkForSensors)
@@ -676,8 +652,6 @@ int Execute_Moving(float targetDistance, float targetRadians)
         status = MOVEMENT_ERROR;
     }
 
-    //leftMovement  += EncoderToCentimeters(abs((float)ENCODER_Read(LEFT)));
-    //if (rightMovement != leftMovement) rotationMovement += (float)atan();
     Debug_End();
     return status;
 }

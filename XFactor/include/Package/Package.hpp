@@ -33,6 +33,8 @@
 #define DETECTION_READ_OFFSET_MULTIPLIER 1.25f
 
 #define PACKAGE_CALIBRATE_COLOUR_PIN 48
+
+#define PACKAGE_COLOUR_THRESHOLD 10
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
