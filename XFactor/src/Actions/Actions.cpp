@@ -1412,7 +1412,7 @@ void Execute_CalibratePackageDetection()
   }
   else
   {
-    LEDS_SetColor(LED_ID_STATUS_INDICATOR, 255,32,32); 
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32,255,32); 
   }
 
   if(digitalRead(PACKAGE_CALIBRATE_COLOUR_PIN) && !oldButton)

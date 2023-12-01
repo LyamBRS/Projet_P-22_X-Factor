@@ -260,7 +260,6 @@ bool Package_Confirmed()
     unsigned long currentColour = 0;
     unsigned long eepromColour = Package_GetColorFromEEPROM();
 
-
     // Get low and high value thresholds from the colour in the eeprom
     int lowRed   = Colour_GetRed(eepromColour)-30;
     int lowGreen = Colour_GetGreen(eepromColour)-30;
@@ -301,7 +300,9 @@ bool Package_Confirmed()
 
     currentColour = GROVE_GetColor();
 
-    if (currentColour < 23) return true;
+    Debug_Information("-", "-", "EEPROM: " + String(eepromColour));
+    Debug_Information("-", "-", "CURREN: " + String(currentColour));
+
     if(Colour_Threshold(LowThreshold, currentColour, HighThreshold))
     {
         return true;
