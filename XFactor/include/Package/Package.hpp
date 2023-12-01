@@ -31,6 +31,8 @@
 #define OUT_OF_BOUNDS_DETECTED 3
 
 #define DETECTION_READ_OFFSET_MULTIPLIER 1.25f
+
+#define PACKAGE_CALIBRATE_COLOUR_PIN 48
 // #pragma endregion
 
 // #pragma region [FUNCTIONS]
@@ -245,6 +247,10 @@ bool Package_GetStatus();
  */
 
 int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relativeRotation_rad, float distance_cm);
+
+bool Package_SaveCurrentColorInEEPROM();
+
+unsigned long Package_GetColorFromEEPROM();
 // #pragma endregion
 
 

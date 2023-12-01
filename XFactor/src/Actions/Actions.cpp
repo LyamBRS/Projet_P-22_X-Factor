@@ -95,6 +95,10 @@ void Execute_CurrentFunction(){
             Execute_SearchForPackage();
             break;
 
+        case(FUNCTION_ID_CALIBRATE_COLOUR):
+            Execute_CalibratePackageDetection();
+            break;
+
         case(FUNCTION_ID_SEARCH_PREPARATIONS):
             Execute_SearchPreparations();
             break;
@@ -166,6 +170,7 @@ bool SetNewExecutionFunction(unsigned char functionID)
         case(FUNCTION_ID_UNLOCKED):
         case(FUNCTION_ID_WAIT_AFTER_SAFEBOX):
         case(FUNCTION_ID_WAIT_FOR_DELIVERY):
+        case(FUNCTION_ID_CALIBRATE_COLOUR):
             // The specified function is indeed a valid function ID.
             currentFunctionID = functionID;
             return true;
@@ -1376,6 +1381,12 @@ void Execute_Unlocked()
   Package_Release();
   Package_StoreClaw();
 
+  if(digitalRead(PACKAGE_CALIBRATE_COLOUR_PIN))
+  {
+    SetNewExecutionFunction(FUNCTION_ID_CALIBRATE_COLOUR);
+    return;
+  }
+
   if (SafeBox_GetStatus() == SafeBox_Status::Unlocked)
   {
     SetNewExecutionFunction(FUNCTION_ID_UNLOCKED);
@@ -1394,4 +1405,33 @@ void Execute_Unlocked()
   }
 }
 
+void Execute_CalibratePackageDetection()
+{
+  static bool oldButton = false;
+
+  if(Package_Confirmed())
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, 255,32,32);
+  }
+  else
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, 255,32,32); 
+  }
+
+  if(digitalRead(PACKAGE_CALIBRATE_COLOUR_PIN) && !oldButton)
+  {
+    oldButton = true;
+    Package_SaveCurrentColorInEEPROM();
+  }
+
+  while(digitalRead(PACKAGE_CALIBRATE_COLOUR_PIN))
+  {
+    LEDS_SetColor(LED_ID_STATUS_INDICATOR, 0,0,255);
+  }
+
+  if(!digitalRead(PACKAGE_CALIBRATE_COLOUR_PIN) && oldButton)
+  {
+    oldButton = false;
+  }
+}
 //#pragma endregion

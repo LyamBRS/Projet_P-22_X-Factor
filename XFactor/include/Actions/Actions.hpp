@@ -454,4 +454,6 @@ void Execute_EndOfProgram();
  * reset by the user
  */
 void Execute_Unlocked();
+
+void Execute_CalibratePackageDetection();
 //#pragma endregion
