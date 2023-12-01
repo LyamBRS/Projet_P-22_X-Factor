@@ -751,9 +751,4 @@ void Execute_EndOfProgram()
     ExecutionUtils_HandleReceivedXFactorStatus();
 }
 
-void Execute_CalibratePackageDetection()
-{
-    Package_Detec
-}
-
 //#pragma endregion
