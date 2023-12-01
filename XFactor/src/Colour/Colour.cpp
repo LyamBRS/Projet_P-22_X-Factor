@@ -75,12 +75,6 @@ unsigned long Colour_GetHexFromRGBC(int red, int green, int blue, int clear)
  */
 bool Colour_Threshold(unsigned long lowValue, unsigned long currentValue, unsigned long maxValue)
 {
-    //int red = Colour_GetRed(currentValue);
-    //if (red <= 21)
-    //{
-    //    return true;
-    //}
-    //return false;
     // - VARIABLES - //
     int lowRed      = Colour_GetRed(lowValue);
     int lowGreen    = Colour_GetGreen(lowValue);

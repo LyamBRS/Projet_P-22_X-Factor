@@ -90,6 +90,5 @@ bool Alarm_VerifyAccelerometer();
  * No alarm needs to be activated.
  */
 bool Alarm_VerifyPackage();
-bool MoveStraightAndTest();
 
 // #pragma endregion

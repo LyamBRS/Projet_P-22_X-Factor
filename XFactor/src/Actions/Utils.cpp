@@ -132,7 +132,6 @@ int ExecutionUtils_CommunicationCheck(int currentExecutionFunctionId, int attemp
     else
     {
       return currentExecutionFunctionId;
-      //return FUNCTION_ID_ERROR;
     }
   }
 

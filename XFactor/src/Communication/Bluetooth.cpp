@@ -44,52 +44,6 @@ bool _messageReceived = false;
  */
 String MessageBuffer(String newMessage, unsigned char bufferIndex, int action)
 {
-    /*
-    // Debug_Start("MessageBuffer");
-    static String messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER] = {};
-    for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
-    {
-        messageBuffer[BT_SIZE_OF_MESSAGE_BUFFER].reserve(BT_MAX_MESSAGE_LENGTH);
-    }
-
-    if(bufferIndex >= BT_SIZE_OF_MESSAGE_BUFFER)
-    {
-        // Debug_Error("Bluetooth", "MessageBuffer", "Specified index is too large");
-        // Debug_End();
-        return BT_ERROR_MESSAGE;
-    }
-
-    if(action > 2 || action < 0)
-    {
-        // Debug_Error("Bluetooth", "MessageBuffer", "Specified action is wrong");
-        // Debug_End();
-        return BT_ERROR_MESSAGE;
-    }
-
-    // Is there a string at the specified index?
-    if(action == 2)
-    {
-        // Debug_End();
-        return (messageBuffer[bufferIndex].length()>0) ? "F" : "E";
-    }
-
-    //Read the buffer
-    if(action == 0)
-    {
-        // Debug_End();
-        return messageBuffer[bufferIndex];
-    }
-
-    //Write the buffer
-    if(action == 1)
-    {
-        messageBuffer[bufferIndex] = newMessage;
-        // Debug_End();
-        return newMessage;
-    }
-    // Debug_Error("Bluetooth", "MessageBuffer", "Failed to execute specified action");
-    // Debug_End();
-    */
     return BT_ERROR_MESSAGE;
 }
 
@@ -115,7 +69,6 @@ String GetMessage(int millisecondsTimeOut)
     unsigned long currentTime = millis();
     unsigned long oldTime = millis();
 
-    //int messageBufferIndex = 0;
     String _currentMessage = "";
 
     while ((currentTime-oldTime) < millisecondsTimeOut)
@@ -135,24 +88,7 @@ String GetMessage(int millisecondsTimeOut)
                 // END OF STRING
                 if(receivedCharacter == '\n')
                 {
-                    //messageBufferIndex = BT_MessagesAvailable();
-
-                    //if(messageBufferIndex > BT_SIZE_OF_MESSAGE_BUFFER-1)
-                    //{
-                    // Oh shit... Whos spamming? lmfao
-                    //    Debug_Error("Bluetooth", "BT_SERIAL_EVENT", "BUFFER OVERFLOW. Message lost.");
-                    //    _currentMessage = "";
-                    //    _messageReceived = false;
-                    //}
-                    //else
-                    //{
-                        //receivedBTMessages[messageBufferIndex] = _currentMessage;
-                        //MessageBuffer(_currentMessage, messageBufferIndex, 1);
-                        //Debug_Information("Bluetooth", "BT_SERIAL_EVENT: new message: ", _currentMessage);
-                        //_currentMessage = "";
-                        //_messageReceived = true;
-                        return _currentMessage;
-                    //}
+                    return _currentMessage;
                 }
                 else
                 {
@@ -288,12 +224,6 @@ int BT_MessagesAvailable()
  */
 bool BT_ClearAllMessages()
 {
-    /*
-    for(unsigned char messageIndex=0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER; messageIndex++)
-    {
-        MessageBuffer("", messageIndex, 1);
-    }
-    */
     return true;
 }
 
@@ -369,8 +299,6 @@ bool BT_WaitForAMessage(int millisecondsTimeOut)
             Debug_End();
             return true;
         }
-
-        //serialEvent1();
     }
     Debug_Warning("Bluetooth", "BT_WaitForAMessage", "Timedout");
     Debug_End();
@@ -406,20 +334,7 @@ String BT_GetLatestMessage()
     if(availableMessages == 0) return BT_NO_MESSAGE;
 
     // - FUNCTION EXECUTION - //
-    //oldestMessage = MessageBuffer("", 0, 0);
     oldestMessage = GetMessage(500);
-
-    // brings buffer forwards by one.
-    //if(BT_SIZE_OF_MESSAGE_BUFFER>1)
-    //{
-    //    for(unsigned char messageIndex = 0; messageIndex<BT_SIZE_OF_MESSAGE_BUFFER-1; messageIndex++)
-    //    {
-    //        String message = MessageBuffer("", messageIndex+1, 0);
-    //        MessageBuffer(message, messageIndex, 1);
-    //    }
-    //}
-    // Clear last message to avoid duplicates
-    //MessageBuffer("", BT_SIZE_OF_MESSAGE_BUFFER-1, 1);
     return oldestMessage;
 }
 
