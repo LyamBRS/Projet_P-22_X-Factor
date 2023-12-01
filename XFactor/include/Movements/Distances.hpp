@@ -29,7 +29,7 @@
 
 //#pragma region [moveVectors]
 
-#define GETTING_OUT_OF_GARAGE_VECTOR STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM, false, DONT_CHECK_SENSORS, true, false, 0.4f
+#define GETTING_OUT_OF_GARAGE_VECTOR STRAIGHT, SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM - (ROBOT_WIDTH_CM / 2), false, DONT_CHECK_SENSORS, true, false, 0.4f
 #define GETTING_BACK_INTO_GARAGE_VECTOR TURN_90_LEFT - (PI / 25), SAFEBOX_LENGTH_CM + ROBOT_LENGTH_CM - 20.0f, false, DONT_CHECK_SENSORS, true, false, 0.4f
 
 #define BACKTRACE_VECTOR backtraceVector.rotation_rad, backtraceVector.distance_cm, false, DONT_CHECK_SENSORS, true, false, SPEED_MAX

@@ -313,7 +313,7 @@ int Package_Detected(int capteur, float relativeRotation_rad, float movementDist
         //Debug_Information("Package.cpp", "Package_Detected", "Sensor : " + String(capteur));
         //Debug_Information("Package.cpp", "Package_Detected", "Distance : " + String(distanceDetected_cm));
 
-        return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
+        //return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
         if (distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM)
         {
@@ -455,7 +455,7 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     positionDetectedX_cm = position.positionX_cm + movementDistanceX_cm + distanceDetectedX_cm + rotationMovementX * positionOffset_cm;
     positionDetectedY_cm = position.positionY_cm + movementDistanceY_cm + distanceDetectedY_cm + rotationMovementY * positionOffset_cm;
 
-    /*Debug_Information("Package", "Package_SafeBoxDetected", "COS : " + String(rotationMovementX));
+    Debug_Information("Package", "Package_SafeBoxDetected", "COS : " + String(rotationMovementX));
     Debug_Information("Package", "Package_SafeBoxDetected", "SIN : " + String(rotationMovementY));
 
     Debug_Information("Package", "Package_SafeBoxDetected", "PositionX : " + String(position.positionX_cm));
@@ -468,7 +468,7 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     Debug_Information("Package", "Package_SafeBoxDetected", "Distance detected Y : " + String(distanceDetectedY_cm));
 
     Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedX : " + String(positionDetectedX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedY : " + String(positionDetectedY_cm));*/
+    Debug_Information("Package", "Package_SafeBoxDetected", "PositionDetectedY : " + String(positionDetectedY_cm));
 
     if (positionDetectedY_cm > DEMO_AREA_WIDTH_CM || positionDetectedY_cm < 0)
     {
