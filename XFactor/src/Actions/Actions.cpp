@@ -350,7 +350,6 @@ void Execute_GettingOutOfGarage()
     if(!SafeBox_ChangeGarageState(true))
     {
       Debug_Warning("Actions", "Execute_GettingOutOfGarage", "Failed to change garage state");
-      //SetNewExecutionFunction(FUNCTION_ID_ERROR);
       return;
     }
   }
@@ -390,7 +389,6 @@ void Execute_SearchPreparations()
   LEDS_SetColor(LED_ID_STATUS_INDICATOR, LED_COLOR_ARMED);
 
   // - Perform status exchange with SafeBox
-  //SafeBox_ExchangeStatus();
   int checkFunctionId = ExecutionUtils_StatusCheck(FUNCTION_ID_SEARCH_PREPARATIONS);
   if (checkFunctionId != FUNCTION_ID_SEARCH_PREPARATIONS)
   {

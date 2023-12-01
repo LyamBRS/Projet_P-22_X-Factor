@@ -43,7 +43,6 @@ bool Package_Init()
         if(Claws_Init())
         {   
             Package_StoreClaw();
-            //delay(1500);
             return true;
         }
         else
@@ -77,11 +76,8 @@ bool Package_Init()
 
 bool Package_Release()
 {
-    /*if (package_setUp == false && pickup == false){
-        return false;
-    }*/
-
-    if (Claws_SetGrabbers(100) == true){
+    if (Claws_SetGrabbers(100) == true)
+    {
         Package_SetStatus(false);
         return true;
     }
@@ -359,8 +355,6 @@ int Package_Detected(int capteur, float relativeRotation_rad, float movementDist
                 return NOTHING_DETECTED;
                 break;
         }
-        //Debug_Information("Package.cpp", "Package_Detected", "Sensor : " + String(capteur));
-        //Debug_Information("Package.cpp", "Package_Detected", "Distance : " + String(distanceDetected_cm));
 
         //return distanceDetected_cm < DISTANCE_SENSOR_MAX_DETECTION_RANGE_CM;
 
@@ -370,7 +364,6 @@ int Package_Detected(int capteur, float relativeRotation_rad, float movementDist
             return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad, movementDistance_cm);
         }
         return false;
-        //return Package_SafeBoxDetected(capteur, (float)distanceDetected_cm, relativeRotation_rad);
     }
 }
 
@@ -416,16 +409,6 @@ bool Package_SetStatus(bool newPackageStatus)
 {
     package_setUp = newPackageStatus;
     return true;
-
-    /*if (Package_Confirmed() == true && Package_DeployClaw() == true && package_setUp == true){
-        return true;
-    }
-
-    else if (!Package_Confirmed() == true && Package_StoreClaw() == true && package_setUp == false){
-        return true;
-    }
-    package_setUp = false;
-    return false;*/
 }
 
 /**
@@ -464,16 +447,6 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
     float positionDetectedX_cm;
     float positionDetectedY_cm;
     float positionOffset_cm;
-
-    //relativeRotation_rad = -relativeRotation_rad;
-    //position.rotation_rad += relativeRotation_rad;
-    /*MovementVector position;
-    position.distance_cm = 100.0f;
-    position.rotation_rad = PI/4;
-
-    relativeRotation_rad = -(PI / 4);
-    distanceDetected_cm = 40.0f;
-    sensorId = FRONT_SENSOR;*/
 
     switch (sensorId)
     {
@@ -532,19 +505,6 @@ int Package_SafeBoxDetected(int sensorId, float distanceDetected_cm, float relat
         //LEDS_SetColor(LED_ID_STATUS_INDICATOR, 32, 32, 32); // Low white
         return OUT_OF_BOUNDS_DETECTED;
     }
-
-    /*Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance X : " + String(distanceDetectedX_cm));
-    Debug_Information("Package", "Package_SafeBoxDetected", "Detection distance Y : " + String(distanceDetectedY_cm));*/
-
-    /*if (abs(positionY + distanceDetectedY_cm) < SAFEBOX_WIDTH_CM)
-    {
-        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected Y");
-    }
-
-    if (abs(positionX + distanceDetectedX_cm) < SAFEBOX_LENGTH_CM)
-    {
-        Debug_Information("Package", "Package_SafeBoxDetected", "SafeBox detected X");
-    }*/
 
     /*if (positionDetectedX_cm > DEMO_AREA_LENGTH_CM - SAFEBOX_WIDTH_CM && positionDetectedY_cm < DEMO_AREA_WIDTH_CM - SAFEBOX_WIDTH_CM)
     {
